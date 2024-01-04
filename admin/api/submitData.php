@@ -32,7 +32,7 @@ if (empty($apiKey)) {
 
 //stage
 //dev
-$Backend_SimplyIn = 'https://dev.backend.simplyin.app/';
+$Backend_SimplyIn = 'https://stage.backend.simplyin.app/';
 update_option('Backend_SimplyIn', $Backend_SimplyIn);
 
 if (!empty($token)) {

@@ -173,14 +173,15 @@ export const PhoneField = () => {
 	useEffect(() => {
 		removeDataSessionStorage({ key: "simplyinToken" })
 	}, [phoneInput])
-	1
+
+
 
 	return (!simplyinToken && <>
 
 		{!simplyinToken && <>
 			<CheckboxContainer>
 				<Checkbox
-					style={{ paddingLeft: 0 }}
+					style={{ marginLeft: -11 }}
 					id="simply-save-checkbox"
 					name="simply-save-checkbox"
 					checked={simplyinToken ? !!simplyinToken : checked}
@@ -210,17 +211,20 @@ export const PhoneField = () => {
 			{checked && <>
 				<PhoneInputDescription>
 					Następnym razem, gdy dokonasz płatności tutaj lub w innych sklepach używających
-					<PhoneInputDescriptionLink href="https://simply.in/">{" "}Simply.IN{" "}</PhoneInputDescriptionLink>
+					<PhoneInputDescriptionLink target="_blank" href="https://simply.in/">{" "}Simply.IN{" "}</PhoneInputDescriptionLink>
 					, otrzymasz kod SMS-em i będziesz mógł bezpiecznie robić zakupy za pomocą
-					<PhoneInputDescriptionLink href="https://simply.in/">{" "}Simply.IN.</PhoneInputDescriptionLink>
+
+					{/* // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-ignore */}
+					<PhoneInputDescriptionLink target="_blank" href={appLocalizer?.base_url || "./"}>{" "}Simply.IN.</PhoneInputDescriptionLink>
 				</PhoneInputDescription>
 				<PhoneInputDescriptionSecondary>
-					Klikając przycisk „Zamawiam” lub analogiczny, potwierdzam że zapoznałem się i akceptuję Regulamin
-					<PhoneInputDescriptionLink href="https://simply.in/terms-and-conditions">{" "}Simply.In.{" "}</PhoneInputDescriptionLink >
+					Klikając przycisk „Zamawiam” lub analogiczny, potwierdzam że zapoznałem się i akceptuję <PhoneInputDescriptionLink target="_blank" href="https://simply.in/terms-and-conditions">{" "}Regulamin
+						{" "}Simply.In.{" "}</PhoneInputDescriptionLink >
 					Administratorem Twoich danych osobowych jest
-					<PhoneInputDescriptionLink href="https://simply.in/">{" "}Simply.In.</PhoneInputDescriptionLink>
+					<PhoneInputDescriptionLink target="_blank" href="https://simply.in/">{" "}Simply.In.</PhoneInputDescriptionLink>
 					Zobacz więcej w
-					<PhoneInputDescriptionLink href="https://simply.in/gdpr-rules">{" "}Polityce Prywatności. </PhoneInputDescriptionLink>
+					<PhoneInputDescriptionLink target="_blank" href="https://simply.in/gdpr-rules">{" "}Polityce Prywatności. </PhoneInputDescriptionLink>
 				</PhoneInputDescriptionSecondary>
 				{/*  */}
 
