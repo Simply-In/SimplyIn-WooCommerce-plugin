@@ -119,19 +119,30 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 
 
 			setSelectedUserData((prev: any) => {
+
+				sessionStorage.setItem("BillingIndex", `${selectedBillingIndex}`)
+				sessionStorage.setItem("ShippingIndex", `${selectedShippingIndex}`)
+				sessionStorage.setItem("ParcelIndex", `null`)
+
+
 				return ({
 					...prev,
 					billingAddresses: userData?.billingAddresses[selectedBillingIndex || 0],
 					shippingAddresses: (selectedShippingIndex !== null && userData?.shippingAddresses?.length) ? userData?.shippingAddresses[selectedShippingIndex || 0] : null,
-					// parcelLockers: userData?.parcelLockers[selectedDeliveryPointIndex]?.lockerId || null
+					parcelLockers: null
+
 				})
 			})
 		} else {
 			setSelectedUserData((prev: any) => {
+
+				sessionStorage.setItem("BillingIndex", `${selectedBillingIndex}`)
+				sessionStorage.setItem("ShippingIndex", `null`)
+				sessionStorage.setItem("ParcelIndex", `${selectedDeliveryPointIndex}`)
 				return ({
 					...prev,
 					billingAddresses: userData?.billingAddresses[selectedBillingIndex || 0],
-					// shippingAddresses: (selectedShippingIndex !== null && userData?.shippingAddresses?.length) ? userData?.shippingAddresses[selectedShippingIndex || 0] : null,
+					shippingAddresses: null,
 					parcelLockers: userData?.parcelLockers[selectedDeliveryPointIndex]?.lockerId || null
 				})
 			})
@@ -145,9 +156,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 
 
 
-		sessionStorage.setItem("BillingIndex", `${selectedBillingIndex}`)
-		sessionStorage.setItem("ShippingIndex", `${selectedShippingIndex}`)
-		sessionStorage.setItem("ParcelIndex", `${selectedDeliveryPointIndex}`)
+
 
 
 
@@ -277,7 +286,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 											<FormControlLabel value={index} control={<Radio />}
 												label={
 													<DataValueContainer>
-														<DataValueTitle>{el?.addressName ?? <>Adres{" "}{index + 1}</>}</DataValueTitle>
+														<DataValueTitle>{el?.addressName ? el.addressName : <>Adres{" "}{index + 1}</>}</DataValueTitle>
 														<DataValueLabel>{el.street}{" "}{el.appartmentNumber},{" "}{el.postalCode},{" "}{el.city}</DataValueLabel>
 													</DataValueContainer>
 												} style={{ marginBottom: 0 }} />
@@ -385,7 +394,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 												<FormControlLabel value={index} control={<Radio />}
 													label={
 														<DataValueContainer>
-															<DataValueTitle>{el?.addressName ?? <>Adres{" "}{index + 1}</>}</DataValueTitle>
+															<DataValueTitle>{el?.addressName ? el?.addressName : <>Adres{" "}{index + 1}</>}</DataValueTitle>
 															<DataValueLabel>{el.street}{" "}{el.appartmentNumber},{" "}{el.postalCode},{" "}{el.city}</DataValueLabel>
 														</DataValueContainer>
 													} style={{ marginBottom: 0 }} />

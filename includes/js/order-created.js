@@ -307,6 +307,9 @@ jQuery(document).ready(async function ($) {
         sessionStorage.removeItem("simplyinToken");
         sessionStorage.removeItem("UserData");
         sessionStorage.removeItem("phoneInput");
+        sessionStorage.removeItem("ParcelIndex");
+        sessionStorage.removeItem("BillingIndex");
+        sessionStorage.removeItem("ShippingIndex");
       });
 
     return;
@@ -393,6 +396,9 @@ jQuery(document).ready(async function ($) {
         sessionStorage.removeItem("electronicContactApprove");
         sessionStorage.removeItem("marketingContactApprove");
         sessionStorage.removeItem("isInpostKeyValid");
+        sessionStorage.removeItem("ParcelIndex");
+        sessionStorage.removeItem("BillingIndex");
+        sessionStorage.removeItem("ShippingIndex");
       })
       .catch((error) => {
         console.log(error);
