@@ -14,7 +14,7 @@ if (isset($data['token'])) {
 define('WP_USE_THEMES', false);
 require('../../../../../wp-load.php');
 $apiKey = get_option('simplyin_api_key');
-$body['api_token'] = $apiKey;
+$body['apiKey'] = $apiKey;
 
 
 //
@@ -32,7 +32,7 @@ if (empty($apiKey)) {
 
 //stage
 //dev
-$Backend_SimplyIn = 'https://stage.backend.simplyin.app/';
+$Backend_SimplyIn = 'https://dev.backend.simplyin.app/';
 update_option('Backend_SimplyIn', $Backend_SimplyIn);
 
 if (!empty($token)) {

@@ -200,7 +200,7 @@ jQuery(document).ready(async function ($) {
           )[0];
 
           newItem = res.data.shippingAddresses.find(
-            (item) => item._id === idNotInModel._id,
+            (item) => item._id === idNotInModel?._id,
           );
         } else {
           const ShippingIndex = loadDataFromSessionStorage({
@@ -222,27 +222,37 @@ jQuery(document).ready(async function ($) {
         if (indexOfUndefinedBilling !== -1) {
           //jest nowy element
 
+          console.log("res.data.billingAddresses", res.data.billingAddresses);
           const idNotInModel = res.data.billingAddresses.filter(
             (item) => !arrayOfIdBilling.includes(item._id),
           )[0];
+          console.log("idNotInModel", idNotInModel);
 
           newItemBilling = res.data.billingAddresses.find((item) => {
-            if ("_id" in idNotInModel) {
+            if (idNotInModel && "_id" in idNotInModel) {
               return item._id === idNotInModel._id;
             }
           });
+          console.log("newItemBilling", newItemBilling);
         } else {
           const BillingIndex = loadDataFromSessionStorage({
             key: "BillingIndex",
           });
           newItemBilling = res.data?.billingAddresses[BillingIndex];
-
-          if (!newItemBilling.state) {
-            newItemBilling.state = "";
-          }
-          if (!newItemBilling.taxId) {
-            newItemBilling.taxId = "";
-          }
+          console.log("newItemBilling", newItemBilling);
+          newItemBilling.state =
+            newItemBilling.state !== undefined && newItemBilling.state !== null
+              ? newItemBilling.state
+              : "";
+          newItemBilling.taxId =
+            newItemBilling.taxId !== undefined && newItemBilling.taxId !== null
+              ? newItemBilling.taxId
+              : "";
+          newItemBilling.appartmentNumber =
+            newItemBilling.appartmentNumber !== undefined &&
+            newItemBilling.appartmentNumber !== null
+              ? newItemBilling.appartmentNumber
+              : "";
 
           //   console.log("2 newItem", newItem);
           //nie ma nowego elementu

@@ -99,8 +99,13 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 
 					setSelectedBillingIndex(0)
 					setSelectedShippingIndex(0)
-					setSameDeliveryAddress(false)
 					setSelectedDeliveryPointIndex(null)
+
+					sessionStorage.setItem("BillingIndex", `0`)
+					sessionStorage.setItem("ShippingIndex", `null`)
+					sessionStorage.setItem("ParcelIndex", `0`)
+
+					setSameDeliveryAddress(false)
 					setSelectedUserData((prev: any) => {
 						return ({
 							...prev,
@@ -119,8 +124,11 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 
 					setSelectedBillingIndex(0)
 					setSelectedShippingIndex(0)
-					setSameDeliveryAddress(false)
 					setSelectedDeliveryPointIndex(null)
+					sessionStorage.setItem("BillingIndex", `0`)
+					sessionStorage.setItem("ShippingIndex", `0`)
+					sessionStorage.setItem("ParcelIndex", `null`)
+					setSameDeliveryAddress(false)
 					setSelectedUserData((prev: any) => {
 						return ({
 							...prev,
@@ -138,8 +146,11 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 
 					setSelectedBillingIndex(0)
 					setSelectedShippingIndex(null)
-					setSameDeliveryAddress(true)
 					setSelectedDeliveryPointIndex(null)
+					sessionStorage.setItem("BillingIndex", `0`)
+					sessionStorage.setItem("ShippingIndex", `null`)
+					sessionStorage.setItem("ParcelIndex", `null`)
+					setSameDeliveryAddress(true)
 					setSelectedUserData((prev: any) => {
 						return ({
 							...prev,
@@ -159,6 +170,9 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 					setSelectedBillingIndex(0)
 					setSelectedShippingIndex(null)
 					setSelectedDeliveryPointIndex(0)
+					sessionStorage.setItem("BillingIndex", `0`)
+					sessionStorage.setItem("ShippingIndex", `null`)
+					sessionStorage.setItem("ParcelIndex", `0`)
 					//todo
 					setSameDeliveryAddress(true)
 
@@ -182,9 +196,11 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 
 					setSelectedBillingIndex(0)
 					setSelectedShippingIndex(null)
-
-					console.log('delivery point index selection');
 					setSelectedDeliveryPointIndex(0)
+					sessionStorage.setItem("BillingIndex", `0`)
+					sessionStorage.setItem("ShippingIndex", `null`)
+					sessionStorage.setItem("ParcelIndex", `0`)
+					console.log('delivery point index selection');
 					setSameDeliveryAddress(true)
 					setPickupPointDelivery(true)
 					setSelectedUserData((prev: any) => {
