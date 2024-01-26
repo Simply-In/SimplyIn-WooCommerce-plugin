@@ -3,29 +3,28 @@ import { useContext, useEffect, useState } from 'react'
 
 // import { Divider } from '@mui/material'
 // import { Link } from '@mui/material'
-// import Countdown from 'react-countdown'
+import Countdown from 'react-countdown'
 // import { AndroidIcon } from '../../../assets/AndroidIcon'
 // import { IosIcon } from '../../../assets/IosIcon'
 // , PopupCountDownContainer, PopupCodeNotDelivered, PopupSendAgain, MobileSystemsLinksContainer, SingleSystemLink
-import { PopupTitle, PopupTextMain, PinInputContainer, PopupTextSecondary } from '../SimplyID.styled'
+// import { PopupTitle, PopupTextMain, PinInputContainer, PopupTextSecondary } from '../SimplyID.styled'
 // import { PopupTitle, PopupTextMain, PopupTextSecondary, PinInputContainer } from '../SimplyID.styled'
-// import { PopupTitle, PopupTextMain, PinInputContainer, PopupTextSecondary, MobileSystemsLinksContainer, SingleSystemLink } from '../SimplyID.styled'
+import { PopupTitle, PopupTextMain, PinInputContainer, PopupTextSecondary, PopupCountDownContainer, PopupCodeNotDelivered, PopupSendAgain } from '../SimplyID.styled'
 
 import { middlewareApi } from '../../../services/middlewareApi'
 import { PopupTextError } from '../../PhoneField/PhoneField.styled'
 import { removeDataSessionStorage, saveDataSessionStorage } from '../../../services/sessionStorageApi'
 import { SelectedDataContext } from '../SimplyID'
-
-
+import { OtpInput as OtpInputReactJS } from 'reactjs-otp-input'
+import { Link } from '@mui/material'
 import { selectPickupPointInpost } from '../../../functions/selectInpostPoint'
 
-// const countdownRenderer = ({ formatted: { minutes, seconds } }: any) => {
-// 	return <span>{minutes}:{seconds}</span>;
-// };
-// const countdownTimeSeconds = 10
+const countdownRenderer = ({ formatted: { minutes, seconds } }: any) => {
+	return <span>{minutes}:{seconds}</span>;
+};
+const countdownTimeSeconds = 10
 
 
-import { OtpInput as OtpInputReactJS } from 'reactjs-otp-input'
 
 
 
@@ -36,7 +35,7 @@ interface IStep1 {
 	setUserData: any
 	setToken: any
 	setSelectedUserData: any
-
+	simplyInput: string
 }
 // eslint-disable-next-line react-refresh/only-export-components
 export const changeInputValue = (inputElement: any, newValue: any) => {
@@ -47,10 +46,10 @@ export const changeInputValue = (inputElement: any, newValue: any) => {
 // eslint-disable-next-line react-refresh/only-export-components
 export const simplyinTokenInputField = document.getElementById('simplyinTokenInput')
 
-export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData, setToken, setSelectedUserData }: IStep1) => {
-	// const [countdown, setCountdown] = useState<boolean>(false)
+export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData, setToken, setSelectedUserData, simplyInput }: IStep1) => {
+	const [countdown, setCountdown] = useState<boolean>(false)
 
-	// const [countdownTime, setCountdownTime] = useState<number>(0)
+	const [countdownTime, setCountdownTime] = useState<number>(0)
 	const [modalError, setModalError] = useState("")
 	const [pinCode, setPinCode] = useState('');
 	const {
@@ -232,15 +231,29 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 
 	// type sendPinAgainMethodType = "sms" | "email"
 
-	// const handleSendPinAgain = (e: any) => {
-	// 	setCountdown(true)
-	// 	setCountdownTime(Date.now() + countdownTimeSeconds * 1000)
-	// 	console.log(e.target.value);
+	const handleSendPinAgain = (e: any) => {
+		setCountdown(true)
+		setCountdownTime(Date.now() + countdownTimeSeconds * 1000)
 
-	// }
-	// const handleCountdownCompleted = () => {
-	// 	setCountdown(false)
-	// }
+		middlewareApi({
+			endpoint: "checkout/resend-checkout-code-via-email",
+			method: 'POST',
+			requestBody: { "email": simplyInput }
+		}).catch((err) => {
+
+			console.log(err);
+
+		})
+
+
+
+
+		console.log(e.target.value);
+
+	}
+	const handleCountdownCompleted = () => {
+		setCountdown(false)
+	}
 
 	// const handleChangePinInput = (e: React.ChangeEvent<HTMLInputElement>) => {
 	// 	console.log('handle change pin input');
@@ -289,6 +302,7 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 								borderRadius: "8px",
 								fontSize: "30px",
 								textAlign: "center",
+								padding: 0
 
 							}}
 							isInputNum={true}
@@ -300,11 +314,11 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 
 
 
-					/>
+						/>
 
 					</form>
 				</div>
-				{/* } */}
+
 			</PinInputContainer>
 
 
@@ -315,29 +329,29 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 				Będziesz mógł edytować swoje dane po zalogowaniu.
 			</PopupTextSecondary>
 
-			{/* {false && (countdown) ?
-				<> */}
-			{/* // <PopupCountDownContainer>
-				// 	<PopupCodeNotDelivered>
-				// 		Kod został ponownie wysłany
-				// 	</PopupCodeNotDelivered>
+			{(countdown) ?
+				<>
+					<PopupCountDownContainer>
+						<PopupCodeNotDelivered>
+							Kod został ponownie wysłany
+						</PopupCodeNotDelivered>
 
-				// 	<Countdown daysInHours={false} renderer={countdownRenderer} zeroPadTime={2} zeroPadDays={2}
-				// 		date={countdownTime} onComplete={handleCountdownCompleted} /></PopupCountDownContainer> */}
-			{/* </>
+						<Countdown daysInHours={false} renderer={countdownRenderer} zeroPadTime={2} zeroPadDays={2}
+							date={countdownTime} onComplete={handleCountdownCompleted} /></PopupCountDownContainer>
+				</>
 				:
-				<> */}
-			{/* <PopupCodeNotDelivered>
+				<>
+					<PopupCodeNotDelivered>
 						Kod nie dotarł?
 					</PopupCodeNotDelivered>
 					<PopupSendAgain>
-						// {/* <Link component="button" id="send-again-btn" underline="hover" onClick={
-						// 	handleSendPinAgain
-						// }>
-						// 	Wyślij ponownie
-						// </Link>
-						// &nbsp; lub &nbsp; */}
-			{/*<Link
+						{/* <Link component="button" id="send-again-btn" underline="hover" onClick={
+							handleSendPinAgain
+						}>
+							Wyślij ponownie
+						</Link>
+						&nbsp; lub &nbsp; */}
+						<Link
 							component="button"
 							id="send-again-email-btn"
 							value="mail"
@@ -346,9 +360,9 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 						>
 							Wyślij e-mailem
 						</Link>
-					</PopupSendAgain> */}
-			{/* </>
-			} */}
+					</PopupSendAgain>
+				</>
+			}
 
 			{/* <Divider style={{ marginTop: 24, marginBottom: 12 }} />
 			<PopupTextSecondary>

@@ -17,22 +17,14 @@ $apiKey = get_option('simplyin_api_key');
 $body['apiKey'] = $apiKey;
 
 
-//
-// $apiKey = "";
-// $body['api_token'] = "";
 
 if (empty($apiKey)) {
 	echo "Simplyin apikey is empty";
 	return;
 }
 
-///
 
-
-
-//stage
-//dev
-$Backend_SimplyIn = 'https://dev.backend.simplyin.app/';
+$Backend_SimplyIn = 'https://dev.backend.simplyin.app/api/';
 update_option('Backend_SimplyIn', $Backend_SimplyIn);
 
 if (!empty($token)) {

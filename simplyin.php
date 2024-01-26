@@ -9,7 +9,7 @@
  * @wordpress-plugin
  * Plugin Name: SimplyIn  
  * Plugin URI:       
- * Description: SimplyIn application. 13.12.2023 16.00
+ * Description: SimplyIn application. 26.01.2024 17.00
  * Version:           1.0.0
  * Author:            Simply.in
  * Author URI:        https://simply.in
@@ -249,6 +249,7 @@ function enqueue_and_localize_order_created_script($order_id)
 	$billing_tax_id = get_post_meta($order_id, '_billing_tax_id', true);
 
 	$myplugin_checkbox_value = get_post_meta($order_id, 'simply-save-checkbox', true);
+	$currentShopUrl = wc_get_page_permalink('shop');
 	$order_data = array(
 		'base_url' => $base_url,
 		'create_new_account' => $myplugin_checkbox_value,
@@ -287,7 +288,8 @@ function enqueue_and_localize_order_created_script($order_id)
 		'order' => $order->get_shipping_company(),
 		'orderTotal' => $order->get_data(),
 		'language' => get_locale(),
-		'shopName' => get_bloginfo('name')
+		'shopName' => get_bloginfo('name'),
+		'shopUrl' => $currentShopUrl
 	);
 
 	foreach ($order->get_items() as $item_id => $item) {

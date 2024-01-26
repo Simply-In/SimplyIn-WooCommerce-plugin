@@ -1,21 +1,21 @@
 /* eslint-disable */
 
-let shopBase = "../../..";
+let shopBaseTwo = "../../..";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore
 if (orderData?.base_url) {
-  shopBase = orderData?.base_url;
+  shopBaseTwo = orderData?.base_url;
   console.log(orderData?.base_url);
 }
 
 const middlewareApiTwo = ({ endpoint, method, requestBody, token }) => {
-  console.log(
-    "middlewareApiTwo",
-    `${shopBase}/wp-content/plugins/simplyin/admin/api/submitData.php`,
-  );
+  //   console.log(
+  //     "middlewareApiTwo",
+  //     `${shopBaseTwo}/wp-content/plugins/simplyin/admin/api/submitData.php`,
+  //   );
 
   return fetch(
-    `${shopBase}/wp-content/plugins/simplyin/admin/api/submitData.php`,
+    `${shopBaseTwo}/wp-content/plugins/simplyin/admin/api/submitData.php`,
     {
       method: "POST",
       headers: {
@@ -27,7 +27,7 @@ const middlewareApiTwo = ({ endpoint, method, requestBody, token }) => {
         requestBody,
         ...(token ? { token } : {}),
       }),
-    },
+    }
   )
     .then((response) => response.json())
     .catch((error) => {
@@ -35,7 +35,7 @@ const middlewareApiTwo = ({ endpoint, method, requestBody, token }) => {
     });
 };
 
-const loadDataFromSessionStorage = ({ key }) => {
+const loadDataFromSessionStorageTwo = ({ key }) => {
   try {
     const serializedData = sessionStorage.getItem(key);
     if (serializedData === null) {
@@ -53,9 +53,7 @@ jQuery(document).ready(async function ($) {
   console.log("Order has been created.");
   console.log(orderData);
   console.log(
-    orderData.orderTotal.meta_data.find(
-      (el) => el.key === "_parcel_machine_id",
-    ),
+    orderData.orderTotal.meta_data.find((el) => el.key === "_parcel_machine_id")
   );
 
   //   return;
@@ -100,11 +98,11 @@ jQuery(document).ready(async function ($) {
   ];
 
   const deliveryPoint = orderData?.orderTotal?.meta_data?.find(
-    (el) => el.key === "_parcel_machine_id",
+    (el) => el.key === "_parcel_machine_id"
   )?.value;
 
   const res = await fetch(
-    `https://api-pl-points.easypack24.net/v1/points/${deliveryPoint}`,
+    `https://api-pl-points.easypack24.net/v1/points/${deliveryPoint}`
   );
   const inpostPointData = await res?.json();
 
@@ -113,7 +111,7 @@ jQuery(document).ready(async function ($) {
   const parcelLockers = [
     {
       addressName: "",
-      label: "",
+      label: "INPOST",
       lockerId: deliveryPoint,
       address: `${inpostPointData?.address?.line1 || ""}, ${
         inpostPointData?.address?.line2 || ""
@@ -121,17 +119,17 @@ jQuery(document).ready(async function ($) {
     },
   ];
 
-  const simplyinToken = loadDataFromSessionStorage({ key: "simplyinToken" });
-  const phoneNumber = loadDataFromSessionStorage({ key: "phoneInput" });
+  const simplyinToken = loadDataFromSessionStorageTwo({ key: "simplyinToken" });
+  const phoneNumber = loadDataFromSessionStorageTwo({ key: "phoneInput" });
 
   const orderItems = orderData.line_items.map((item) => {
     return {
-      name: item.name,
-      url: item.product_url,
-      price: item.price,
-      quantity: item.quantity,
-      currency: orderData.orderTotal.currency,
-      thumbnailUrl: item.image_url,
+      name: item.name || "",
+      url: item.product_url || "",
+      price: item.price || "",
+      quantity: item.quantity || "",
+      currency: orderData.orderTotal.currency || "",
+      thumbnailUrl: item.image_url || "",
     };
   });
   //   EasyPackPointObject
@@ -140,7 +138,7 @@ jQuery(document).ready(async function ($) {
   //   console.log(userData);
 
   if (!!simplyinToken && typeof orderData !== "undefined") {
-    const userData = loadDataFromSessionStorage({
+    const userData = loadDataFromSessionStorageTwo({
       key: "UserData",
     });
 
@@ -176,7 +174,7 @@ jQuery(document).ready(async function ($) {
     const indexOfUndefined = arrayOfId.indexOf(undefined);
 
     const arrayOfIdBilling = userData.billingAddresses.map((el) => el._id);
-    const indexOfUndefinedBilling = arrayOfId.indexOf(undefined);
+    const indexOfUndefinedBilling = arrayOfIdBilling.indexOf(undefined);
 
     // console.log("arrayOfId", arrayOfId);
     // console.log("indexOfUndefined", indexOfUndefined);
@@ -196,17 +194,17 @@ jQuery(document).ready(async function ($) {
           //jest nowy element
 
           const idNotInModel = res.data.shippingAddresses.filter(
-            (item) => !arrayOfId.includes(item._id),
+            (item) => !arrayOfId.includes(item._id)
           )[0];
 
           newItem = res.data.shippingAddresses.find(
-            (item) => item._id === idNotInModel?._id,
+            (item) => item._id === idNotInModel?._id
           );
         } else {
-          const ShippingIndex = loadDataFromSessionStorage({
+          const ShippingIndex = loadDataFromSessionStorageTwo({
             key: "ShippingIndex",
           });
-          const BillingIndex = loadDataFromSessionStorage({
+          const BillingIndex = loadDataFromSessionStorageTwo({
             key: "BillingIndex",
           });
           newItem =
@@ -219,14 +217,18 @@ jQuery(document).ready(async function ($) {
         }
 
         let newItemBilling;
+
+        //Nie ma elementów bez id.
         if (indexOfUndefinedBilling !== -1) {
           //jest nowy element
 
           console.log("res.data.billingAddresses", res.data.billingAddresses);
+
           const idNotInModel = res.data.billingAddresses.filter(
-            (item) => !arrayOfIdBilling.includes(item._id),
+            (item) => !arrayOfIdBilling.includes(item._id)
           )[0];
-          console.log("idNotInModel", idNotInModel);
+
+          console.log("idNotInModel", idNotInModel); //lapie undefined
 
           newItemBilling = res.data.billingAddresses.find((item) => {
             if (idNotInModel && "_id" in idNotInModel) {
@@ -235,10 +237,21 @@ jQuery(document).ready(async function ($) {
           });
           console.log("newItemBilling", newItemBilling);
         } else {
-          const BillingIndex = loadDataFromSessionStorage({
+          const BillingIndex = loadDataFromSessionStorageTwo({
             key: "BillingIndex",
           });
+
+          //   const BillingIndexOldMethod = loadDataFromSessionStorage({
+          //     key: "BillingIndex",
+          //   });
+          console.log("Billing index from local storage", BillingIndex);
+          //   console.log(
+          //     "Billing index from local storage BillingIndexOldMethod",
+          //     BillingIndexOldMethod
+          //   );
+
           newItemBilling = res.data?.billingAddresses[BillingIndex];
+
           console.log("newItemBilling", newItemBilling);
           newItemBilling.state =
             newItemBilling.state !== undefined && newItemBilling.state !== null
@@ -263,14 +276,14 @@ jQuery(document).ready(async function ($) {
           //jest nowy element
 
           const idNotInModel = res.data.parcelLockers.filter(
-            (item) => !arrayOfIdParcel.includes(item._id),
+            (item) => !arrayOfIdParcel.includes(item._id)
           )[0];
 
           newItemParcel = res.data.parcelLockers.find(
-            (item) => item._id === idNotInModel._id,
+            (item) => item._id === idNotInModel._id
           );
         } else {
-          const ParcelIndex = loadDataFromSessionStorage({
+          const ParcelIndex = loadDataFromSessionStorageTwo({
             key: "ParcelIndex",
           });
 
@@ -331,7 +344,7 @@ jQuery(document).ready(async function ($) {
     ? [
         {
           addressName: "",
-          label: "",
+          label: "INPOST",
           lockerId: deliveryPoint,
           address: `${inpostPointData?.address?.line1 || ""}, ${
             inpostPointData?.address?.line2 || ""

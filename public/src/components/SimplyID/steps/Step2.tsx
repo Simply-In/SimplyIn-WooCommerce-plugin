@@ -262,8 +262,14 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 						?
 						<DataValueContainer style={{ padding: 8 }}>
 							<DataValueTitle>{userData?.billingAddresses[selectedBillingIndex || 0]?.addressName ?? <>Adres{" "}{(+selectedBillingIndex || 0) + 1}</>}</DataValueTitle>
-							{userData?.billingAddresses && <DataValueLabel>{userData?.billingAddresses[selectedBillingIndex || 0]?.street}{" "}{userData?.billingAddresses[selectedBillingIndex || 0]?.appartmentNumber},{" "}{userData?.billingAddresses[selectedBillingIndex || 0]?.postalCode},{" "}{userData?.billingAddresses[selectedBillingIndex || 0]?.city}</DataValueLabel>
-							}	</DataValueContainer>
+							{userData?.billingAddresses &&
+								<DataValueLabel>
+									{userData?.billingAddresses[selectedBillingIndex || 0]?.street || ""}
+									{userData?.billingAddresses[selectedBillingIndex || 0]?.appartmentNumber.length ? "/" + userData?.billingAddresses[selectedBillingIndex || 0]?.appartmentNumber : ""}
+									{", " + userData?.billingAddresses[selectedBillingIndex || 0]?.city || ""}
+								</DataValueLabel>
+							}
+						</DataValueContainer>
 						:
 						<CardContent>
 							<NoDataLabel>Brak danych</NoDataLabel>
@@ -287,7 +293,9 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 												label={
 													<DataValueContainer>
 														<DataValueTitle>{el?.addressName ? el.addressName : <>Adres{" "}{index + 1}</>}</DataValueTitle>
-														<DataValueLabel>{el.street}{" "}{el.appartmentNumber},{" "}{el.postalCode},{" "}{el.city}</DataValueLabel>
+														<DataValueLabel>{el?.street || ""}
+															{el?.appartmentNumber.length ? "/" + el?.appartmentNumber : ""}
+															{", " + el?.city || ""}</DataValueLabel>
 													</DataValueContainer>
 												} style={{ marginBottom: 0 }} />
 											<ContextMenu userData={userData} setUserData={setUserData} item={index} setEditItemIndex={setEditItemIndex} property={'billingAddresses'}
@@ -364,7 +372,9 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 										</DataValueTitle>
 										{userData?.shippingAddresses &&
 											<DataValueLabel>
-												{userData?.shippingAddresses[selectedShippingIndex]?.street || ""}{" "}{userData?.shippingAddresses[selectedShippingIndex]?.appartmentNumber || ""},{" "}{userData?.shippingAddresses[selectedShippingIndex]?.postalCode || ""},{" "}{userData?.shippingAddresses[selectedShippingIndex]?.city || ""}
+											{userData?.shippingAddresses[selectedShippingIndex]?.street || ""}
+											{userData?.shippingAddresses[selectedShippingIndex]?.appartmentNumber.length ? "/" + userData?.shippingAddresses[selectedShippingIndex]?.appartmentNumber : ""}
+											{", " + userData?.shippingAddresses[selectedShippingIndex]?.city || ""}
 											</DataValueLabel>
 										}
 									</>
@@ -395,7 +405,11 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 													label={
 														<DataValueContainer>
 															<DataValueTitle>{el?.addressName ? el?.addressName : <>Adres{" "}{index + 1}</>}</DataValueTitle>
-															<DataValueLabel>{el.street}{" "}{el.appartmentNumber},{" "}{el.postalCode},{" "}{el.city}</DataValueLabel>
+															<DataValueLabel>
+																{el?.street || ""}
+																{el?.appartmentNumber.length ? "/" + el?.appartmentNumber : ""}
+																{", " + el?.city || ""}
+															</DataValueLabel>
 														</DataValueContainer>
 													} style={{ marginBottom: 0 }} />
 												<ContextMenu setUserData={setUserData} item={index} setEditItemIndex={setEditItemIndex} property={"shippingAddresses"} userData={userData}
