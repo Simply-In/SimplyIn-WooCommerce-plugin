@@ -24,7 +24,7 @@ if (empty($apiKey)) {
 }
 
 
-$Backend_SimplyIn = 'https://dev.backend.simplyin.app/api/';
+$Backend_SimplyIn = 'https://preprod.backend.simplyin.app/api/';
 update_option('Backend_SimplyIn', $Backend_SimplyIn);
 
 if (!empty($token)) {
