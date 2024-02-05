@@ -9,26 +9,18 @@ if (orderData?.base_url) {
 }
 
 const middlewareApiTwo = ({ endpoint, method, requestBody, token }) => {
-  //   console.log(
-  //     "middlewareApiTwo",
-  //     `${shopBaseTwo}/wp-content/plugins/simplyin/admin/api/submitData.php`,
-  //   );
-
-  return fetch(
-    `${shopBaseTwo}/wp-content/plugins/simplyin/admin/api/submitData.php`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        endpoint,
-        method,
-        requestBody,
-        ...(token ? { token } : {}),
-      }),
-    }
-  )
+  return fetch(`${shopBaseTwo}/wp-json/simplyin/data/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      endpoint,
+      method,
+      requestBody,
+      ...(token ? { token } : {}),
+    }),
+  })
     .then((response) => response.json())
     .catch((error) => {
       console.log(error);

@@ -33,73 +33,6 @@ function run_simplyin()
 	
 }
 
-// code for checking if api key is valid
-
-// $saved_api_key = get_option('simplyin_api_key');
-// // print_r($saved_api_key);
-// // print_r('Api key is invalid');
-// $Backend_SimplyIn = get_option('Backend_SimplyIn');
-// // echo '<script>console.log(adsasd)</script>';
-
-// // return;
-
-// function middlewareApi($endpoint, $method, $requestBody, $token = null)
-// {
-// 	$shopBase = home_url(); // Replace with your actual shop base URL
-
-// 	$url = $shopBase . '/wp-content/plugins/simplyin/admin/api/submitData.php';
-
-// 	// Prepare data to be sent
-// 	$postData = array(
-// 		'endpoint' => $endpoint,
-// 		'method' => $method,
-// 		'requestBody' => $requestBody,
-// 		'token' => $token ?? ""
-// 	);
-
-// 	// Initialize cURL session
-// 	$ch = curl_init($url);
-
-// 	// Set cURL options
-// 	curl_setopt($ch, CURLOPT_POST, 1);
-// 	curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
-// 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-// 	// Execute cURL session and get the response
-// 	$response = curl_exec($ch);
-
-// 	// Check for cURL errors
-// 	if (curl_errno($ch)) {
-// 		echo 'Curl error: ' . curl_error($ch);
-// 	}
-
-// 	// Close cURL session
-// 	curl_close($ch);
-
-// 	// Decode the JSON response
-// 	$responseData = json_decode($response, true);
-
-// 	// Return the decoded data
-// 	return $responseData;
-// }
-
-// // Example usage:
-// $endpoint = "checkout/submitEmail";
-// $method = 'POST';
-// $requestBody = '{ "email": "" }';
-// // $token = $saved_api_key;
-// $token = "";
-
-// // if (empty($token)) {
-// // 	// Handle the case where $token is not set or is empty
-// // 	return;
-// // }
-
-
-// // $result = middlewareApi($endpoint, $method, $requestBody, $token);
-
-// // print_r($result . 'test');
-
 
 
 
@@ -499,3 +432,90 @@ function display_custom_order_data($order)
 		echo '<p><strong>Tax ID:</strong> ' . esc_html($billing_tax_id) . '</p>';
 	}
 }
+
+
+function custom_rest_api_endpoint()
+{
+	register_rest_route(
+		'simplyin',
+		'/data/',
+		array(
+			'methods' => array('GET', 'POST'),
+			'callback' => 'custom_rest_api_callback',
+		)
+	);
+}
+
+function custom_rest_api_callback($data)
+{
+
+	$data = json_decode(file_get_contents("php://input"), true);
+	$endpoint = $data['endpoint'];
+	$method = strtoupper($data['method']);
+	$body = $data['requestBody'];
+
+	if (isset($data['token'])) {
+		$token = $data['token'];
+	} else {
+		$token = '';
+	}
+
+	$apiKey = get_option('simplyin_api_key');
+
+	if (empty($apiKey)) {
+		http_response_code(400);  // Bad Request
+		echo "Error: Simplyin API key is empty";
+		return;
+	}
+
+	$body['apiKey'] = $apiKey;
+
+
+
+	if (empty($apiKey)) {
+		echo "Simplyin apikey is empty";
+		return;
+	}
+
+
+	$Backend_SimplyIn = 'https://dev.backend.simplyin.app/api/';
+	update_option('Backend_SimplyIn', $Backend_SimplyIn);
+
+	if (!empty($token)) {
+		$url = $Backend_SimplyIn . $endpoint . '?api_token=' . urlencode($token);
+	} else {
+		$url = $Backend_SimplyIn . $endpoint;
+	}
+
+
+
+
+	$headers = array('Content-Type: application/json');
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, $url);
+
+	switch ($method) {
+		case 'GET':
+			curl_setopt($ch, CURLOPT_HTTPGET, 1);
+			break;
+		case 'POST':
+			curl_setopt($ch, CURLOPT_POST, 1);
+			break;
+		case 'PATCH':
+			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
+			break;
+		default:
+			break;
+	}
+
+	curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($body));
+	curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+	$response = curl_exec($ch);
+
+	curl_close($ch);
+	echo $response;
+}
+
+add_action('rest_api_init', 'custom_rest_api_endpoint');

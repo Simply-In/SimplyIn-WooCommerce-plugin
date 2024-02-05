@@ -12,7 +12,7 @@ interface IMiddlewareApi {
 }
 
 export const middlewareApi = ({ endpoint, method, requestBody, token }: IMiddlewareApi) => {
-	return axios.post(`${shopBase}/wp-content/plugins/simplyin/admin/api/submitData.php`, {
+	return axios.post(`${shopBase}/wp-json/simplyin/data/`, {
 		endpoint,
 		method,
 		requestBody,
