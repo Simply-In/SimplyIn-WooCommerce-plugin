@@ -1,26 +1,24 @@
-import { Box } from "@mui/material";
 import styled from "styled-components";
-
-export const SimplyIn = styled.div`
-`
+import { Box } from "@mui/material";
 
 export const SimplyinContainer = styled.div`
-display:flex;
-justify-content: center;
-align-items: center;
-gap: 20px;
-& svg{
-	cursor: pointer;
-}`
+	display:flex;
+	justify-content: center;
+	align-items: center;
+	gap: 20px;
+	& svg{
+		cursor: pointer;
+	}
+`
 
 
 export const PopupContainer = styled.div`
-// max-width: 400px;
-padding: 8px 16px 16px 16px;
-z-index:1000;
+	padding: 8px 16px 16px 16px;
+	z-index:1000;
 `;
 export const CloseContainer = styled.div`
-cursor: pointer;`
+	cursor: pointer;
+`
 
 export const PopupHeader = styled.div`
   display: flex;
@@ -65,9 +63,9 @@ export const Step2Title = styled.label`
 `;
 
 export const SectionTitle = styled.div`
-font-family: Inter, sans-serif;
-font-weight: 600;
-font-size: 18px;
+	font-family: Inter, sans-serif;
+	font-weight: 600;
+	font-size: 18px;
 `
 
 export const PopupTextMain = styled.div`
@@ -100,142 +98,145 @@ export const PopupCodeNotDelivered = styled(PopupTextSecondary)`
 `;
 
 export const PopupSendAgain = styled(PopupTextSecondary)`
-color: #000;
-margin-top: 0;
-/* margin-bottom */
+	color: #000;
+	margin-top: 0;
 `;
 
 export const PinInputContainer = styled.div`
-display: flex;
-justify-content: center;
-align-items: center;
-margin: 24px 0px;
-flex-direction:column;
-& div > div {
 	display: flex;
-    justify-content: center;
-    gap: 12px;
-}
-& > div {
-	display: flex;
-	flex-direction:row;
-    justify-content: center;
-    gap: 12px;
-}
-& form > div {
-	display: flex;
-	flex-direction:row;
-    justify-content: center;
-    gap: 12px;
-}
-
-
+	justify-content: center;
+	align-items: center;
+	margin: 24px 0px;
+	flex-direction:column;
+	& div > div {
+		display: flex;
+		justify-content: center;
+		gap: 12px;
+	}
+	& > div {
+		display: flex;
+		flex-direction:row;
+		justify-content: center;
+		gap: 12px;
+	}
+	& form > div {
+		display: flex;
+		flex-direction:row;
+		justify-content: center;
+		gap: 12px;
+	}
 `;
+
 export const PopupCountDownContainer = styled.div`
-display: flex;
-flex-direction:column;
-justify-content: center;
-align-items: center;`
+	display: flex;
+	flex-direction:column;
+	justify-content: center;
+	align-items: center;
+`
 
 
 export const MobileSystemsLinksContainer = styled.div`
-display: flex;
-flex-direction:row;
-justify-content: center;
-align-items: center;
-gap:60px;
-margin-top:14px;
+	display: flex;
+	flex-direction:row;
+	justify-content: center;
+	align-items: center;
+	gap:60px;
+	margin-top:14px;
 `
 export const SingleSystemLink = styled.a`
-display: flex;
-flex-direction:row;
-justify-content: space-between;
-align-items: center;
-color:#3167B9;
-gap:6px;
-font-size:14px;
-text-decoration:none;
-cursor:pointer;`
+	display: flex;
+	flex-direction:row;
+	justify-content: space-between;
+	align-items: center;
+	color:#3167B9;
+	gap:6px;
+	font-size:14px;
+	text-decoration:none;
+	cursor:pointer;
+`
 
 
 
 export const ButtonsContainer = styled.div`
-width: 100%;
-display: flex;
-flex-direction:row;
-gap: 20px;
-justify-content: center;
-align-items: center;
+	width: 100%;
+	display: flex;
+	flex-direction:row;
+	gap: 20px;
+	justify-content: center;
+	align-items: center;
 `
 export const RadioElementContainer = styled.div`
-width: 100%;
-gap: 12px;
-display: flex;
-flex-direction:row;
-justify-content: space-between;
-align-items: center;
-margin-bottom:20px;`
+	width: 100%;
+	gap: 12px;
+	display: flex;
+	flex-direction:row;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom:20px;
+	`
 
 export const DataValueContainer = styled.div`
-display: flex;
-flex-direction:column;
-font-family: Inter, sans-serif
+	display: flex;
+	flex-direction:column;
+	font-family: Inter, sans-serif;
 `
 export const DataValueTitle = styled.div`
-font-size: 16px;
-font-weight: 700;
+	font-size: 16px;
+	font-weight: 700;
 `
 export const DataValueLabel = styled.div`
-
-font-size: 16px;
-font-weight: 400;
+	font-size: 16px;
+	font-weight: 400;
 `
 
 
 export const AddNewData = styled.div`
-font-family: Inter, sans-serif;
-font-size: 16px;
-font-weight: 700;
-color:#3167B9;
-cursor: pointer;
-display: flex;
-flex-direction: row;
-gap: 6px;
-margin-bottom: 14px;
+	font-family: Inter, sans-serif;
+	font-size: 16px;
+	font-weight: 700;
+	color:#3167B9;
+	cursor: pointer;
+	display: flex;
+	flex-direction: row;
+	gap: 6px;
+	margin-bottom: 14px;
 
 `
 export const AddNewDataText = styled.div`
-
+	&a{
+		text-decoration:none
+	}
 `
+
 export const NoDataLabel = styled.div`
-font-family: Inter, sans-serif;
-font-size: 16px;
+	font-family: Inter, sans-serif;
+	font-size: 16px;
 `
 
 export const EditFormTitle = styled.div`
-font-family: Inter, sans-serif;
-font-size: 18px;
-font-weight: 600;
-margin-bottom: 20px
+	font-family: Inter, sans-serif;
+	font-size: 18px;
+	font-weight: 600;
+	margin-bottom: 20px;
 `
 
 export const EditFormLabel = styled.div`
-font-family: Inter, sans-serif;
-font-size: 18px;
-font-weight: 600;
-color: #3167B9;
-text-decoration: underline;
-margin-bottom: 16px
+	font-family: Inter, sans-serif;
+	font-size: 18px;
+	font-weight: 600;
+	color: #3167B9;
+	text-decoration: underline;
+	margin-bottom: 16px;
 `
 export const DeleteItemTitle = styled.div`
-font-family: Inter, sans-serif;
-font-size: 20px;
-font-weight: 600;
+	font-family: Inter, sans-serif;
+	font-size: 20px;
+	font-weight: 600;
 `
 export const DeleteItemText = styled.div`
-font-family: Inter, sans-serif;
-font-size: 16px;
-font-weight: 400;
+	font-family: Inter, sans-serif;
+	font-size: 16px;
+	font-weight: 400;
 `
 
 
@@ -259,5 +260,7 @@ export const StyledBox = styled(Box)`
 
 
 export const HorizontalLine = styled.hr`
-color: "#D9D9D9"
+	color: #D9D9D9;
 `
+
+

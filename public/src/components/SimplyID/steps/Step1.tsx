@@ -330,27 +330,23 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 			</PopupTextSecondary>
 
 			{(countdown) ?
-				<>
-					<PopupCountDownContainer>
-						<PopupCodeNotDelivered>
-							Kod został ponownie wysłany
-						</PopupCodeNotDelivered>
 
-						<Countdown daysInHours={false} renderer={countdownRenderer} zeroPadTime={2} zeroPadDays={2}
-							date={countdownTime} onComplete={handleCountdownCompleted} /></PopupCountDownContainer>
-				</>
+				<PopupCountDownContainer>
+					<PopupCodeNotDelivered>
+						Kod został ponownie wysłany
+					</PopupCodeNotDelivered>
+
+					<Countdown daysInHours={false} renderer={countdownRenderer} zeroPadTime={2} zeroPadDays={2}
+						date={countdownTime} onComplete={handleCountdownCompleted} />
+				</PopupCountDownContainer>
+
 				:
 				<>
 					<PopupCodeNotDelivered>
 						Kod nie dotarł?
 					</PopupCodeNotDelivered>
 					<PopupSendAgain>
-						{/* <Link component="button" id="send-again-btn" underline="hover" onClick={
-							handleSendPinAgain
-						}>
-							Wyślij ponownie
-						</Link>
-						&nbsp; lub &nbsp; */}
+
 						<Link
 							component="button"
 							id="send-again-email-btn"

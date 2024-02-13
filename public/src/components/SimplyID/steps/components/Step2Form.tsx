@@ -87,10 +87,10 @@ export const Step2Form = ({
 			addressName: editData?.addressName || null,
 			address: editData?.address,
 			lockerId: editData?.lockerId,
-			_id: editData?._id || null,
+			_id: editData?._id || undefined,
 			label: editData?.label || ""
 		} : {
-			_id: editData?._id || null,
+				_id: editData?._id || undefined,
 			addressName: editData?.addressName || null,
 			name: editData?.name,
 			surname: editData?.surname,
@@ -162,7 +162,6 @@ export const Step2Form = ({
 			const debouncedRequest = debounce(async () => {
 				try {
 					const inpostPointData = await getInpostPointData({ deliveryPointID: manuallyChangeLockerId as string })
-					// console.log('inpostPointData', inpostPointData);
 					if (inpostPointData?.status === 404) {
 						setValue('address', "")
 						setError('lockerId', { message: 'Selected shipping point is invalid' })
@@ -172,7 +171,6 @@ export const Step2Form = ({
 					clearErrors('lockerId')
 					clearErrors('address')
 					setValue('address', `${inpostPointData?.address?.line1 || ""}, ${inpostPointData?.address?.line2 || ""}`)
-					// console.log('new inpost point', inpostPointData);
 				}
 				catch (err) {
 					console.log('ERROR', err);
@@ -270,7 +268,6 @@ export const Step2Form = ({
 			window.afterPointSelected = function (point) {
 
 				console.log('point', point);
-				// console.log('window', window);
 				if (manuallyChangeLockerId !== point.name) {
 					setLockerIdValue(point.name)
 					setValue('lockerId', point.name)
@@ -337,17 +334,17 @@ export const Step2Form = ({
 			<form onSubmit={handleSubmit(onSubmit)}>
 				<Grid container spacing={2}>
 					{!isDeliveryPoint &&
-						<>
+
 							<EditFormAddress
 								control={control}
 								errors={errors}
 								isBillingAddress={isBillingAddress}
 								countryListSelect={countryListSelect}
 							/>
-						</>}
+					}
 
 					{isDeliveryPoint &&
-						<>
+
 
 						<EditFormMachine
 							control={control}
@@ -361,7 +358,7 @@ export const Step2Form = ({
 
 						/>
 
-					</>}
+					}
 
 
 				</Grid>

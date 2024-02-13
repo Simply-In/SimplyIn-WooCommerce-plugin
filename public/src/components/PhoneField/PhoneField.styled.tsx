@@ -1,5 +1,7 @@
 import styled from "styled-components";
 
+console.log('styled phone')
+
 export const CheckboxContainer = styled.div`
 	display:flex;
 	margin-bottom:12px;`
@@ -48,3 +50,4 @@ export const PopupTextError = styled.div`
 	color: red;
 	margin-top: 24px;
 `
+console.log('styled phone end')

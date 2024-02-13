@@ -43,7 +43,7 @@ const loadDataFromSessionStorageTwo = ({ key }) => {
 
 jQuery(document).ready(async function ($) {
   console.log("Order has been created.");
-  console.log(orderData);
+  console.log("orderData", orderData);
   console.log(
     orderData.orderTotal.meta_data.find((el) => el.key === "_parcel_machine_id")
   );
@@ -56,6 +56,11 @@ jQuery(document).ready(async function ($) {
 
   let shortLang = (lang) => lang.substring(0, 2).toUpperCase();
 
+  const customTaxIdName = loadDataFromSessionStorageTwo({ key: "nipField" });
+  const customTaxId = orderData.orderTotal.meta_data.find(
+    (el) => el.key === "_" + customTaxIdName
+  );
+
   const billingAddresses = [
     {
       addressName:
@@ -65,14 +70,19 @@ jQuery(document).ready(async function ($) {
       city: (orderData.billingAddresses.city || "").trim(),
       postalCode: (orderData.billingAddresses.postcode || "").trim(),
       country: (orderData.billingAddresses.country || "").trim(),
-      taxId: (orderData.billingAddresses.taxId || "").trim(),
+      taxId: (
+        customTaxId?.value ||
+        orderData.billingAddresses.taxId ||
+        ""
+      ).trim(),
       companyName: (orderData.billingAddresses.companyName || "").trim(),
       name: (orderData.billingAddresses.first_name || "").trim(),
       surname: (orderData.billingAddresses.last_name || "").trim(),
       state: (orderData.billingAddresses.state || "").trim() || "",
-      taxId: (orderData.billingAddresses.tax_id || "").trim() || "",
     },
   ];
+
+  console.log("billingAddresses", billingAddresses);
   const shippingAddresses = [
     {
       addressName:
@@ -98,8 +108,9 @@ jQuery(document).ready(async function ($) {
   );
   const inpostPointData = await res?.json();
 
+  console.log(111);
   console.log("inpostPointData", inpostPointData);
-
+  console.log(222);
   const parcelLockers = [
     {
       addressName: "",
@@ -111,6 +122,8 @@ jQuery(document).ready(async function ($) {
     },
   ];
 
+  console.log(333);
+
   const simplyinToken = loadDataFromSessionStorageTwo({ key: "simplyinToken" });
   const phoneNumber = loadDataFromSessionStorageTwo({ key: "phoneInput" });
 
@@ -121,15 +134,14 @@ jQuery(document).ready(async function ($) {
       price: item.price || "",
       quantity: item.quantity || "",
       currency: orderData.orderTotal.currency || "",
-      thumbnailUrl: item.image_url || "",
+      thumbnailUrl: item.image_url || null,
     };
   });
-  //   EasyPackPointObject
-  //   {"pointName":"SDI01M","pointDesc":"Wolska 32","pointAddDesc":"Przy delikatesach Fikus"}
-  //   console.log(orderItems);
-  //   console.log(userData);
+
+  console.log("444");
 
   if (!!simplyinToken && typeof orderData !== "undefined") {
+    console.log("account exists");
     const userData = loadDataFromSessionStorageTwo({
       key: "UserData",
     });
@@ -149,7 +161,6 @@ jQuery(document).ready(async function ($) {
 
       userData[arrayKey].push(newObj);
     }
-    // userData.parcelLockers = [];
 
     addIfValueNotExists(billingAddresses[0], "billingAddresses");
     addIfValueNotExists(shippingAddresses[0], "shippingAddresses");
@@ -168,8 +179,7 @@ jQuery(document).ready(async function ($) {
     const arrayOfIdBilling = userData.billingAddresses.map((el) => el._id);
     const indexOfUndefinedBilling = arrayOfIdBilling.indexOf(undefined);
 
-    // console.log("arrayOfId", arrayOfId);
-    // console.log("indexOfUndefined", indexOfUndefined);
+    console.log("555");
 
     middlewareApiTwo({
       endpoint: "userData",
@@ -233,15 +243,6 @@ jQuery(document).ready(async function ($) {
             key: "BillingIndex",
           });
 
-          //   const BillingIndexOldMethod = loadDataFromSessionStorage({
-          //     key: "BillingIndex",
-          //   });
-          console.log("Billing index from local storage", BillingIndex);
-          //   console.log(
-          //     "Billing index from local storage BillingIndexOldMethod",
-          //     BillingIndexOldMethod
-          //   );
-
           newItemBilling = res.data?.billingAddresses[BillingIndex];
 
           console.log("newItemBilling", newItemBilling);
@@ -259,7 +260,6 @@ jQuery(document).ready(async function ($) {
               ? newItemBilling.appartmentNumber
               : "";
 
-          //   console.log("2 newItem", newItem);
           //nie ma nowego elementu
         }
 
@@ -364,7 +364,6 @@ jQuery(document).ready(async function ($) {
       },
     })
       .then((res) => {
-        // console.log(res.authToken);
         if (res.error) {
           throw new Error(res.error);
         }

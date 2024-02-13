@@ -12,7 +12,6 @@ import NoData from '../../../../assets/NoData.svg';
 import { CalculateSquareCoordinate, Coordinates, calculateSquareCorners, getLogo, getPoints } from '../functions';
 
 
-
 interface IAddressSearch {
 	setLockerIdValue: any
 	setValue: any
@@ -174,7 +173,7 @@ export const AddressSearch = ({
 						?
 						machineData?.filter(Boolean)?.slice(0, 5)?.map((machine: any, index: number) => {
 							return (
-								<RadioElementContainerSelectMachine>
+								<RadioElementContainerSelectMachine key={index}>
 									<FormControlLabel value={index} control={<Radio />}
 										label={
 											<div style={{ display: "flex" }}>

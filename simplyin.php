@@ -9,7 +9,7 @@
  * @wordpress-plugin
  * Plugin Name: SimplyIn  
  * Plugin URI:       
- * Description: SimplyIn application. 26.01.2024 17.00
+ * Description: SimplyIn application. 13.02.2024 17.00
  * Version:           1.0.0
  * Author:            Simply.in
  * Author URI:        https://simply.in
@@ -136,7 +136,7 @@ function load_scripts()
 			$shipping_titles[] = $method->get_title();
 		}
 	}
-	// $shipping_methodsss = WC()->shipping()->get_shipping_methods();
+
 
 	$shipping_methods = $woocommerce->shipping->get_shipping_methods();
 	$apiKey = get_option('simplyin_api_key');
@@ -165,7 +165,7 @@ function load_scripts()
 }
 
 add_action('woocommerce_thankyou', 'enqueue_and_localize_order_created_script', 10);
-// echo plugin_dir_url(__FILE__) . 'public/dist/bundle.js';
+
 function enqueue_and_localize_order_created_script($order_id)
 {
 
@@ -178,8 +178,11 @@ function enqueue_and_localize_order_created_script($order_id)
 
 	$base_url = home_url();
 
-	// $parcel_machine_parcel_sizes = $shipx_api->get_parcel_machine_parcel_sizes();
+
 	$billing_tax_id = get_post_meta($order_id, '_billing_tax_id', true);
+
+
+	
 
 	$myplugin_checkbox_value = get_post_meta($order_id, 'simply-save-checkbox', true);
 	$currentShopUrl = wc_get_page_permalink('shop');
@@ -310,7 +313,7 @@ function add_phone_token_input_field($checkout)
 		'type' => 'hidden',
 		'class' => array('input-hidden'),
 		'label' => __('Phone Token Input'),
-	), $checkout->get_value('simplyinTokenInput'));
+	), $checkout->get_value('simplyinPhoneTokenInput'));
 	echo '</div>';
 }
 
@@ -395,6 +398,9 @@ function save_tax_id_to_order($order_id)
 	if (!empty($_POST['billing_tax_id'])) {
 		update_post_meta($order_id, '_billing_tax_id', sanitize_text_field($_POST['billing_tax_id']));
 	}
+	// if (!empty($_POST['billing_wooccm11'])) {
+	// 	update_post_meta($order_id, '_billing_wooccm11', sanitize_text_field($_POST['_billing_wooccm11']));
+	// }
 }
 
 
@@ -404,6 +410,7 @@ function add_custom_string_to_order_details_customer($order)
 {
 
 	$billing_tax_id = get_post_meta($order->id, '_billing_tax_id', true);
+	
 
 	echo '<script>const areaname = document.querySelector(".woocommerce-column--billing-address").querySelector(".woocommerce-customer-details--email");
 	const newNode = document.createElement("div");

@@ -1,11 +1,11 @@
-import { useState, useEffect, ChangeEvent, createContext } from "react";
+import { useState, useEffect, ChangeEvent, createContext, useMemo } from "react";
 import { SimplyinSmsPopupOpenerIcon } from "../../assets/SimplyinSmsPopupOpenerIcon.tsx";
-import { SimplyIn, SimplyinContainer, } from "./SimplyID.styled";
+import { SimplyinContainer, } from "./SimplyID.styled";
 import { middlewareApi } from '../../services/middlewareApi.ts'
 import { debounce } from 'lodash';
-import PinCodeModal from "./PinCodeModal.tsx";
 import { changeInputValue, simplyinTokenInputField } from "./steps/Step1.tsx";
 import { useSelectedSimplyData } from "../../hooks/useSelectedSimplyData.ts";
+import PinCodeModal from "./PinCodeModal.tsx";
 
 
 
@@ -125,23 +125,34 @@ export const SimplyID = () => {
 		};
 	}, [])
 
+	const providerProps = useMemo(() => {
+		return {
+			selectedBillingIndex,
+			setSelectedBillingIndex,
+			selectedShippingIndex,
+			setSelectedShippingIndex,
+			sameDeliveryAddress,
+			setSameDeliveryAddress,
+			selectedDeliveryPointIndex,
+			setSelectedDeliveryPointIndex,
+			pickupPointDelivery,
+			setPickupPointDelivery
+		}
+	}, [selectedBillingIndex,
+		setSelectedBillingIndex,
+		selectedShippingIndex,
+		setSelectedShippingIndex,
+		sameDeliveryAddress,
+		setSameDeliveryAddress,
+		selectedDeliveryPointIndex,
+		setSelectedDeliveryPointIndex,
+		pickupPointDelivery,
+		setPickupPointDelivery])
 
 	return (
 		<ApiContext.Provider value={token}>
-			<SelectedDataContext.Provider value={{
-				selectedBillingIndex,
-				setSelectedBillingIndex,
-				selectedShippingIndex,
-				setSelectedShippingIndex,
-				sameDeliveryAddress,
-				setSameDeliveryAddress,
-				selectedDeliveryPointIndex,
-				setSelectedDeliveryPointIndex,
-				pickupPointDelivery,
-				setPickupPointDelivery
-
-			}}>
-				<SimplyIn className="REACT_APP">
+			<SelectedDataContext.Provider value={providerProps}>
+				<div className="REACT_APP">
 					<SimplyinContainer>
 						<input autoComplete="off"
 							{...attributeObject}
@@ -164,7 +175,7 @@ export const SimplyID = () => {
 
 
 					/>}
-				</SimplyIn >
+				</div >
 			</SelectedDataContext.Provider>
 		</ApiContext.Provider>
 	);

@@ -68,44 +68,41 @@ export const PinCodeModal = ({ phoneNumber, visible, setVisible, setToken, simpl
 	useInsertFormData(selectedUserData, WPformElements)
 
 	return (<>
-		{phoneNumber && <Modal
+		{phoneNumber &&
+			<Modal
 			open={visible}
 			onClose={() => setVisible(false)}
 			aria-labelledby="modal-modal-title"
 			aria-describedby="modal-modal-description"
 		>
-			<StyledBox id="containerSimply"
-				style={{ maxWidth: editItemIndex?.property === "parcelLockers" ? "650px" : "400px" }}
-
-			>
+				<StyledBox id="containerSimply" style={{ maxWidth: editItemIndex?.property === "parcelLockers" ? "650px" : "400px" }}>
 					<PopupHeader>
-
 					<SimplyinSmsPopupOpenerIcon style={{ marginBottom: "12px" }} />
 						<CloseContainer onClick={handleClosePopup}>
 							<CloseIcon />
 						</CloseContainer>
 					</PopupHeader>
-				<PopupContainer>
-					{modalStep === 1 &&
-						<Step1
-							setToken={setToken}
-							phoneNumber={phoneNumber}
-							handleClosePopup={handleClosePopup}
-							setModalStep={setModalStep}
-							setUserData={setUserData}
-							setSelectedUserData={setSelectedUserData}
-							simplyInput={simplyInput} />}
-					{modalStep === 2 &&
-						<Step2
-							handleClosePopup={handleClosePopup}
-							userData={userData}
-							setUserData={setUserData}
-							setSelectedUserData={setSelectedUserData}
-							editItemIndex={editItemIndex}
-							setEditItemIndex={setEditItemIndex}
+					<PopupContainer>
+						{modalStep === 1 &&
+							<Step1
+								setToken={setToken}
+								phoneNumber={phoneNumber}
+								handleClosePopup={handleClosePopup}
+								setModalStep={setModalStep}
+								setUserData={setUserData}
+								setSelectedUserData={setSelectedUserData}
+								simplyInput={simplyInput} />}
+						{modalStep === 2 &&
+							<Step2
+								handleClosePopup={handleClosePopup}
+								userData={userData}
+								setUserData={setUserData}
+								setSelectedUserData={setSelectedUserData}
+								editItemIndex={editItemIndex}
+								setEditItemIndex={setEditItemIndex}
 
-						/>}
-				</PopupContainer>
+							/>}
+					</PopupContainer>
 			</StyledBox>
 		</Modal>
 		}</>

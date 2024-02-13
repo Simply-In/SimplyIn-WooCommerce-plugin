@@ -3,6 +3,12 @@ import { selectPickupPointInpost } from '../functions/selectInpostPoint';
 
 export const useInsertFormData = (userData: any, formElements: any) => {
 	console.log('insert', userData);
+
+
+	const shopDefaultNipField = document.querySelector('[placeholder*="nip" i]') || document.querySelector('[id*="nip" i]')
+
+
+
 	useEffect((): void => {
 
 		if (!Object.keys(userData).length) {
@@ -11,14 +17,27 @@ export const useInsertFormData = (userData: any, formElements: any) => {
 		if (userData.phoneNumber) { (document.getElementById('billing_phone') as HTMLInputElement).value = userData.phoneNumber }
 
 
+
 		if (userData?.billingAddresses) {
 			const address = userData.billingAddresses
+			if (address?.taxId || address?.companyName) {
+
+				const companyCheckbox = document.querySelector("[value='company' i]") ?? document.querySelector("[value='firma' i]")
+
+				console.log('companyCheckbox', companyCheckbox);
+				if (companyCheckbox) {
+					companyCheckbox?.setAttribute('checked', 'checked')
+					const changeEvent = new Event('change', { bubbles: true });
+					companyCheckbox?.dispatchEvent(changeEvent);
+				}
+
+			}
 
 			if ("name" in address) { (document.getElementById('billing_first_name') as HTMLInputElement).value = address.name || "" }
 			if ("surname" in address) { (document.getElementById('billing_last_name') as HTMLInputElement).value = address.surname || "" }
 			if ("city" in address) { (document.getElementById('billing_city') as HTMLInputElement).value = address.city || "" }
 			if ("companyName" in address) { (document.getElementById('billing_company') as HTMLInputElement).value = address.companyName || "" }
-			if ("taxId" in address) { (document.getElementById('billing_tax_id') as HTMLInputElement).value = address.taxId || "" }
+			if ("taxId" in address) { (shopDefaultNipField as HTMLInputElement || document.getElementById('billing_tax_id') as HTMLInputElement).value = address.taxId || "" }
 			if ("country" in address) {
 				const savedCountryCode = address.country;
 				const countrySelect = document.getElementById('billing_country') as HTMLSelectElement;

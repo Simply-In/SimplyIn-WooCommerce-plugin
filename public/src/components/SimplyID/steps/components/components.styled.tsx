@@ -29,7 +29,7 @@ export const StyledRadioContainer = styled.div`
 
 export const StyledTextField = styled(TextField)`
 	fieldset {
-		border-color: rgb(217, 217, 217)
+		border-color: rgb(217, 217, 217);
 	}
 `
 
@@ -54,3 +54,6 @@ export const StyledRadioGroupSelectMachine = styled(RadioGroup)`
 	gap:12px;
 
 `
+
+
+console.log('styled components end');

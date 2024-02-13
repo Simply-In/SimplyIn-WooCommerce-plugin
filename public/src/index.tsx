@@ -4,13 +4,12 @@ import { SimplyID } from "./components/SimplyID";
 import { PhoneField } from "./components/PhoneField/PhoneField";
 import SimplyBrandIcon from "./assets/SimplyBrandIcon";
 import { middlewareApi } from "./services/middlewareApi";
-// import { selectIPickupPointInpost } from "./functions/selectInpostPoint";
+import { saveDataSessionStorage } from "./services/sessionStorageApi";
 
+// import { selectIPickupPointInpost } from "./functions/selectInpostPoint";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore
-// if (appLocalizer) { console.log((appLocalizer.apiKey)); }
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//@ts-ignore
+// if (appLocalizer) { console.log((appLocalizer)); }
 
 
 type data = {
@@ -42,9 +41,80 @@ const waitForElementToRender = (data: data) => {
 	});
 }
 
+const nipFieldHandling = () => {
+
+
+	const nipField = document.querySelector('[placeholder*="nip" i]') || document.querySelector('[id*="nip" i]')
+	console.log("nipField", nipField);
+
+
+	saveDataSessionStorage({ key: "nipField", data: nipField?.id })
+
+	if (nipField) {
+		console.log('element found');
+		const taxIdField = document.getElementById('billing_tax_id_field');
+		if (taxIdField) {
+			taxIdField.style.display = 'none';
+		} else {
+			console.log('Element not found');
+		}
+	} else {
+		console.log('element not found');
+
+	}
+
+}
+
+const placingEmailField = () => {
+
+	const container = document.querySelector('.woocommerce-billing-fields__field-wrapper');
+
+	// change class of Element to have wide
+	const elementToMove = document.getElementById('billing_email_field');
+
+	if (elementToMove && container) {
+		const indexOfEmailFieldInContainer = Array.from(container?.children)?.indexOf(elementToMove);
+
+		if (elementToMove.classList.contains('form-row-last')) {
+			container.children[indexOfEmailFieldInContainer - 1].classList.remove("form-row-first")
+			container.children[indexOfEmailFieldInContainer - 1].classList.add("form-row-wide")
+		}
+
+		if (elementToMove.classList.contains('form-row-first')) {
+			container.children[indexOfEmailFieldInContainer + 1].classList.remove("form-row-last")
+			container.children[indexOfEmailFieldInContainer + 1].classList.add("form-row-wide")
+		}
 
 
 
+	}
+
+	// moving email container field to top
+
+	// const billingFirstNameField = document.getElementById('billing_first_name_field');
+	// const dataPriorityValue = billingFirstNameField?.getAttribute('data-priority')
+
+
+
+	elementToMove?.classList.remove("form-row-first")
+	elementToMove?.classList.remove("form-row-last")
+	elementToMove?.classList.add("form-row-wide")
+	// Check if both the container and the element to move exist
+	if (container && elementToMove) {
+		//if first element is billing_name, insert email - simply-field at first place in checkout container
+		if (container.children[0].classList.contains('billing_first_name_field')) {
+			container.insertBefore(elementToMove, container.children[0]);
+			elementToMove?.setAttribute('data-priority', "1");
+		} else {
+			container.insertBefore(elementToMove, container.children[1]);
+			elementToMove?.setAttribute('data-priority', `1`);
+		}
+
+	} else {
+		console.log('Container or element not found');
+	}
+
+}
 
 
 
@@ -110,6 +180,18 @@ document.addEventListener("DOMContentLoaded", (async (): any => {
 
 
 
+
+	nipFieldHandling()
+	//if there is nip field, do not render taxIdField
+
+
+
+
+	placingEmailField()
+
+
+
+
 	const testRequest = await middlewareApi({
 		endpoint: "checkout/submitEmail",
 		method: 'POST',
@@ -126,8 +208,6 @@ document.addEventListener("DOMContentLoaded", (async (): any => {
 
 	}
 
-
-	console.log(testRequest);
 	if (testRequest === "Unauthorized") {
 		console.log("SIMPLYIN API KEY INVALID");
 		isValid = false
@@ -146,7 +226,12 @@ document.addEventListener("DOMContentLoaded", (async (): any => {
 
 
 
-	// selectIPickupPointInpost({ deliveryPointID: 'LGE04M' });
+
+
+
+
+
+
 
 })());
 

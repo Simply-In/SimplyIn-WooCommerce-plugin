@@ -1,5 +1,5 @@
 
-import { Checkbox, Divider } from "@mui/material";
+import { Checkbox, Divider, FormControl, FormControlLabel, FormGroup } from "@mui/material";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { CheckboxContainer, CheckboxLabel, PhoneInputDescription, PhoneInputDescriptionLink, PhoneInputDescriptionSecondary } from "./PhoneField.styled";
 import { debounce } from "lodash";
@@ -26,7 +26,6 @@ export const PhoneField = () => {
 	const [countryCode, setCountryCode] = useState<Country>("PL")
 	const handleChangeCheckbox = () => {
 		setChecked((prev) => !prev);
-
 	};
 
 
@@ -51,7 +50,7 @@ export const PhoneField = () => {
 
 
 	useEffect(() => {
-		// if (checked && !checkedRef.current) {
+
 		setError("")
 		const phoneInputField = document.getElementById("billing_phone") as HTMLInputElement
 
@@ -60,10 +59,6 @@ export const PhoneField = () => {
 		if (!phoneVal) return
 
 
-		console.log('1', phoneVal);
-		console.log('62', parsePhoneNumber(phoneVal) || "");
-		console.log('check if valid', isValidPhoneNumber(phoneVal || ""));
-		console.log(phoneVal);
 
 		if (isValidPhoneNumber(phoneVal || "")) {
 			console.log("warunek 1");
@@ -80,10 +75,10 @@ export const PhoneField = () => {
 				try {
 					console.log("warunek 3 ");
 
-				// kod z wybranego kraju lub deafultowy
-				const countrySelect = document.getElementById('billing_country') as HTMLSelectElement 
+					// kod z wybranego kraju lub deafultowy
+					const countrySelect = document.getElementById('billing_country') as HTMLSelectElement
 
-				const countryCode = countrySelect?.options[countrySelect?.selectedIndex]?.value || "PL"
+					const countryCode = countrySelect?.options[countrySelect?.selectedIndex]?.value || "PL"
 					console.log("countryCode", countryCode);
 
 					const selectedCountryNumber = parsePhoneNumber(phoneInputField?.value, countryCode as Country || "PL")
@@ -92,15 +87,15 @@ export const PhoneField = () => {
 					if (!selectedCountryNumber) {
 						return
 					}
-				setCountryCode(countryCode as Country)
+					setCountryCode(countryCode as Country)
 
-				setPhoneInput(selectedCountryNumber?.number || "")
+					setPhoneInput(selectedCountryNumber?.number || "")
 
-				if (!isValidPhoneNumber(selectedCountryNumber?.number as string || "") && phoneVal) {
+					if (!isValidPhoneNumber(selectedCountryNumber?.number as string || "") && phoneVal) {
 
-				// console.log('777 numer nieporpawny');
-					setError("Sprawdź poprawność wprowadzonego numeru")
-				}
+						// console.log('777 numer nieporpawny');
+						setError("Sprawdź poprawność wprowadzonego numeru")
+					}
 				}
 				catch (err) {
 					setError("Wystąpił błąd, wprowadź numer ręcznie")
@@ -179,19 +174,22 @@ export const PhoneField = () => {
 	return (!simplyinToken && <>
 
 		{!simplyinToken && <>
-			<CheckboxContainer>
-				<Checkbox
-					style={{ marginLeft: -11 }}
-					id="simply-save-checkbox"
-					name="simply-save-checkbox"
-					checked={simplyinToken ? !!simplyinToken : checked}
-					onChange={handleChangeCheckbox}
-					inputProps={{ 'aria-label': 'controlled' }} />
-				<CheckboxLabel onClick={() => handleChangeCheckbox()}>
-					<span>Nowość!</span> Zapisz swoje dane w Simply.IN aby łatwo i prosto kupować w tym i w innych sklepach.
-				</CheckboxLabel>
+			<CheckboxContainer  >
+				<FormControl sx={{}} component="fieldset" variant="standard">
+					<FormGroup>
+						<FormControlLabel
+							control={
+								<Checkbox 
+									checked={simplyinToken ? !!simplyinToken : checked}
+									onChange={handleChangeCheckbox} 
+									id="simply-save-checkbox"
+									name="simply-save-checkbox" />
+							}
+							label={<CheckboxLabel><span>Nowość!</span> Zapisz swoje dane w Simply.IN aby łatwo i prosto kupować w tym i w innych sklepach.</CheckboxLabel>}
+						/>
+					</FormGroup>
+				</FormControl>
 			</CheckboxContainer>
-
 			{checked && <>
 				<SimplyInFullLogo style={{ marginBottom: "8px" }} />
 				<PhoneInput
