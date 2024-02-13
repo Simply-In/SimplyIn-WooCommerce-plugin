@@ -19,6 +19,7 @@ import { SelectedDataContext } from '../SimplyID';
 import { resetDeliveryMethod, selectPickupPointInpost } from '../../../functions/selectInpostPoint';
 import { getLogo } from './functions';
 
+import { useTranslation } from "react-i18next";
 
 
 
@@ -51,6 +52,7 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
 
 
 export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUserData, editItemIndex, setEditItemIndex }: IStep2) => {
+	const { t } = useTranslation();
 
 	const [expanded, setExpanded] = useState({
 		billing: true,
@@ -236,7 +238,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 			{!editItemIndex?.property &&
 				<PopupHeader style={{ position: "relative", zIndex: 1, padding: 0, borderBottom: "none" }}>
 					<Step2Title >
-						Wybierz dane
+						{t('modal-step-2.selectData')}
 					</Step2Title>
 				</PopupHeader>
 			}
@@ -245,7 +247,8 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 
 			{!editItemIndex?.property && <>
 				<CardActions disableSpacing sx={{ padding: 0 }}>
-					<SectionTitle>Dane rozliczeniowe</SectionTitle>
+					<SectionTitle>{t('modal-step-2.billingData')}</SectionTitle>
+
 
 					<ExpandMore
 						expand={expanded.billing}
@@ -261,7 +264,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 					{userData?.billingAddresses?.length
 						?
 						<DataValueContainer style={{ padding: 8 }}>
-							<DataValueTitle>{userData?.billingAddresses[selectedBillingIndex || 0]?.addressName ?? <>Adres{" "}{(+selectedBillingIndex || 0) + 1}</>}</DataValueTitle>
+							<DataValueTitle>{userData?.billingAddresses[selectedBillingIndex || 0]?.addressName ?? <>{t('modal-step-2.address')}{" "}{(+selectedBillingIndex || 0) + 1}</>}</DataValueTitle>
 							{userData?.billingAddresses &&
 								<DataValueLabel>
 									{userData?.billingAddresses[selectedBillingIndex || 0]?.street || ""}
@@ -272,7 +275,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 						</DataValueContainer>
 						:
 						<CardContent>
-							<NoDataLabel>Brak danych</NoDataLabel>
+							<NoDataLabel>{t('modal-step-2.noData')}</NoDataLabel>
 						</CardContent>
 					}
 				</Collapse>
@@ -288,11 +291,11 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 								?
 								userData?.billingAddresses.map((el: any, index: number) => {
 									return (
-										<RadioElementContainer>
+										<RadioElementContainer key={index}>
 											<FormControlLabel value={index} control={<Radio />}
 												label={
 													<DataValueContainer>
-														<DataValueTitle>{el?.addressName ? el.addressName : <>Adres{" "}{index + 1}</>}</DataValueTitle>
+														<DataValueTitle>{el?.addressName ? el.addressName : <>{t('modal-step-2.address')}{" "}{index + 1}</>}</DataValueTitle>
 														<DataValueLabel>{el?.street || ""}
 															{el?.appartmentNumber.length ? "/" + el?.appartmentNumber : ""}
 															{", " + el?.city || ""}</DataValueLabel>
@@ -308,7 +311,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 								})
 								:
 
-								<NoDataLabel>Brak danych</NoDataLabel>
+								<NoDataLabel>{t('modal-step-2.noData')}</NoDataLabel>
 							}
 						</RadioGroup>
 
@@ -318,13 +321,13 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 				</Collapse>
 				<AddNewData onClick={() => handleAddNewData("billingAddresses")} style={{ paddingBottom: 12, borderBottom: " 1px solid #D9D9D9" }}>
 					<PlusIcon />
-					<AddNewDataText>Dodaj nowe dane rozliczeniowe</AddNewDataText>
+					<AddNewDataText>{t('modal-step-2.addNewBillingData')}</AddNewDataText>
 				</AddNewData>
 
 
 				{/* <HorizontalLine /> */}
 				<FormControl style={{ fontFamily: "font-family: Inter, sans-serif;", borderBottom: " 1px solid #D9D9D9", marginBottom: 12, width: "100%" }}>
-					<SectionTitle>Dostawa</SectionTitle>
+					<SectionTitle>{t('modal-step-2.delivery')}</SectionTitle>
 					<RadioGroup
 						aria-labelledby="radioDeliveryType"
 						name="radioDeliveryType"
@@ -332,15 +335,15 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 						onChange={handleChangeDelivery}
 						style={{ padding: "8px 8px 0 8px" }}
 					>
-						<FormControlLabel value="address" control={<Radio />} label={<Typography style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: "16px" }}>Dostawa pod drzwi</Typography>} />
-						<FormControlLabel value="machine" control={<Radio />} label={<Typography style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: "16px" }}>Dostawa do automatu lub punktu</Typography>} />
+						<FormControlLabel value="address" control={<Radio />} label={<Typography style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: "16px" }}>{t('modal-step-2.doorDelivery')}</Typography>} />
+						<FormControlLabel value="machine" control={<Radio />} label={<Typography style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: "16px" }}>{t('modal-step-2.parcelDelivery')}</Typography>} />
 
 					</RadioGroup>
 				</FormControl>
 
 				{deliveryType === "address" && <>
 					<CardActions disableSpacing sx={{ padding: 0 }}>
-						<SectionTitle>Dane dostawy</SectionTitle>
+						<SectionTitle>{t('modal-step-2.shippingData')}</SectionTitle>
 						<ExpandMore
 							expand={expanded.shipping}
 							onClick={() => handleExpandClick("shipping")}
@@ -357,7 +360,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 							'& .MuiTypography-root': {
 								fontFamily: 'Inter, sans-serif'
 							}
-						}} style={{ textAlign: 'left', fontFamily: "Inter, sans-serif" }} control={<Checkbox checked={sameDeliveryAddress} onChange={handleChangeShippingCheckbox} />} label="Dane dostawy są takie same jak dane rozliczeniowe." />
+						}} style={{ textAlign: 'left', fontFamily: "Inter, sans-serif" }} control={<Checkbox checked={sameDeliveryAddress} onChange={handleChangeShippingCheckbox} />} label={t('modal-step-2.sameData')} />
 
 					</FormGroup>
 					<Collapse in={!expanded.shipping} timeout="auto" unmountOnExit >
@@ -368,7 +371,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 								{!sameDeliveryAddress && (selectedShippingIndex !== null && !isNaN(selectedShippingIndex)) &&
 									<>
 										<DataValueTitle>
-											{userData?.shippingAddresses[selectedShippingIndex]?.addressName ?? <>Adres {+selectedShippingIndex + 1}</>}
+										{userData?.shippingAddresses[selectedShippingIndex]?.addressName ?? <>{t('modal-step-2.address')} {+selectedShippingIndex + 1}</>}
 										</DataValueTitle>
 										{userData?.shippingAddresses &&
 											<DataValueLabel>
@@ -400,11 +403,11 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 									?
 									userData?.shippingAddresses.map((el: any, index: number) => {
 										return (
-											<RadioElementContainer>
+											<RadioElementContainer key={index}>
 												<FormControlLabel value={index} control={<Radio />}
 													label={
 														<DataValueContainer>
-															<DataValueTitle>{el?.addressName ? el?.addressName : <>Adres{" "}{index + 1}</>}</DataValueTitle>
+															<DataValueTitle>{el?.addressName ? el?.addressName : <>{t('modal-step-2.address')}{" "}{index + 1}</>}</DataValueTitle>
 															<DataValueLabel>
 																{el?.street || ""}
 																{el?.appartmentNumber.length ? "/" + el?.appartmentNumber : ""}
@@ -420,7 +423,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 									})
 									:
 
-									<NoDataLabel>Brak danych</NoDataLabel>
+									<NoDataLabel>{t('modal-step-2.noData')}</NoDataLabel>
 								}
 							</RadioGroup>
 						</CardContent>
@@ -428,7 +431,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 					</Collapse>
 					<AddNewData onClick={() => handleAddNewData("shippingAddresses")}>
 						<PlusIcon />
-						<AddNewDataText>Dodaj nowe dane dostawy</AddNewDataText>
+						<AddNewDataText>{t('modal-step-2.addNewShippingData')}</AddNewDataText>
 					</AddNewData>
 				</>}
 
@@ -437,7 +440,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 				{deliveryType === "machine" &&
 					<>
 						<CardActions disableSpacing sx={{ padding: 0 }}>
-							<SectionTitle>Automaty paczkowe</SectionTitle>
+						<SectionTitle>{t('modal-step-2.parcelMachines')}</SectionTitle>
 						<ExpandMore
 							expand={expanded.deliveryPoint}
 							onClick={() => handleExpandClick("deliveryPoint")}
@@ -465,7 +468,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 								{pickupPointDelivery && (selectedDeliveryPointIndex !== null && !isNaN(selectedDeliveryPointIndex)) ?
 									<>
 										<DataValueTitle>
-											{userData?.parcelLockers[selectedDeliveryPointIndex]?.addressName || "Adres" + +selectedDeliveryPointIndex + 1}
+											{userData?.parcelLockers[selectedDeliveryPointIndex]?.addressName || t('modal-step-2.address') + +selectedDeliveryPointIndex + 1}
 										</DataValueTitle>
 										{userData?.parcelLockers &&
 											<DataValueLabel>
@@ -475,7 +478,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 									</>
 									:
 									<div style={{ padding: "8px" }}>
-										<NoDataLabel>Punkt odbioru nie został wybrany</NoDataLabel>
+										<NoDataLabel>{t('modal-step-2.notSelectedDeliveryPoint')}</NoDataLabel>
 									</div>
 
 								}
@@ -483,7 +486,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 							:
 
 							<CardContent>
-								<NoDataLabel>Brak danych</NoDataLabel>
+								<NoDataLabel>{t('modal-step-2.noData')}</NoDataLabel>
 							</CardContent>
 
 						}
@@ -502,7 +505,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 									?
 									userData?.parcelLockers.map((el: any, index: number) => {
 										return (
-											<RadioElementContainer>
+											<RadioElementContainer key={index}>
 												<FormControlLabel value={index} control={<Radio />}
 													label={
 														<div style={{ display: "flex" }}>
@@ -522,7 +525,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 																}} />
 															</div>
 															<DataValueContainer>
-																<DataValueTitle>{el?.addressName ?? el?.lockerId ?? <>Punkt{" "}{index + 1}</>}</DataValueTitle>
+																<DataValueTitle>{el?.addressName ?? el?.lockerId ?? <>{t('modal-step-2.point')}{" "}{index + 1}</>}</DataValueTitle>
 																<DataValueLabel>{el?.address ?? ""}</DataValueLabel>
 															</DataValueContainer>
 														</div>
@@ -535,7 +538,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 										})
 									:
 
-									<NoDataLabel>Brak danych</NoDataLabel>
+									<NoDataLabel>{t('modal-step-2.noData')}</NoDataLabel>
 								}
 							</RadioGroup>
 						</CardContent>
@@ -543,7 +546,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 					</Collapse>
 					<AddNewData onClick={() => handleAddNewData("parcelLockers")}>
 						<PlusIcon />
-						<AddNewDataText>Dodaj nowe dane paczkomatu lub punktu</AddNewDataText>
+						<AddNewDataText>{t('modal-step-2.addNewParcelData')}</AddNewDataText>
 					</AddNewData>
 				</>
 
@@ -563,7 +566,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 						sx={{
 							fontFamily: 'Inter, sans-serif'
 						}}>
-						Wybierz
+						{t('modal-step-2.selectData')}
 					</Button>
 				</div>
 			</>}

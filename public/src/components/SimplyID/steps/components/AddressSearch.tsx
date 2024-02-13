@@ -10,6 +10,7 @@ import { DataValueContainer, DataValueTitle, DataValueLabel, NoDataLabel } from 
 
 import NoData from '../../../../assets/NoData.svg';
 import { CalculateSquareCoordinate, Coordinates, calculateSquareCorners, getLogo, getPoints } from '../functions';
+import { useTranslation } from 'react-i18next';
 
 
 interface IAddressSearch {
@@ -27,6 +28,7 @@ export const AddressSearch = ({
 	IAddressSearch) => {
 
 
+	const { t } = useTranslation();
 
 	const [searchInput, setSearchInput] = useState<string>('');
 	const [addressOptions, setAddressOptions] = useState<any[]>([]);
@@ -160,7 +162,7 @@ export const AddressSearch = ({
 				onInputChange={handleChangeSearchInput}
 				options={addressOptions}
 				getOptionLabel={(option: any) => option?.display_name}
-				renderInput={(params) => <TextField {...params} label="Wyszukaj adres" variant="outlined" />}
+				renderInput={(params) => <TextField {...params} label={t('modal-form.searchAddress')} variant="outlined" />}
 			/>
 
 			<StyledRadioContainer >
@@ -195,7 +197,7 @@ export const AddressSearch = ({
 												<DataValueContainer>
 													<DataValueTitle>{machine?.foreign_access_point_id}</DataValueTitle>
 													<DataValueLabel>{machine?.street?.charAt(0).toUpperCase() + machine?.street?.slice(1).toLowerCase()}{" "}{machine?.house_number}{" "}{machine?.postal_code}{" "}{machine?.city.charAt(0).toUpperCase() + machine?.city.slice(1).toLowerCase()}</DataValueLabel>
-													<DataValueLabel>Odległość: {machine?.distance}m</DataValueLabel>
+													<DataValueLabel>{t('modal-form.distance')}: {machine?.distance}m</DataValueLabel>
 												</DataValueContainer>
 											</div>
 										} style={{ marginBottom: 0 }} />
@@ -226,7 +228,8 @@ export const AddressSearch = ({
 									width: '90%',
 									height: 'auto'
 								}} />
-								<NoDataLabel style={{ color: "#707070", fontSize: 14, fontWeight: 600 }}>Nie znaleziono żadnych punktów w pobliżu podanego adresu</NoDataLabel>
+								<NoDataLabel style={{ color: "#707070", fontSize: 14, fontWeight: 600 }}>{t('modal-form.noPointFound')}</NoDataLabel>
+
 							</div>
 						</div>
 					}

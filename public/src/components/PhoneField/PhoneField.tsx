@@ -8,6 +8,8 @@ import PhoneInput, { Country, isValidPhoneNumber, parsePhoneNumber } from 'react
 import 'react-phone-number-input/style.css'
 import { removeDataSessionStorage, saveDataSessionStorage } from "../../services/sessionStorageApi";
 import { SimplyInFullLogo } from "../../assets/SimplyInFullLogo";
+import { useTranslation } from "react-i18next";
+
 
 const MyCustomInput = React.forwardRef((props, ref: any) => (
 	<div style={{ display: 'flex', flex: "1 1 auto" }}>
@@ -24,6 +26,8 @@ export const PhoneField = () => {
 	const checkedRef = useRef(false);
 
 	const [countryCode, setCountryCode] = useState<Country>("PL")
+	const { t } = useTranslation();
+
 	const handleChangeCheckbox = () => {
 		setChecked((prev) => !prev);
 	};
@@ -69,7 +73,7 @@ export const PhoneField = () => {
 			if (phoneVal.startsWith("+")) {
 				console.log("wartunek 2")
 				setPhoneInput(phoneVal || "")
-				setError("Sprawdź poprawność wprowadzonego numeru")
+				setError(t("payment.checkPhoneNumber"))
 			} else {
 
 				try {
@@ -94,11 +98,11 @@ export const PhoneField = () => {
 					if (!isValidPhoneNumber(selectedCountryNumber?.number as string || "") && phoneVal) {
 
 						// console.log('777 numer nieporpawny');
-						setError("Sprawdź poprawność wprowadzonego numeru")
+						setError(t("payment.checkPhoneNumber"))
 					}
 				}
 				catch (err) {
-					setError("Wystąpił błąd, wprowadź numer ręcznie")
+					setError(t('payment.phoneNumberError'))
 					console.log('błąd', err);
 				}
 			}
@@ -128,7 +132,7 @@ export const PhoneField = () => {
 			setError('');
 		} else {
 			console.log('ERROR', number);
-			setError('Numer telefonu jest nieprawidłowy.');
+			setError(t('payment.phoneNumberIncorrect'));
 		}
 	}
 
@@ -185,7 +189,7 @@ export const PhoneField = () => {
 									id="simply-save-checkbox"
 									name="simply-save-checkbox" />
 							}
-							label={<CheckboxLabel><span>Nowość!</span> Zapisz swoje dane w Simply.IN aby łatwo i prosto kupować w tym i w innych sklepach.</CheckboxLabel>}
+							label={<CheckboxLabel><span>{t('payment.paymentTitle-1')}							</span> {t('payment.paymentTitle-2')}</CheckboxLabel>}
 						/>
 					</FormGroup>
 				</FormControl>
@@ -208,21 +212,21 @@ export const PhoneField = () => {
 
 			{checked && <>
 				<PhoneInputDescription>
-					Następnym razem, gdy dokonasz płatności tutaj lub w innych sklepach używających
+					{t('payment.createAccountDescription-1')}
 					<PhoneInputDescriptionLink target="_blank" href="https://simply.in/">{" "}Simply.IN{" "}</PhoneInputDescriptionLink>
-					, otrzymasz kod SMS-em i będziesz mógł bezpiecznie robić zakupy za pomocą
+					{t('payment.createAccountDescription-2')}
 
 					{/* // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore */}
 					<PhoneInputDescriptionLink target="_blank" href={appLocalizer?.base_url || "./"}>{" "}Simply.IN.</PhoneInputDescriptionLink>
 				</PhoneInputDescription>
 				<PhoneInputDescriptionSecondary>
-					Klikając przycisk „Zamawiam” lub analogiczny, potwierdzam że zapoznałem się i akceptuję <PhoneInputDescriptionLink target="_blank" href="https://simply.in/terms-and-conditions">{" "}Regulamin
+					{t('payment.createAccountDescription-3')} <PhoneInputDescriptionLink target="_blank" href="https://simply.in/terms-and-conditions">{" "}{t('payment.createAccountDescription-4')}
 						{" "}Simply.In.{" "}</PhoneInputDescriptionLink >
-					Administratorem Twoich danych osobowych jest
+					{t('payment.createAccountDescription-5')}
 					<PhoneInputDescriptionLink target="_blank" href="https://simply.in/">{" "}Simply.In.</PhoneInputDescriptionLink>
-					Zobacz więcej w
-					<PhoneInputDescriptionLink target="_blank" href="https://simply.in/gdpr-rules">{" "}Polityce Prywatności. </PhoneInputDescriptionLink>
+					{t('payment.createAccountDescription-6')}
+					<PhoneInputDescriptionLink target="_blank" href="https://simply.in/gdpr-rules">{" "}{t('payment.createAccountDescription-7')} </PhoneInputDescriptionLink>
 				</PhoneInputDescriptionSecondary>
 				{/*  */}
 

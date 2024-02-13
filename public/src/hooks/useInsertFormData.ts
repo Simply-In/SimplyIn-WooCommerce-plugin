@@ -20,18 +20,77 @@ export const useInsertFormData = (userData: any, formElements: any) => {
 
 		if (userData?.billingAddresses) {
 			const address = userData.billingAddresses
+			const companyCheckbox = document.querySelector("[value='company' i]") ?? document.querySelector("[value='firma' i]") ?? null
+
+			const radioNodeList = companyCheckbox?.parentNode?.querySelectorAll('input[type="radio"]')
+			const radioInputsArray = Array.from(radioNodeList || []);
+			const filteredRadioInputs = radioInputsArray.filter(input => input !== companyCheckbox);
+
+			const notFirma = document.getElementById(filteredRadioInputs[0]?.id)
+
+
+
 			if (address?.taxId || address?.companyName) {
 
-				const companyCheckbox = document.querySelector("[value='company' i]") ?? document.querySelector("[value='firma' i]")
+				// const companyCheckbox = document.querySelector("[value='company' i]") ?? document.querySelector("[value='firma' i]")
 
-				console.log('companyCheckbox', companyCheckbox);
 				if (companyCheckbox) {
+					notFirma?.removeAttribute('checked')
 					companyCheckbox?.setAttribute('checked', 'checked')
 					const changeEvent = new Event('change', { bubbles: true });
 					companyCheckbox?.dispatchEvent(changeEvent);
 				}
 
+			} else {
+				companyCheckbox?.removeAttribute('checked')
+				notFirma?.setAttribute('checked', 'checked')
+				const changeEvent = new Event('change', { bubbles: true });
+				notFirma?.dispatchEvent(changeEvent);
 			}
+
+
+			// if (address?.taxId || address?.companyName) {
+
+			// 	console.log('companyCheckbox', companyCheckbox);
+
+			// 	console.log("FIRMA CHANGE");
+			// 	if (firma && (firma as HTMLInputElement).checked) {
+			// 		// (firma as HTMLInputElement).checked = true
+			// 		firma?.setAttribute('checked', 'checked')
+
+			// 	}
+
+			// 	if (notFirma && (notFirma as HTMLInputElement).checked) {
+			// 		// (notFirma as HTMLInputElement).checked = false
+			// 		notFirma?.removeAttribute('checked')
+			// 	}
+
+
+			// 	firma?.dispatchEvent(changeEventFirma)
+			// 	// notFirma?.dispatchEvent(changeEventNotFirma)
+
+
+			// } else if (companyCheckbox) {
+			// 	if (radioNodeList) {
+
+			// 		console.log("NOT FIRMA CHANGE");
+			// 		if (notFirma && (notFirma as HTMLInputElement).checked) {
+			// 			// (notFirma as HTMLInputElement).checked = true
+			// 			notFirma?.setAttribute('checked', 'checked')
+			// 		}
+			// 		if (firma && (firma as HTMLInputElement).checked) {
+			// 			// (firma as HTMLInputElement).checked = false
+			// 			firma?.removeAttribute('checked')
+
+			// 		}
+			// 		// firma?.dispatchEvent(changeEventFirma)
+			// 		notFirma?.dispatchEvent(changeEventNotFirma)
+
+
+			// 	}
+			// }
+
+
 
 			if ("name" in address) { (document.getElementById('billing_first_name') as HTMLInputElement).value = address.name || "" }
 			if ("surname" in address) { (document.getElementById('billing_last_name') as HTMLInputElement).value = address.surname || "" }
@@ -74,7 +133,7 @@ export const useInsertFormData = (userData: any, formElements: any) => {
 					const stateElementType = stateElement?.nodeName
 
 					if (stateElementType === 'INPUT' && stateElement instanceof HTMLInputElement) {
-						stateElement.value = address.state 
+						stateElement.value = address.state
 
 					} else if (stateElementType === 'SELECT' && stateElement instanceof HTMLSelectElement) {
 

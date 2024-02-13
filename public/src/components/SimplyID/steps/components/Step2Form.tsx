@@ -14,6 +14,7 @@ import { getInpostPointData } from '../../../../functions/selectInpostPoint';
 import { EditFormMachine } from './EditFormMachine';
 import { EditFormFooter } from './EditFormFooter';
 import { EditFormAddress } from './EditFormAddress';
+import { useTranslation } from "react-i18next";
 
 
 declare global {
@@ -49,6 +50,7 @@ export const Step2Form = ({
 	setSelectedDeliveryPointIndex,
 	setSameDeliveryAddress
 }: IStep2Form) => {
+	const { t } = useTranslation();
 
 
 	console.log('editItem', editItem);
@@ -56,21 +58,21 @@ export const Step2Form = ({
 	editItem?.property === "parcelLockers"
 	const SignupSchema = Yup.object().shape(editItem?.property === "parcelLockers" ? {
 		addressName: Yup.string().notRequired(),
-		address: Yup.string().required("Aby uzyskać dane adresowe, wprowadź poprawny numer paczkomatu"),
-		lockerId: Yup.string().required("Numer identyfikacyjny paczkomatu jest wymagany"),
+		address: Yup.string().required(t('modal-form.parcelAddressError')),
+		lockerId: Yup.string().required(t('modal-form.lockerIdError')),
 		_id: Yup.string().notRequired(),
 		label: Yup.string().notRequired(),
 	} : {
 		addressName: Yup.string().notRequired(),
-		name: Yup.string().required('Imię jest wymagane'),
-		surname: Yup.string().required('Nazwisko jest wymagane'),
+			name: Yup.string().required(t('modal-form.nameError')),
+			surname: Yup.string().required(t('modal-form.surnameError')),
 		companyName: Yup.string().notRequired(),
 		taxId: Yup.string().notRequired(),
-		street: Yup.string().required('Ulica jest wymagana'),
+			street: Yup.string().required(t('modal-form.streetError')),
 		appartmentNumber: Yup.string().notRequired(),
-		postalCode: Yup.string().required('Kod pocztowy jest wymagany'),
-		city: Yup.string().required('Miasto jest wymagany'),
-		country: Yup.string().required('Kraj jest wymagany'),
+			postalCode: Yup.string().required(t('modal-form.postalCodeError')),
+			city: Yup.string().required(t('modal-form.cityError')),
+			country: Yup.string().required(t('modal-form.countryError')),
 		_id: Yup.string().notRequired(),
 
 
@@ -126,7 +128,7 @@ export const Step2Form = ({
 
 
 		if (!countrySelect) {
-			console.error('Country select element not found');
+			console.error(t('modal-form.countryNotFound'));
 			return;
 		}
 
@@ -164,9 +166,9 @@ export const Step2Form = ({
 					const inpostPointData = await getInpostPointData({ deliveryPointID: manuallyChangeLockerId as string })
 					if (inpostPointData?.status === 404) {
 						setValue('address', "")
-						setError('lockerId', { message: 'Selected shipping point is invalid' })
+						setError('lockerId', { message: t('modal-form.shippingPointError') })
 
-						throw new Error('Selected shipping point is invalid')
+						throw new Error(t('modal-form.shippingPointError'))
 					}
 					clearErrors('lockerId')
 					clearErrors('address')
@@ -236,9 +238,9 @@ export const Step2Form = ({
 	}
 
 	const editItemTitle = () => {
-		if (editItem?.property === "billingAddresses") { return "Dane rozliczeniowe" }
-		if (editItem?.property === "shippingAddresses") { return "Dane dostawy" }
-		if (editItem?.property === "parcelLockers") { return "Punkt odbioru" }
+		if (editItem?.property === "billingAddresses") { return t('modal-form.billingData') }
+		if (editItem?.property === "shippingAddresses") { return t('modal-form.shippingData') }
+		if (editItem?.property === "parcelLockers") { return t('modal-form.parcelData') }
 	}
 
 

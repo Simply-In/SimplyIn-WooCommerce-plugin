@@ -301,14 +301,14 @@ add_action('woocommerce_after_order_notes', 'add_phone_token_input_field');
 
 function add_phone_token_input_field($checkout)
 {
-	echo '<div id="simply_token_input_field" style="visibility: hidden" ><h2>' . __('Simply Token') . '</h2>';
+	echo '<div id="simply_token_input_field" style="visibility: hidden; display: none" ><h2>' . __('Simply Token') . '</h2>';
 	woocommerce_form_field('simplyinTokenInput', array(
 		'type' => 'hidden',
 		'class' => array('input-hidden'),
 		'label' => __('Simply Token Input'),
 	), $checkout->get_value('simplyinTokenInput'));
 	echo '</div>';
-	echo '<div id="phone_token_input_field" style="visibility: hidden" ><h2>' . __('Phone Token') . '</h2>';
+	echo '<div id="phone_token_input_field" style="visibility: hidden; display: none" ><h2>' . __('Phone Token') . '</h2>';
 	woocommerce_form_field('simplyinPhoneTokenInput', array(
 		'type' => 'hidden',
 		'class' => array('input-hidden'),
