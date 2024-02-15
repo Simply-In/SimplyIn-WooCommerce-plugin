@@ -73,7 +73,7 @@ function custom_override_checkout_fields($fields)
 	$fields['billing']['billing_email'] = array(
 		'label' => __('Email', 'woocommerce'),
 		'placeholder' => _x('Wprowadź swój email. 🤠🙈💥', 'placeholder', 'woocommerce'),
-		'required' => false,
+		'required' => true,
 		'clear' => false,
 		'type' => 'text',
 		'id' => 'billing_email',
