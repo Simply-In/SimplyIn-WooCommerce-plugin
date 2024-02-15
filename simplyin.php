@@ -220,7 +220,7 @@ function enqueue_and_localize_order_created_script($order_id)
 		),
 		'line_items' => array(),
 		'payment_method' => $order->get_payment_method_title(),
-		'shipping_method' => $item_data,
+		'shipping_method' => isset($item_data) ? $item_data : null,
 		'order' => $order->get_shipping_company(),
 		'orderTotal' => $order->get_data(),
 		'language' => get_locale(),

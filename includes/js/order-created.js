@@ -108,9 +108,7 @@ jQuery(document).ready(async function ($) {
   );
   const inpostPointData = await res?.json();
 
-  console.log(111);
-  console.log("inpostPointData", inpostPointData);
-  console.log(222);
+
   const parcelLockers = [
     {
       addressName: "",
@@ -121,8 +119,6 @@ jQuery(document).ready(async function ($) {
       }`,
     },
   ];
-
-  console.log(333);
 
   const simplyinToken = loadDataFromSessionStorageTwo({ key: "simplyinToken" });
   const phoneNumber = loadDataFromSessionStorageTwo({ key: "phoneInput" });
@@ -138,7 +134,7 @@ jQuery(document).ready(async function ($) {
     };
   });
 
-  console.log("444");
+ 
 
   if (!!simplyinToken && typeof orderData !== "undefined") {
     console.log("account exists");
@@ -178,8 +174,6 @@ jQuery(document).ready(async function ($) {
 
     const arrayOfIdBilling = userData.billingAddresses.map((el) => el._id);
     const indexOfUndefinedBilling = arrayOfIdBilling.indexOf(undefined);
-
-    console.log("555");
 
     middlewareApiTwo({
       endpoint: "userData",

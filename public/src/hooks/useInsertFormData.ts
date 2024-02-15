@@ -49,46 +49,7 @@ export const useInsertFormData = (userData: any, formElements: any) => {
 			}
 
 
-			// if (address?.taxId || address?.companyName) {
 
-			// 	console.log('companyCheckbox', companyCheckbox);
-
-			// 	console.log("FIRMA CHANGE");
-			// 	if (firma && (firma as HTMLInputElement).checked) {
-			// 		// (firma as HTMLInputElement).checked = true
-			// 		firma?.setAttribute('checked', 'checked')
-
-			// 	}
-
-			// 	if (notFirma && (notFirma as HTMLInputElement).checked) {
-			// 		// (notFirma as HTMLInputElement).checked = false
-			// 		notFirma?.removeAttribute('checked')
-			// 	}
-
-
-			// 	firma?.dispatchEvent(changeEventFirma)
-			// 	// notFirma?.dispatchEvent(changeEventNotFirma)
-
-
-			// } else if (companyCheckbox) {
-			// 	if (radioNodeList) {
-
-			// 		console.log("NOT FIRMA CHANGE");
-			// 		if (notFirma && (notFirma as HTMLInputElement).checked) {
-			// 			// (notFirma as HTMLInputElement).checked = true
-			// 			notFirma?.setAttribute('checked', 'checked')
-			// 		}
-			// 		if (firma && (firma as HTMLInputElement).checked) {
-			// 			// (firma as HTMLInputElement).checked = false
-			// 			firma?.removeAttribute('checked')
-
-			// 		}
-			// 		// firma?.dispatchEvent(changeEventFirma)
-			// 		notFirma?.dispatchEvent(changeEventNotFirma)
-
-
-			// 	}
-			// }
 
 
 
@@ -158,19 +119,26 @@ export const useInsertFormData = (userData: any, formElements: any) => {
 
 		if (userData?.shippingAddresses) {
 			const checkbox = document.getElementById('ship-to-different-address-checkbox');
-			(checkbox as HTMLInputElement).checked = true;
+			try {
+				if (checkbox) {
+					(checkbox as HTMLInputElement).checked = true;
+				}
+			} catch (err) {
+				console.log(err);
+			}
 			document.querySelector('.shipping_address')?.removeAttribute('style')
 			const shippingAddress = userData.shippingAddresses
 
-			if ("name" in shippingAddress) { (document.getElementById('shipping_first_name') as HTMLInputElement).value = shippingAddress.name || "" }
-			if ("surname" in shippingAddress) { (document.getElementById('shipping_last_name') as HTMLInputElement).value = shippingAddress.surname || "" }
-			if ("city" in shippingAddress) { (document.getElementById('shipping_city') as HTMLInputElement).value = shippingAddress.city || "" }
-			if ("companyName" in shippingAddress) { (document.getElementById('shipping_company') as HTMLInputElement).value = shippingAddress.companyName || "" }
-			if ("street" in shippingAddress) { (document.getElementById('shipping_address_1') as HTMLInputElement).value = `${shippingAddress.street} ${shippingAddress.streetNumber ? shippingAddress.streetNumber : ""}` }
-			if ("appartmentNumber" in shippingAddress) { (document.getElementById('shipping_address_2') as HTMLInputElement).value = shippingAddress.appartmentNumber || "" }
-			if ("postalCode" in shippingAddress) { (document.getElementById('shipping_postcode') as HTMLInputElement).value = shippingAddress.postalCode || "" }
+			if ("name" in shippingAddress && document.getElementById('shipping_first_name')) { (document.getElementById('shipping_first_name') as HTMLInputElement).value = shippingAddress.name || "" }
+			if ("surname" in shippingAddress && document.getElementById('shipping_last_name')) { (document.getElementById('shipping_last_name') as HTMLInputElement).value = shippingAddress.surname || "" }
+			if ("city" in shippingAddress && document.getElementById('shipping_city')) { (document.getElementById('shipping_city') as HTMLInputElement).value = shippingAddress.city || "" }
+			if ("companyName" in shippingAddress && document.getElementById('shipping_company')) { (document.getElementById('shipping_company') as HTMLInputElement).value = shippingAddress.companyName || "" }
+			if ("street" in shippingAddress && document.getElementById('shipping_address_1')) { (document.getElementById('shipping_address_1') as HTMLInputElement).value = `${shippingAddress.street} ${shippingAddress.streetNumber ? shippingAddress.streetNumber : ""}` }
+			if ("appartmentNumber" in shippingAddress && document.getElementById('shipping_address_2')) { (document.getElementById('shipping_address_2') as HTMLInputElement).value = shippingAddress.appartmentNumber || "" }
+			if ("postalCode" in shippingAddress && document.getElementById('shipping_postcode')) { (document.getElementById('shipping_postcode') as HTMLInputElement).value = shippingAddress.postalCode || "" }
 			if ("country" in shippingAddress) {
 				const savedCountryCode = shippingAddress.country || "";
+
 				const countrySelect = document.getElementById('shipping_country') as HTMLSelectElement;
 				const countrySpan = document.getElementById('select2-shipping_country-container') as HTMLSpanElement
 
@@ -197,7 +165,16 @@ export const useInsertFormData = (userData: any, formElements: any) => {
 			if ((checkbox as HTMLInputElement)?.checked) {
 				checkbox?.click();
 			}
-			(checkbox as HTMLInputElement).checked = false;
+			try {
+
+				if (checkbox) {
+					(checkbox as HTMLInputElement).checked = false;
+				}
+			}
+			catch (err) {
+				console.log(err);
+			}
+
 		}
 
 

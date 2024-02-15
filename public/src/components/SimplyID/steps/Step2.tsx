@@ -182,30 +182,6 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 			return (event.target.checked)
 		});
 	};
-	// const handleChangeDeliveryCheckbox = (event: React.ChangeEvent<HTMLInputElement>) => {
-
-	// 	setPickupPointDelivery(() => {
-	// 		handleExpandClick("deliveryPoint", !event.target.checked)
-	// 		if (event.target.checked) {
-	// 			setSelectedDeliveryPointIndex(0)
-	// 			handleExpandClick("deliveryPoint", true)
-	// 			saveDataSessionStorage({
-	// 				key: 'useParcel',
-	// 				data: true
-	// 			});
-	// 		}
-	// 		else {
-	// 			handleExpandClick("deliveryPoint", false)
-	// 			setSelectedDeliveryPointIndex(null)
-	// 			saveDataSessionStorage({
-	// 				key: 'useParcel',
-	// 				data: false
-	// 			});
-	// 		}
-	// 		return (event.target.checked)
-	// 	});
-	// };
-
 
 
 	const handleChangeDelivery = (event: React.ChangeEvent<HTMLInputElement>) => {
