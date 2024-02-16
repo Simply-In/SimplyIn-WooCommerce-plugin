@@ -50,9 +50,9 @@ const nipFieldHandling = () => {
 
 	saveDataSessionStorage({ key: "nipField", data: nipField?.id })
 
-	if (nipField) {
+	if (nipField && nipField.id !== "billing_tax_id_simply") {
 		console.log('element found');
-		const taxIdField = document.getElementById('billing_tax_id_field');
+		const taxIdField = document.getElementById('billing_tax_id_simply_field');
 		if (taxIdField) {
 			taxIdField.style.display = 'none';
 		} else {

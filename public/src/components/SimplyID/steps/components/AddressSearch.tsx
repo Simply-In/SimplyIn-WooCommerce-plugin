@@ -1,5 +1,4 @@
 import TextField from '@material-ui/core/TextField';
-import axios from 'axios';
 import { debounce } from 'lodash';
 import { useEffect, useState } from 'react';
 import geolib from 'geolib';
@@ -11,6 +10,7 @@ import { DataValueContainer, DataValueTitle, DataValueLabel, NoDataLabel } from 
 import NoData from '../../../../assets/NoData.svg';
 import { CalculateSquareCoordinate, Coordinates, calculateSquareCorners, getLogo, getPoints } from '../functions';
 import { useTranslation } from 'react-i18next';
+import { middlewareApi } from '../../../../services/middlewareApi';
 
 
 interface IAddressSearch {
@@ -41,14 +41,28 @@ export const AddressSearch = ({
 
 	const getAddress = debounce(() => {
 
-		axios.get(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchInput)}&format=json`)
-			.then((res) => {
-				console.log(res?.data);
-				setAddressOptions(res?.data || []);
-			})
+
+		middlewareApi({
+			endpoint: "addresses/find",
+			method: 'POST',
+			requestBody: { "searchAddressBy": searchInput }
+		}).then((res) => {
+			console.log(res?.data);
+			setAddressOptions(res?.data || []);
+		})
 			.catch((error) => {
 				console.error("Error fetching address:", error);
 			});
+
+
+		// axios.get(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchInput)}&format=json`)
+		// 	.then((res) => {
+		// 		console.log(res?.data);
+		// 		setAddressOptions(res?.data || []);
+		// 	})
+		// 	.catch((error) => {
+		// 		console.error("Error fetching address:", error);
+		// 	});
 	}, 300);
 
 

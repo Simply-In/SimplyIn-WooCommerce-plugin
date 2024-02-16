@@ -57,7 +57,7 @@ export const useInsertFormData = (userData: any, formElements: any) => {
 			if ("surname" in address) { (document.getElementById('billing_last_name') as HTMLInputElement).value = address.surname || "" }
 			if ("city" in address) { (document.getElementById('billing_city') as HTMLInputElement).value = address.city || "" }
 			if ("companyName" in address) { (document.getElementById('billing_company') as HTMLInputElement).value = address.companyName || "" }
-			if ("taxId" in address) { (shopDefaultNipField as HTMLInputElement || document.getElementById('billing_tax_id') as HTMLInputElement).value = address.taxId || "" }
+			if ("taxId" in address) { (shopDefaultNipField as HTMLInputElement || document.getElementById('billing_tax_id_simply') as HTMLInputElement).value = address.taxId || "" }
 			if ("country" in address) {
 				const savedCountryCode = address.country;
 				const countrySelect = document.getElementById('billing_country') as HTMLSelectElement;

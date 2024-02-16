@@ -179,7 +179,7 @@ function enqueue_and_localize_order_created_script($order_id)
 	$base_url = home_url();
 
 
-	$billing_tax_id = get_post_meta($order_id, '_billing_tax_id', true);
+	$billing_tax_id = get_post_meta($order_id, '_billing_tax_id_simply', true);
 
 
 	
@@ -370,37 +370,57 @@ function bks_remove_values($value, $input)
 // add_action('woocommerce_shipping_method_chosen', 'reset_default_shipping_method');
 
 
+function your_extension_translate($string)
+{
+	$translations = array(
+		'pl_PL' => array(
+			'Tax ID' => 'Numer identyfikacji podatkowej (NIP)',
+			'Enter your Tax ID' => 'Wprowadź swój numer NIP',
+		),
+		'en_US' => array(
+			'Tax ID' => 'Tax ID',
+			'Enter your Tax ID' => 'Enter your Tax ID',
+		),
+	);
 
-// Step 1: Add the "Tax ID" field to the billing section of the checkout page
-add_filter('woocommerce_checkout_fields', 'add_tax_id_to_billing');
+	$locale = get_locale();
+	if (isset($translations[$locale][$string])) {
+		return $translations[$locale][$string];
+	} else {
+		return $string; // Fallback to English if no translation found
+	}
+}
 
 function add_tax_id_to_billing($fields)
 {
-	$fields['billing']['billing_tax_id'] = array(
+	$fields['billing']['billing_tax_id_simply'] = array(
 		'type' => 'text',
-		'label' => __('Tax ID', 'woocommerce'),
-		'placeholder' => __('Enter your Tax ID', 'woocommerce'),
+		'label' => your_extension_translate('Tax ID'),
+		'placeholder' => your_extension_translate('Enter your Tax ID'),
 		'required' => false,
-		// You can change this to true if you want it to be required
 		'class' => array('form-row-wide'),
 	);
-
+  
 	return $fields;
 }
 
+add_filter('woocommerce_checkout_fields', 'add_tax_id_to_billing');
 
 
-// Step 2: Save the "Tax ID" field data to the order
+
+
+
+
+
+
 add_action('woocommerce_checkout_update_order_meta', 'save_tax_id_to_order');
 
 function save_tax_id_to_order($order_id)
 {
-	if (!empty($_POST['billing_tax_id'])) {
-		update_post_meta($order_id, '_billing_tax_id', sanitize_text_field($_POST['billing_tax_id']));
+	if (!empty($_POST['billing_tax_id_simply'])) {
+		update_post_meta($order_id, '_billing_tax_id_simply', sanitize_text_field($_POST['billing_tax_id_simply']));
 	}
-	// if (!empty($_POST['billing_wooccm11'])) {
-	// 	update_post_meta($order_id, '_billing_wooccm11', sanitize_text_field($_POST['_billing_wooccm11']));
-	// }
+
 }
 
 
@@ -409,7 +429,7 @@ function save_tax_id_to_order($order_id)
 function add_custom_string_to_order_details_customer($order)
 {
 
-	$billing_tax_id = get_post_meta($order->id, '_billing_tax_id', true);
+	$billing_tax_id = get_post_meta($order->id, '_billing_tax_id_simply', true);
 	
 
 	echo '<script>const areaname = document.querySelector(".woocommerce-column--billing-address").querySelector(".woocommerce-customer-details--email");
@@ -425,8 +445,8 @@ add_action('woocommerce_checkout_update_order_meta', 'save_custom_checkout_field
 
 function save_custom_checkout_field($order_id)
 {
-	if ($_POST['billing_tax_id']) {
-		update_post_meta($order_id, 'billing_tax_id', sanitize_text_field($_POST['billing_tax_id']));
+	if ($_POST['billing_tax_id_simply']) {
+		update_post_meta($order_id, 'billing_tax_id_simply', sanitize_text_field($_POST['billing_tax_id_simply']));
 	}
 }
 
@@ -434,7 +454,7 @@ add_action('woocommerce_admin_order_data_after_billing_address', 'display_custom
 
 function display_custom_order_data($order)
 {
-	$billing_tax_id = get_post_meta($order->get_id(), 'billing_tax_id', true);
+	$billing_tax_id = get_post_meta($order->get_id(), 'billing_tax_id_simply', true);
 	if (!empty($billing_tax_id)) {
 		echo '<p><strong>Tax ID:</strong> ' . esc_html($billing_tax_id) . '</p>';
 	}
