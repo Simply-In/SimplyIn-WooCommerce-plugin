@@ -21,7 +21,6 @@ declare global {
 	interface Window {
 		afterPointSelected: (point: any) => void;
 		querySelector: any
-
 	}
 }
 
@@ -90,7 +89,9 @@ export const Step2Form = ({
 			address: editData?.address,
 			lockerId: editData?.lockerId,
 			_id: editData?._id || undefined,
-			label: editData?.label || ""
+			label: editData?.label || "",
+			logoUrl: editData?.logoUrl || ""
+
 		} : {
 				_id: editData?._id || undefined,
 			addressName: editData?.addressName || null,
@@ -250,15 +251,7 @@ export const Step2Form = ({
 	const isDeliveryPoint = editItem?.property === "parcelLockers"
 
 
-	// const address = watch('address')
-
-	// const addressInputProps = (address as string)?.length ? {
-	// 	shrink: true, // Forces label to always behave like a placeholder
-	// } : {}
-
 	useEffect(() => {
-		// Your script-related code here
-		// <link rel="stylesheet" href="https://geowidget.inpost.pl/inpost-geowidget.css"/>
 		const script = document.createElement('script');
 		script.src = 'https://geowidget.inpost.pl/inpost-geowidget.js';
 		// script.src = 'https://sandbox-easy-geowidget-sdk.easypack24.net/inpost-geowidget.js';
@@ -279,8 +272,6 @@ export const Step2Form = ({
 
 
 					if (addressNameRef?.current) {
-						console.log('ref', addressNameRef?.current)
-						// addressNameRef.current.focus();
 
 						const inputElement = addressNameRef.current?.querySelector('input');
 
@@ -289,13 +280,6 @@ export const Step2Form = ({
 							inputElement.focus();
 							const containerElement = document.getElementById('containerSimply');
 							if (containerElement) {
-
-								console.log('SCROLL BOTTOM');
-								// containerElement.scrollTo({
-								// 	top: document.body.scrollHeight,
-								// 	behavior: 'smooth',     // You can use 'center', 'end', or 'nearest'
-								// })
-
 								setTimeout(() => containerElement.scrollTo({
 									top: document.body.scrollHeight,
 									behavior: 'smooth',     // You can use 'center', 'end', or 'nearest'

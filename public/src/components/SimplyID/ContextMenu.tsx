@@ -156,7 +156,7 @@ export const ContextMenu = ({ userData, item, setEditItemIndex, property, setUse
 					'aria-labelledby': 'basic-button',
 				}}
 			>
-				<MenuItem onClick={handleEdit}><ContextMenuItemContentWrapper><EditIcon />Edytuj</ContextMenuItemContentWrapper></MenuItem>
+				{property !== "parcelLockers" && <MenuItem onClick={handleEdit}><ContextMenuItemContentWrapper><EditIcon />Edytuj</ContextMenuItemContentWrapper></MenuItem>}
 				{isDeletable() && <MenuItem onClick={handleDelete}><ContextMenuItemContentWrapper><DeleteIcon /> Usuń</ContextMenuItemContentWrapper></MenuItem>}
 			</Menu>
 			<Dialog open={openDialog} onClose={handleCloseDialog}>

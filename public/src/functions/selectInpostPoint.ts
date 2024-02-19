@@ -1,12 +1,6 @@
 import axios from "axios";
 import { saveDataLocalStorage } from "../services/sessionStorageApi";
 
-// type data = {
-// 	elementId?: string;
-// 	selector?: string;
-
-// }
-
 
 
 export const getInpostPointData = async ({ deliveryPointID }: IselectIPickupPointInpost) => {
@@ -104,8 +98,6 @@ export const selectPickupPointInpost = async ({ deliveryPointID }: IselectIPicku
 
 }
 
-
-
 export const resetDeliveryMethod = () => {
 
 	let isFunctionCalled = false;
@@ -139,10 +131,6 @@ export const resetDeliveryMethod = () => {
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		//@ts-ignore
 	})(jQuery);
-
-	return
-
-
 
 }
 

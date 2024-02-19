@@ -17,9 +17,9 @@ import { PlusIcon } from '../../../assets/PlusIcon';
 import ContextMenu from '../ContextMenu';
 import { SelectedDataContext } from '../SimplyID';
 import { resetDeliveryMethod, selectPickupPointInpost } from '../../../functions/selectInpostPoint';
-import { getLogo } from './functions';
 
 import { useTranslation } from "react-i18next";
+import { getPlaceholder } from './functions';
 
 
 
@@ -81,7 +81,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 	const handleExpandClick = (property: "billing" | "shipping" | "deliveryPoint", value?: boolean) => {
 
 		setExpanded((prev) => {
-			return ({ ...prev, [property]: value ? value : !prev[property] })
+			return ({ ...prev, [property]: value || !prev[property] })
 		});
 	};
 
@@ -154,16 +154,6 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 
 
 		}
-
-
-
-
-
-
-
-
-
-
 		handleClosePopup()
 
 	}
@@ -224,8 +214,6 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 			{!editItemIndex?.property && <>
 				<CardActions disableSpacing sx={{ padding: 0 }}>
 					<SectionTitle>{t('modal-step-2.billingData')}</SectionTitle>
-
-
 					<ExpandMore
 						expand={expanded.billing}
 						onClick={() => handleExpandClick('billing')}
@@ -426,16 +414,6 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 							<ExpandMoreIcon />
 						</ExpandMore>
 					</CardActions>
-					{/* <FormGroup>
-						<FormControlLabel sx={{
-							textAlign: 'left',
-							fontFamily: 'Inter, sans-serif',
-							'& .MuiTypography-root': {
-								fontFamily: 'Inter, sans-serif'
-							}
-						}} style={{ textAlign: 'left', fontFamily: "Inter, sans-serif" }} control={<Checkbox checked={pickupPointDelivery} onChange={handleChangeDeliveryCheckbox} />} label="Dostawa do paczkomatu" />
-
-					</FormGroup> */}
 					<Collapse in={!expanded.deliveryPoint} timeout="auto" unmountOnExit>
 						{userData?.parcelLockers.length
 							?
@@ -481,7 +459,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 									?
 									userData?.parcelLockers.map((el: any, index: number) => {
 										return (
-											<RadioElementContainer key={index}>
+											<RadioElementContainer key={el?._parcelLocker ?? index}>
 												<FormControlLabel value={index} control={<Radio />}
 													label={
 														<div style={{ display: "flex" }}>
@@ -495,7 +473,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 																	width: "50px",
 																	marginRight: "8px"
 																}}>
-																<img src={getLogo({ label: el.label || "" }) || ""} alt={el.label || "supplier logo"} style={{
+																<img src={el?.logoUrl || getPlaceholder()} alt={el.label || "supplier logo"} style={{
 																	width: '42px',
 																	height: '42px'
 																}} />
@@ -506,7 +484,12 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 															</DataValueContainer>
 														</div>
 														} style={{ marginBottom: 0 }} />
-												<ContextMenu setUserData={setUserData} item={index} setEditItemIndex={setEditItemIndex} property={"parcelLockers"} userData={userData}
+												<ContextMenu
+													setUserData={setUserData}
+													item={index}
+													setEditItemIndex={setEditItemIndex}
+													property={"parcelLockers"}
+													userData={userData}
 													selectedPropertyIndex={selectedDeliveryPointIndex}
 													setSelectedPropertyIndex={setSelectedDeliveryPointIndex} />
 												</RadioElementContainer>)
