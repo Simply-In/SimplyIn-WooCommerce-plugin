@@ -54,6 +54,3 @@ export const StyledRadioGroupSelectMachine = styled(RadioGroup)`
 	gap:12px;
 
 `
-
-
-console.log('styled components end');

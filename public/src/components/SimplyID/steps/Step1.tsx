@@ -73,9 +73,9 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 		}).then(async (res) => {
 			console.log(res);
 			setModalError("")
-			if (res.error) {
-				setModalError('Błędny kod weryfikacyjny')
-				throw new Error(res.error)
+			if (res.message === "Code doesnt exist") {
+				setModalError(t('modal-step-1.codeInvalid'))
+				throw new Error(res.message)
 
 			} else if (res.data) {
 				console.log('DATA', res.data);

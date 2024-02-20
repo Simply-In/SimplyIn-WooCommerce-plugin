@@ -17,13 +17,18 @@
 			"checkPhoneNumber": "Sprawdź poprawność wprowadzonego numeru",
 			"phoneNumberError": "Wystąpił błąd, wprowadź numer ręcznie"
 		},
+		"modal": {
+			"addressDelete": "Usuwanie adresu",
+			"addressDeleteConfirmation": "Czy na pewno chcesz usunąc ten adres?"
+		},
 		"modal-step-1": {
 			"confirm": "Potwierdź, że to Ty",
 			"insertCode": "Wpisz kod przesłany na numer",
 			"editAfterLogin": "Będziesz mógł edytować swoje dane po zalogowaniu",
 			"codeNotArrived": "Kod nie dotarł?",
 			"sendViaEmail": "Wyślij e-mailem",
-			"codeHasBeenSent": "Kod został ponownie wysłany"
+			"codeHasBeenSent": "Kod został ponownie wysłany",
+			"codeInvalid": "Błędny kod weryfikacyjny"
 		},
 		"modal-step-2": {
 			"address": "Adres",

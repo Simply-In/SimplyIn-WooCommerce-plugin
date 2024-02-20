@@ -1,8 +1,6 @@
 import axios from "axios";
 import { saveDataLocalStorage } from "../services/sessionStorageApi";
 
-
-
 export const getInpostPointData = async ({ deliveryPointID }: IselectIPickupPointInpost) => {
 	try {
 		const res = await axios(`https://api-pl-points.easypack24.net/v1/points/${deliveryPointID}`);
@@ -19,10 +17,6 @@ export const getInpostPointData = async ({ deliveryPointID }: IselectIPickupPoin
 interface IselectIPickupPointInpost {
 	deliveryPointID: string
 }
-
-
-
-
 interface IselectIPickupPointInpost {
 	deliveryPointID: string
 }

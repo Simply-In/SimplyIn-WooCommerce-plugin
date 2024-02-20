@@ -17,13 +17,18 @@
 			"checkPhoneNumber": "Check the inserted phone number",
 			"phoneNumberError": "An error has occurred, enter the number manually"
 		},
+		"modal": {
+			"addressDelete": "Address delete",
+			"addressDeleteConfirmation": "Are you sure you want to delete this address?"
+		},
 		"modal-step-1": {
 			"confirm": "Confirm that it is you",
 			"insertCode": "Insert code sent to number",
 			"editAfterLogin": "You will be able to edit your data after login",
 			"codeNotArrived": "Code not received?",
 			"sendViaEmail": "Send via email",
-			"codeHasBeenSent": "The code was resent"
+			"codeHasBeenSent": "The code was resent",
+			"codeInvalid": "Verification code invalid"
 		},
 		"modal-step-2": {
 			"address": "Address",

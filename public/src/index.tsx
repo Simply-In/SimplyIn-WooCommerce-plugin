@@ -42,26 +42,16 @@ const waitForElementToRender = (data: data) => {
 }
 
 const nipFieldHandling = () => {
-
-
 	const nipField = document.querySelector('[placeholder*="nip" i]') || document.querySelector('[id*="nip" i]')
-	console.log("nipField", nipField);
-
 
 	saveDataSessionStorage({ key: "nipField", data: nipField?.id })
 
 	if (nipField && nipField.id !== "billing_tax_id_simply") {
-		console.log('element found');
 		const taxIdField = document.getElementById('billing_tax_id_simply_field');
 		if (taxIdField) {
 			taxIdField.style.display = 'none';
-		} else {
-			console.log('Element not found');
-		}
-	} else {
-		console.log('element not found');
-
-	}
+		} 
+	} 
 
 }
 

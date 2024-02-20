@@ -80,14 +80,13 @@ export const PhoneField = () => {
 					console.log("warunek 3 ");
 
 					// kod z wybranego kraju lub deafultowy
-					const countrySelect = document.getElementById('billing_country') as HTMLSelectElement
+					const countrySelect = document.getElementById('billing_country') as any
 
-					const countryCode = countrySelect?.options[countrySelect?.selectedIndex]?.value || "PL"
-					console.log("countryCode", countryCode);
+					const countryCode = countrySelect?.value || countrySelect?.options[countrySelect?.selectedIndex]?.value || "PL"
+
 
 					const selectedCountryNumber = parsePhoneNumber(phoneInputField?.value, countryCode as Country || "PL")
 
-					console.log(selectedCountryNumber);
 					if (!selectedCountryNumber) {
 						return
 					}
@@ -106,11 +105,7 @@ export const PhoneField = () => {
 					console.log('błąd', err);
 				}
 			}
-
-
 		}
-
-
 		checkedRef.current = true;
 		// }
 	}, [attributeObject, checked])
@@ -142,7 +137,6 @@ export const PhoneField = () => {
 			setSimplyinToken((simplyinTokenInput as HTMLInputElement)?.value)
 		}
 
-
 		simplyinTokenInput?.addEventListener('input', handleSimplyTokenChange);
 
 		return () => {
@@ -156,7 +150,6 @@ export const PhoneField = () => {
 		const debouncedRequest = debounce(() => {
 
 			if (checked && phoneInput && isValidPhoneNumber(phoneInput || "")) {
-
 				saveDataSessionStorage({ key: "phoneInput", data: phoneInput })
 
 			}
@@ -189,7 +182,7 @@ export const PhoneField = () => {
 									id="simply-save-checkbox"
 									name="simply-save-checkbox" />
 							}
-							label={<CheckboxLabel><span>{t('payment.paymentTitle-1')}							</span> {t('payment.paymentTitle-2')}</CheckboxLabel>}
+							label={<CheckboxLabel><span>{t('payment.paymentTitle-1')}</span> {t('payment.paymentTitle-2')}</CheckboxLabel>}
 						/>
 					</FormGroup>
 				</FormControl>

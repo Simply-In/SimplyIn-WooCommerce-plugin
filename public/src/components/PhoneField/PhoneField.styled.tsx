@@ -1,7 +1,5 @@
 import styled from "styled-components";
 
-console.log('styled phone')
-
 export const CheckboxContainer = styled.div`
 	display:flex;
 	margin-bottom:12px;`
@@ -14,7 +12,6 @@ export const CheckboxLabel = styled.div`
 		font-weight:700;
 		font-family: Inter, sans-serif;
 	}
-
 `
 export const PhoneInputDescription = styled.div`
 	font-size: 16px;
@@ -50,4 +47,3 @@ export const PopupTextError = styled.div`
 	color: red;
 	margin-top: 24px;
 `
-console.log('styled phone end')
