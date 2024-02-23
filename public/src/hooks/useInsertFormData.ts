@@ -1,24 +1,41 @@
 import { useEffect } from 'react'
 import { selectPickupPointInpost } from '../functions/selectInpostPoint';
 
+const updateField = (addressField: string, elementId: string, data: any) => {
+	if (addressField in data) {
+		const element = document.getElementById(elementId) as HTMLInputElement;
+		if (element) {
+			try {
+				element.value = data[addressField] || "";
+			}
+			catch (err) { console.log(err); }
+		}
+	}
+}
+
+
 export const useInsertFormData = (userData: any, formElements: any) => {
-	console.log('insert', userData);
+
 
 
 	const shopDefaultNipField = document.querySelector('[placeholder*="nip" i]') || document.querySelector('[id*="nip" i]')
-
-
 
 	useEffect((): void => {
 
 		if (!Object.keys(userData).length) {
 			return
 		}
-		if (userData.phoneNumber) { (document.getElementById('billing_phone') as HTMLInputElement).value = userData.phoneNumber }
+		if (userData.phoneNumber) {
+			const billingPhone = document.getElementById('billing_phone') as HTMLInputElement;
+			if (billingPhone) {
+				billingPhone.value = userData.phoneNumber;
+			}
+		}
 
 
 
 		if (userData?.billingAddresses) {
+
 			const address = userData.billingAddresses
 			const companyCheckbox = document.querySelector("[value='company' i]") ?? document.querySelector("[value='firma' i]") ?? null
 
@@ -29,10 +46,7 @@ export const useInsertFormData = (userData: any, formElements: any) => {
 			const notFirma = document.getElementById(filteredRadioInputs[0]?.id)
 
 
-
 			if (address?.taxId || address?.companyName) {
-
-				// const companyCheckbox = document.querySelector("[value='company' i]") ?? document.querySelector("[value='firma' i]")
 
 				if (companyCheckbox) {
 					notFirma?.removeAttribute('checked')
@@ -48,28 +62,33 @@ export const useInsertFormData = (userData: any, formElements: any) => {
 				notFirma?.dispatchEvent(changeEvent);
 			}
 
+			if ("taxId" in address) {
+				const billing_tax_id_simply = (shopDefaultNipField || document.getElementById('billing_tax_id_simply')) as HTMLInputElement
+				if (billing_tax_id_simply) {
+					try {
+						billing_tax_id_simply.value = address.taxId || ""
+					} catch (err) { console.log(err); }
+				}
+			}
+
+			updateField("name", 'billing_first_name', address);
+			updateField("surname", 'billing_last_name', address);
+			updateField("city", 'billing_city', address);
+			updateField("companyName", 'billing_company', address);
 
 
-
-
-
-			if ("name" in address) { (document.getElementById('billing_first_name') as HTMLInputElement).value = address.name || "" }
-			if ("surname" in address) { (document.getElementById('billing_last_name') as HTMLInputElement).value = address.surname || "" }
-			if ("city" in address) { (document.getElementById('billing_city') as HTMLInputElement).value = address.city || "" }
-			if ("companyName" in address) { (document.getElementById('billing_company') as HTMLInputElement).value = address.companyName || "" }
-			if ("taxId" in address) { (shopDefaultNipField as HTMLInputElement || document.getElementById('billing_tax_id_simply') as HTMLInputElement).value = address.taxId || "" }
 			if ("country" in address) {
 				const savedCountryCode = address.country;
 				const countrySelect = document.getElementById('billing_country') as HTMLSelectElement;
 				const countrySpan = document.getElementById('select2-billing_country-container') as HTMLSpanElement
 
-				if (countrySelect) {
-					for (let i = 0; i < countrySelect.options.length; i++) {
-						if (countrySelect.options[i].value === savedCountryCode) {
+				if (countrySelect && countrySelect?.options) {
+					for (let i = 0; i < countrySelect?.options.length; i++) {
+						if (countrySelect?.options[i].value === savedCountryCode) {
 							countrySelect.selectedIndex = i;
 
-							if (countrySpan?.innerText) {
-								countrySpan.innerText = countrySelect.options[i].innerText || ""
+							if (countrySpan && countrySpan?.innerText) {
+								countrySpan.innerText = countrySelect?.options[i].innerText || ""
 							}
 
 							//causing shipping method update
@@ -82,15 +101,29 @@ export const useInsertFormData = (userData: any, formElements: any) => {
 				}
 
 			}
-			if ("street" in address) { (document.getElementById('billing_address_1') as HTMLInputElement).value = `${address.street} ${address.streetNumber ? address.streetNumber : ""}` }
-			if ("appartmentNumber" in address) { (document.getElementById('billing_address_2') as HTMLInputElement).value = address.appartmentNumber || "" }
-			if ("postalCode" in address) { (document.getElementById('billing_postcode') as HTMLInputElement).value = address.postalCode || "" }
+
+			updateField("appartmentNumber", 'billing_address_2', address);
+
+			if ("street" in address) {
+				const billing_address_1 = document.getElementById('billing_address_1') as HTMLInputElement
+				if (billing_address_1) {
+
+					try {
+						billing_address_1.value = `${address.street} ${address.streetNumber ? address.streetNumber : ""}`
+					} catch (err) { console.log(err); }
+				}
+
+			}
+
+			updateField("postalCode", 'billing_postcode', address);
+
+
 
 			if ("state" in address) {
 
 				const stateElement: HTMLElement | null = document.getElementById('billing_state')
 
-				if (stateElement) {
+				if (stateElement && stateElement?.nodeName) {
 					const stateElementType = stateElement?.nodeName
 
 					if (stateElementType === 'INPUT' && stateElement instanceof HTMLInputElement) {
@@ -122,6 +155,11 @@ export const useInsertFormData = (userData: any, formElements: any) => {
 			try {
 				if (checkbox) {
 					(checkbox as HTMLInputElement).checked = true;
+
+					const changeEvent = new Event('change', { bubbles: true });
+					checkbox.dispatchEvent(changeEvent);
+
+
 				}
 			} catch (err) {
 				console.log(err);
@@ -129,13 +167,15 @@ export const useInsertFormData = (userData: any, formElements: any) => {
 			document.querySelector('.shipping_address')?.removeAttribute('style')
 			const shippingAddress = userData.shippingAddresses
 
-			if ("name" in shippingAddress && document.getElementById('shipping_first_name')) { (document.getElementById('shipping_first_name') as HTMLInputElement).value = shippingAddress.name || "" }
-			if ("surname" in shippingAddress && document.getElementById('shipping_last_name')) { (document.getElementById('shipping_last_name') as HTMLInputElement).value = shippingAddress.surname || "" }
-			if ("city" in shippingAddress && document.getElementById('shipping_city')) { (document.getElementById('shipping_city') as HTMLInputElement).value = shippingAddress.city || "" }
-			if ("companyName" in shippingAddress && document.getElementById('shipping_company')) { (document.getElementById('shipping_company') as HTMLInputElement).value = shippingAddress.companyName || "" }
-			if ("street" in shippingAddress && document.getElementById('shipping_address_1')) { (document.getElementById('shipping_address_1') as HTMLInputElement).value = `${shippingAddress.street} ${shippingAddress.streetNumber ? shippingAddress.streetNumber : ""}` }
-			if ("appartmentNumber" in shippingAddress && document.getElementById('shipping_address_2')) { (document.getElementById('shipping_address_2') as HTMLInputElement).value = shippingAddress.appartmentNumber || "" }
-			if ("postalCode" in shippingAddress && document.getElementById('shipping_postcode')) { (document.getElementById('shipping_postcode') as HTMLInputElement).value = shippingAddress.postalCode || "" }
+			updateField("name", 'shipping_first_name', shippingAddress);
+			updateField("surname", 'shipping_last_name', shippingAddress);
+			updateField("city", 'shipping_city', shippingAddress);
+			updateField("companyName", 'shipping_company', shippingAddress);
+			updateField("street", 'shipping_address_1', shippingAddress);
+			updateField("appartmentNumber", 'shipping_address_2', shippingAddress);
+			updateField("postalCode", 'shipping_postcode', shippingAddress);
+
+
 			if ("country" in shippingAddress) {
 				const savedCountryCode = shippingAddress.country || "";
 
@@ -184,4 +224,4 @@ export const useInsertFormData = (userData: any, formElements: any) => {
 
 	}, [userData, formElements])
 
-} 
+}

@@ -106,7 +106,7 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 
 									{countryListSelect?.map((item: any) => (
 										<MenuItem key={item.code} value={item.code}>
-											{item.name}
+											{t(`countries.${item.code}`)}
 										</MenuItem>
 									))}
 								</Select >

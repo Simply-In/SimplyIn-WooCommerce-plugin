@@ -9,7 +9,7 @@
  * @wordpress-plugin
  * Plugin Name: SimplyIn  
  * Plugin URI:       
- * Description: SimplyIn application. 13.02.2024 17.00
+ * Description: SimplyIn application. 23.02.2024 17.00
  * Version:           1.0.0
  * Author:            Simply.in
  * Author URI:        https://simply.in
@@ -72,7 +72,7 @@ function custom_override_checkout_fields($fields)
 {
 	$fields['billing']['billing_email'] = array(
 		'label' => __('Email', 'woocommerce'),
-		'placeholder' => _x('Wprowadź swój email. 🤠🙈💥', 'placeholder', 'woocommerce'),
+		'placeholder' => _x('Wprowadź swój email', 'placeholder', 'woocommerce'),
 		'required' => true,
 		'clear' => false,
 		'type' => 'text',
@@ -354,22 +354,6 @@ function bks_remove_values($value, $input)
 	return $value;
 }
 
-
-// function reset_default_shipping_method()
-// {
-
-// 	$available_methods = WC()->shipping->packages[0]['rates'];
-
-// 	print_r($available_methods);
-
-
-// 	// $chosen_method = key($available_methods);
-// 	// WC()->session->set( 'chosen_shipping_methods', $chosen_method );
-
-// }
-// add_action('woocommerce_shipping_method_chosen', 'reset_default_shipping_method');
-
-
 function your_extension_translate($string)
 {
 	$translations = array(
@@ -546,3 +530,92 @@ function custom_rest_api_callback($data)
 }
 
 add_action('rest_api_init', 'custom_rest_api_endpoint');
+
+
+
+
+
+function enqueue_custom_script()
+{
+	global $wp;
+	global $woocommerce;
+	wc_enqueue_js("console.log('TEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEST');");
+
+	if (isset($wp->query_vars['order-received'])) {
+		$order_id = absint($wp->query_vars['order-received']);
+		// Get the WC_Order object
+		$order = wc_get_order($order_id);
+
+		// Get the order number
+		$order_number = $order->get_order_number();
+		$order = wc_get_order($order_number);
+		$total = $order->get_data();
+	} else {
+		$order_number = 'no data';
+		$order = 'no order';
+		$total = 'total';
+
+	}
+
+
+
+
+
+	wp_enqueue_script('thankyou-script', plugin_dir_url(__FILE__) . 'public/js/thankyouscript.js', array('jquery'), '1.0', true);
+	wp_localize_script(
+		'thankyou-script',
+		'custom_script_params',
+		array(
+			'order_number' => $order_number,
+			'order' => $order,
+			'total' => $total,
+		)
+
+	);
+}
+
+// Hook the function to the wp_enqueue_scripts action
+add_action('wp_enqueue_scripts', 'enqueue_custom_script');
+
+
+
+
+// add_action('woocommerce_payment_complete', 'custom_process_order', 10, 1);
+
+// add_action('woocommerce_new_order', 'custom_function_on_order_create', 10, 1);
+
+// function custom_function_on_order_create($order_id)
+// {
+
+// 	$create_new_account = get_post_meta($order_id, 'simply-save-checkbox', true);
+
+// 	$order = wc_get_order($order_id);
+// 	$email = $order->get_billing_email();
+
+
+// 	error_log('Custom script executed for order ID: ' . $order_id);
+// 	echo 'Custom script executed!';
+
+
+// 	echo '----------- new acc' . $create_new_account . '----------' . '\n';
+// 	echo '----------- email' . $email . '----------' . '\n';
+// 	echo '----------- order' . $order . '----------' . '\n';
+
+
+
+// 	$log_message = 'Custom script executed for order ID: ' . $order_id;
+// 	$logs_directory = plugin_dir_path(__FILE__) . 'logs/';
+
+// 	if (!file_exists($logs_directory)) {
+// 		mkdir($logs_directory, 0755, true);
+// 	}
+// 	$log_file = $logs_directory . 'custom_log.log';
+// 	file_put_contents($log_file, $log_message . PHP_EOL, FILE_APPEND);
+
+// 	if ($create_new_account == "1") {
+// 		file_put_contents($log_file, "new account has been created with email" . $email . PHP_EOL, FILE_APPEND);
+
+// 	} else {
+// 		file_put_contents($log_file, "new account has not been created with email" . $email . PHP_EOL, FILE_APPEND);
+// 	}
+// }

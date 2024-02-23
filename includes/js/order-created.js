@@ -112,7 +112,7 @@ jQuery(document).ready(async function ($) {
   const parcelLockers = [
     {
       addressName: "",
-      label: "INPOST",
+      label: "inpost",
       lockerId: deliveryPoint,
       address: `${inpostPointData?.address?.line1 || ""}, ${
         inpostPointData?.address?.line2 || ""
@@ -134,8 +134,6 @@ jQuery(document).ready(async function ($) {
     };
   });
 
- 
-
   if (!!simplyinToken && typeof orderData !== "undefined") {
     console.log("account exists");
     const userData = loadDataFromSessionStorageTwo({
@@ -147,7 +145,13 @@ jQuery(document).ready(async function ($) {
         .filter((key) => newObj[key] != "")
         .filter((key) => newObj[key] != null)
         .filter((key) => key != "addressName")
-        .filter((key) => key != "_id");
+        .filter((key) => key != "_id")
+        .filter((key) => key != "logoUrl")
+        .filter((key) => key != "providerId")
+        .filter((key) => key != "icon")
+        .filter((key) =>
+          arrayKey === "parcelLockers" ? key != "address" : key
+        );
 
       for (let existingObj of userData[arrayKey]) {
         if (keys.every((key) => newObj[key] === existingObj[key])) {
@@ -352,7 +356,6 @@ jQuery(document).ready(async function ($) {
         shippingAddresses: shippingAddresses || [],
         parcelLockers: parcelLockersNewAccount,
         language: shortLang(getLangBrowser() ?? orderData?.language),
-        // language: "PL",
         termsAndConditionsAccepted: true,
         marketingConsent: true,
       },

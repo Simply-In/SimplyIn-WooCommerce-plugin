@@ -73,7 +73,8 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 		}).then(async (res) => {
 			console.log(res);
 			setModalError("")
-			if (res.message === "Code doesnt exist") {
+			// if (res.message === "Code doesnt exist") {
+			if (!res.data ?? res.message === "Code doesnt exist" ?? res.message === "INTERNAL_SERVER_ERROR") {
 				setModalError(t('modal-step-1.codeInvalid'))
 				throw new Error(res.message)
 

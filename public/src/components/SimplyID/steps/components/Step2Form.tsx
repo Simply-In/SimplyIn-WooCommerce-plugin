@@ -15,6 +15,7 @@ import { EditFormMachine } from './EditFormMachine';
 import { EditFormFooter } from './EditFormFooter';
 import { EditFormAddress } from './EditFormAddress';
 import { useTranslation } from "react-i18next";
+import { countriesList } from '../countriesList';
 
 
 declare global {
@@ -95,8 +96,8 @@ export const Step2Form = ({
 		} : {
 				_id: editData?._id || undefined,
 			addressName: editData?.addressName || null,
-			name: editData?.name,
-			surname: editData?.surname,
+				name: editItem?.property === "billingAddresses" && isNewData ? userData?.name : editData?.name,
+				surname: editItem?.property === "billingAddresses" && isNewData ? userData?.surname : editData?.surname,
 			companyName: editData?.companyName,
 			taxId: editData?.taxId,
 			street: editData?.street,
@@ -108,10 +109,6 @@ export const Step2Form = ({
 		}
 	});
 
-
-
-
-
 	const onSubmit = (data: any) => {
 
 		handleSave(data)
@@ -121,31 +118,11 @@ export const Step2Form = ({
 
 	const addressNameRef = useRef<HTMLLabelElement>(null)
 
+
 	useEffect(() => {
-		const countryList: any = [];
-
-		const billingCountrySelect = document.querySelector('select#billing_country');
-		const countrySelect: any = billingCountrySelect
 
 
-		if (!countrySelect) {
-			console.error(t('modal-form.countryNotFound'));
-			return;
-		}
-
-		// eslint-disable-next-line prefer-const
-		for (let option of countrySelect.options) {
-			const country = {
-				code: option.value,
-				name: option.textContent
-			};
-
-			if (country.code !== "") {
-				countryList.push(country);
-			}
-		}
-
-		setCountryListSelect(countryList)
+		setCountryListSelect(countriesList)
 
 	}, [])
 
@@ -321,12 +298,12 @@ export const Step2Form = ({
 				<Grid container spacing={2}>
 					{!isDeliveryPoint &&
 
-							<EditFormAddress
-								control={control}
-								errors={errors}
-								isBillingAddress={isBillingAddress}
-								countryListSelect={countryListSelect}
-							/>
+						<EditFormAddress
+							control={control}
+							errors={errors}
+							isBillingAddress={isBillingAddress}
+							countryListSelect={countryListSelect}
+						/>
 					}
 
 					{isDeliveryPoint &&
