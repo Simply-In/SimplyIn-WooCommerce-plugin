@@ -457,9 +457,14 @@ function customRestApiEndpoint()
 		)
 	);
 }
-
+$simplyin_config = array(
+	'backendSimplyIn' => 'https://dev.backend.simplyin.app/api/',
+);
 function customRestApiCallback()
 {
+	global $simplyin_config;
+
+	$headers = array('Content-Type: application/json');
 
 	$data = json_decode(file_get_contents("php://input"), true);
 	$endpoint = $data['endpoint'];
@@ -490,19 +495,18 @@ function customRestApiCallback()
 	}
 
 
-	$backendSimplyIn = 'https://dev.backend.simplyin.app/api/';
-	update_option('Backend_SimplyIn', $backendSimplyIn);
+
+	update_option('Backend_SimplyIn', $simplyin_config['backendSimplyIn']);
 
 	if (!empty($token)) {
-		$url = $backendSimplyIn . $endpoint . '?api_token=' . urlencode($token);
+		$url = $simplyin_config['backendSimplyIn'] . $endpoint . '?api_token=' . urlencode($token);
 	} else {
-		$url = $backendSimplyIn . $endpoint;
+		$url = $simplyin_config['backendSimplyIn'] . $endpoint;
 	}
 
 
 
 
-	$headers = array('Content-Type: application/json');
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $url);
 
