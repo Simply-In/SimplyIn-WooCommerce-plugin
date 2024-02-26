@@ -304,6 +304,7 @@ jQuery(document).ready(async function ($) {
                     label: newItemParcel?.label,
                     lockerId: newItemParcel?.lockerId,
                     address: newItemParcel?.address,
+                    logoUrl: newItemParcel?.logoUrl,
                   },
                 }
               : {
@@ -378,6 +379,7 @@ jQuery(document).ready(async function ($) {
                 label: res?.data?.parcelLockers[0]?.label,
                 lockerId: res?.data?.parcelLockers[0]?.lockerId,
                 address: res?.data?.parcelLockers[0]?.address,
+                logoUrl: res?.data?.parcelLockers[0]?.logoUrl,
               },
             }
           : { shippingData: res?.data?.shippingAddresses[0] };

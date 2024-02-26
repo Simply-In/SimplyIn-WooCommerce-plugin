@@ -23,7 +23,7 @@ if (!defined('WPINC')) {
 }
 define('SIMPLYIN_VERSION', '1.0.0');
 
-require plugin_dir_path(__FILE__) . 'includes/class-simplyin.php';
+require_once plugin_dir_path(__FILE__) . 'includes/class-simplyin.php';
 
 function run_simplyin()
 {
