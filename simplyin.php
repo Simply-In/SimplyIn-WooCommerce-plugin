@@ -457,7 +457,7 @@ function custom_rest_api_endpoint()
 	);
 }
 
-function custom_rest_api_callback($data)
+function custom_rest_api_callback()
 {
 
 	$data = json_decode(file_get_contents("php://input"), true);
@@ -582,40 +582,40 @@ add_action('wp_enqueue_scripts', 'enqueue_custom_script');
 
 // add_action('woocommerce_payment_complete', 'custom_process_order', 10, 1);
 
-// add_action('woocommerce_new_order', 'custom_function_on_order_create', 10, 1);
+add_action('woocommerce_new_order', 'custom_function_on_order_create', 10, 1);
 
-// function custom_function_on_order_create($order_id)
-// {
+function custom_function_on_order_create($order_id)
+{
 
-// 	$create_new_account = get_post_meta($order_id, 'simply-save-checkbox', true);
+	$create_new_account = get_post_meta($order_id, 'simply-save-checkbox', true);
 
-// 	$order = wc_get_order($order_id);
-// 	$email = $order->get_billing_email();
-
-
-// 	error_log('Custom script executed for order ID: ' . $order_id);
-// 	echo 'Custom script executed!';
+	$order = wc_get_order($order_id);
+	$email = $order->get_billing_email();
 
 
-// 	echo '----------- new acc' . $create_new_account . '----------' . '\n';
-// 	echo '----------- email' . $email . '----------' . '\n';
-// 	echo '----------- order' . $order . '----------' . '\n';
+	error_log('Custom script executed for order ID: ' . $order_id);
+	echo 'Custom script executed!';
+
+
+	echo '----------- new acc' . $create_new_account . '----------' . '\n';
+	echo '----------- email' . $email . '----------' . '\n';
+	echo '----------- order' . $order . '----------' . '\n';
 
 
 
-// 	$log_message = 'Custom script executed for order ID: ' . $order_id;
-// 	$logs_directory = plugin_dir_path(__FILE__) . 'logs/';
+	$log_message = 'Custom script executed for order ID: ' . $order_id;
+	$logs_directory = plugin_dir_path(__FILE__) . 'logs/';
 
-// 	if (!file_exists($logs_directory)) {
-// 		mkdir($logs_directory, 0755, true);
-// 	}
-// 	$log_file = $logs_directory . 'custom_log.log';
-// 	file_put_contents($log_file, $log_message . PHP_EOL, FILE_APPEND);
+	if (!file_exists($logs_directory)) {
+		mkdir($logs_directory, 0755, true);
+	}
+	$log_file = $logs_directory . 'custom_log.log';
+	file_put_contents($log_file, $log_message . PHP_EOL, FILE_APPEND);
 
-// 	if ($create_new_account == "1") {
-// 		file_put_contents($log_file, "new account has been created with email" . $email . PHP_EOL, FILE_APPEND);
+	if ($create_new_account == "1") {
+		file_put_contents($log_file, "new account has been created with email" . $email . PHP_EOL, FILE_APPEND);
 
-// 	} else {
-// 		file_put_contents($log_file, "new account has not been created with email" . $email . PHP_EOL, FILE_APPEND);
-// 	}
-// }
+	} else {
+		file_put_contents($log_file, "new account has not been created with email" . $email . PHP_EOL, FILE_APPEND);
+	}
+}

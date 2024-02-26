@@ -81,7 +81,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 	const handleExpandClick = (property: "billing" | "shipping" | "deliveryPoint", value?: boolean) => {
 
 		setExpanded((prev) => {
-			return ({ ...prev, [property]: value || !prev[property] })
+			return ({ ...prev, [property]: value ?? !prev[property] })
 		});
 	};
 
@@ -255,7 +255,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 								?
 								userData?.billingAddresses.map((el: any, index: number) => {
 									return (
-										<RadioElementContainer key={index}>
+										<RadioElementContainer key={el._id}>
 											<FormControlLabel value={index} control={<Radio />}
 												label={
 													<DataValueContainer>
@@ -367,7 +367,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 									?
 									userData?.shippingAddresses.map((el: any, index: number) => {
 										return (
-											<RadioElementContainer key={index}>
+											<RadioElementContainer key={el._id}>
 												<FormControlLabel value={index} control={<Radio />}
 													label={
 														<DataValueContainer>
@@ -459,7 +459,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 									?
 									userData?.parcelLockers.map((el: any, index: number) => {
 										return (
-											<RadioElementContainer key={el?._parcelLocker ?? index}>
+											<RadioElementContainer key={el?.id ?? index}>
 												<FormControlLabel value={index} control={<Radio />}
 													label={
 														<div style={{ display: "flex" }}>

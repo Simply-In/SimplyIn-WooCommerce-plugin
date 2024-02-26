@@ -25,7 +25,7 @@ const SimplyBrandIcon = () => {
 		<div style={{ display: "flex", flexDirection: "column", fontSize: "14px", width: "100%", justifyContent: "center" }}>
 			<div style={{ display: "flex", width: "auto", flexDirection: "column", alignItems: "center" }}>
 				<svg height="30" width="164">
-					<text x="50%" y="70%" fill="black" font-weight="600" font-size="14px" text-anchor="middle" alignment-baseline="middle">	{t('headerTitle')}</text>
+					<text x="50%" y="70%" fill="black" fontWeight="600" fontSize="14px" textAnchor="middle" alignmentBaseline="middle">	{t('headerTitle')}</text>
 				</svg>
 				<svg width="164" height="39" viewBox="0 0 164 39" fill="none" xmlns="http://www.w3.org/2000/svg">
 					<path d="M144.5 0H19.5C8.73045 0 0 8.73045 0 19.5C0 30.2696 8.73045 39 19.5 39H144.5C155.27 39 164 30.2696 164 19.5C164 8.73045 155.27 0 144.5 0Z" fill="url(#paint0_linear_1857_8431)" />
@@ -41,8 +41,8 @@ const SimplyBrandIcon = () => {
 					<path d="M113.117 21.1138C113 21.1138 112.883 21.1138 112.765 21.0845C112.443 21.0258 112.149 20.8791 111.944 20.6445C111.651 20.3217 111.504 19.9404 111.504 19.471C111.504 19.0016 111.651 18.6202 111.944 18.2975C112.237 17.9748 112.619 17.8281 113.117 17.8281C113.176 17.8281 113.235 17.8281 113.294 17.8575C113.704 17.8868 114.027 18.0335 114.291 18.2975C114.584 18.6202 114.731 19.0016 114.731 19.471C114.731 19.9404 114.584 20.3217 114.291 20.6445C114.144 20.7911 113.968 20.9085 113.763 20.9965C113.558 21.0845 113.352 21.1138 113.117 21.1138Z" fill="#FFC200" />
 					<defs>
 						<linearGradient id="paint0_linear_1857_8431" x1="228.288" y1="39.3885" x2="10.0512" y2="8.521" gradientUnits="userSpaceOnUse">
-							<stop stop-color="#0000E9" />
-							<stop offset="1" stop-color="#776AD1" />
+							<stop stopColor="#0000E9" />
+							<stop offset="1" stopColor="#776AD1" />
 						</linearGradient>
 					</defs>
 				</svg>

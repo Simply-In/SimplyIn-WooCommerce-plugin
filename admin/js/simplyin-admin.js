@@ -3,7 +3,7 @@
   "use strict";
 })(jQuery);
 function showhides() {
-  var x = document.getElementById("simplyin_api_key");
+  const x = document.getElementById("simplyin_api_key");
   if (x.type === "password") {
     x.type = "text";
     jQuery(".show-pass").hide();
@@ -13,7 +13,7 @@ function showhides() {
     jQuery(".hide-pass").hide();
     x.type = "password";
   }
-  var y = document.getElementById("simply-inpost-geowidget");
+  const y = document.getElementById("simply-inpost-geowidget");
   if (y.type === "password") {
     y.type = "text";
     jQuery(".show-pass").hide();

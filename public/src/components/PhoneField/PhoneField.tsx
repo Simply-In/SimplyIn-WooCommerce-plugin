@@ -18,7 +18,7 @@ const MyCustomInput = React.forwardRef((props, ref: any) => (
 ))
 
 export const PhoneField = () => {
-	const [attributeObject, setAttributeObject] = useState<any>({});
+	const [attributeObject, setAttributeObject] = useState<unknown>({});
 	const [phoneInput, setPhoneInput] = useState<string>("");
 	const [checked, setChecked] = useState(false);
 	const [error, setError] = useState("")
@@ -42,9 +42,9 @@ export const PhoneField = () => {
 		const attributes: any = phoneInputField?.attributes;
 
 		const attributeKeeper: any = {};
-		for (let i = 0; i < attributes.length; i++) {
-			const attributeName = attributes[i]?.name;
-			const attributeValue = attributes[i]?.value;
+		for (const attribute of attributes) {
+			const attributeName = attribute?.name;
+			const attributeValue = attribute?.value;
 			attributeKeeper[attributeName] = attributeValue;
 		}
 		setAttributeObject(attributeKeeper);
@@ -62,54 +62,52 @@ export const PhoneField = () => {
 		const phoneVal = phoneInputField?.value.replace(/^00|^0/, '+') || ""
 		if (!phoneVal) return
 
-
-
-		if (isValidPhoneNumber(phoneVal || "")) {
-			console.log("warunek 1");
-			setPhoneInput(phoneVal || "")
-		} else {
-
-
-			if (phoneVal.startsWith("+")) {
-				console.log("wartunek 2")
-				setPhoneInput(phoneVal || "")
-				setError(t("payment.checkPhoneNumber"))
+		try {
+			if (isValidPhoneNumber(phoneVal || "")) {
+				// Condition 1: Valid phone number
+				console.log("Condition 1");
+				setPhoneInput(phoneVal || "");
+			} else if (phoneVal.startsWith("+")) {
+				// Condition 2: Phone number starts with '+'
+				console.log("Condition 2");
+				setPhoneInput(phoneVal || "");
+				setError(t("payment.checkPhoneNumber"));
 			} else {
+				// Condition 3: Phone number does not start with '+' and is not valid
+				console.log("Condition 3");
 
-				try {
-					console.log("warunek 3 ");
+				// Retrieve the selected country code from the billing_country element
+				const countrySelect = document.getElementById('billing_country') as HTMLSelectElement;
+				const countryCode = countrySelect?.value || "PL"; // Default to "PL" if not available
 
-					// kod z wybranego kraju lub deafultowy
-					const countrySelect = document.getElementById('billing_country') as any
+				// Parse the phone number using the selected country code
+				const selectedCountryNumber = parsePhoneNumber(phoneVal, countryCode as Country || "PL");
 
-					const countryCode = countrySelect?.value || countrySelect?.options[countrySelect?.selectedIndex]?.value || "PL"
-
-
-					const selectedCountryNumber = parsePhoneNumber(phoneInputField?.value, countryCode as Country || "PL")
-
-					if (!selectedCountryNumber) {
-						return
-					}
-					setCountryCode(countryCode as Country)
-
-					setPhoneInput(selectedCountryNumber?.number || "")
-
-					if (!isValidPhoneNumber(selectedCountryNumber?.number as string || "") && phoneVal) {
-
-						// console.log('777 numer nieporpawny');
-						setError(t("payment.checkPhoneNumber"))
-					}
+				if (!selectedCountryNumber) {
+					// Invalid phone number for the selected country
+					return;
 				}
-				catch (err) {
-					setError(t('payment.phoneNumberError'))
-					console.log('błąd', err);
+
+				// Set the country code and formatted phone input
+				setCountryCode(countryCode as Country);
+				setPhoneInput(selectedCountryNumber.number || "");
+
+				if (!isValidPhoneNumber(selectedCountryNumber.number || "") && phoneVal) {
+					// Invalid phone number for the selected country
+					setError(t("payment.checkPhoneNumber"));
 				}
 			}
+		} catch (err) {
+			// Handle any unexpected errors
+			setError(t('payment.phoneNumberError'));
+			console.error('Error:', err);
 		}
 		checkedRef.current = true;
 		// }
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [attributeObject, checked])
 
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const debouncedValidation = useCallback(
 		debounce((number) => {
 			validatePhoneNumber(number);

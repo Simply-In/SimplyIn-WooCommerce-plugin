@@ -102,7 +102,8 @@ $allowedposttags['i']        = $allowed_atts;
 
 
 
-	public function addMetatoOrders( $order_id, $posted ) {
+	public function addMetatoOrders($order_id)
+	{
 		$order = wc_get_order( $order_id );
 		$order->update_meta_data( 'my_custom_meta_key', 'my data' );
 		$order->save();

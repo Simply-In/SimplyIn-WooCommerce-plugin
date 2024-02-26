@@ -81,11 +81,6 @@ const placingEmailField = () => {
 
 	// moving email container field to top
 
-	// const billingFirstNameField = document.getElementById('billing_first_name_field');
-	// const dataPriorityValue = billingFirstNameField?.getAttribute('data-priority')
-
-
-
 	elementToMove?.classList.remove("form-row-first")
 	elementToMove?.classList.remove("form-row-last")
 	elementToMove?.classList.add("form-row-wide")
@@ -112,9 +107,6 @@ const placingEmailField = () => {
 //@ts-ignore
 document.addEventListener("DOMContentLoaded", (async (): any => {
 
-
-	let isValid = true
-
 	const reactAppContainer = document.createElement("div");
 	reactAppContainer.setAttribute("id", "reactAppContainer");
 	reactAppContainer.setAttribute("class", "woocommerce-input-wrapper");
@@ -126,7 +118,7 @@ document.addEventListener("DOMContentLoaded", (async (): any => {
 
 	console.log('reactAppContainer', reactAppContainer);
 	ReactDOM.render(
-		isValid && <SimplyID />,
+		<SimplyID />,
 		document.getElementById("reactAppContainer")
 	);
 
@@ -140,7 +132,7 @@ document.addEventListener("DOMContentLoaded", (async (): any => {
 
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	//@ts-ignore
-	ReactDOM.render(isValid && <PhoneField />, document.getElementById("phoneAppContainer"));
+	ReactDOM.render(<PhoneField />, document.getElementById("phoneAppContainer"));
 
 
 
@@ -152,7 +144,7 @@ document.addEventListener("DOMContentLoaded", (async (): any => {
 
 	BillingSection?.insertBefore(simplyLogoContainer, BillingSection.firstChild);
 	ReactDOM.render(
-		isValid && <SimplyBrandIcon />,
+		<SimplyBrandIcon />,
 		document.getElementById("simplyLogoContainer")
 	);
 
@@ -174,12 +166,7 @@ document.addEventListener("DOMContentLoaded", (async (): any => {
 	nipFieldHandling()
 	//if there is nip field, do not render taxIdField
 
-
-
-
 	placingEmailField()
-
-
 
 
 	const testRequest = await middlewareApi({
@@ -198,19 +185,14 @@ document.addEventListener("DOMContentLoaded", (async (): any => {
 
 	}
 
-	if (testRequest === "Unauthorized") {
+	if (testRequest?.message === "Merchant api key not found") {
 		console.log("SIMPLYIN API KEY INVALID");
-		isValid = false
 		deleteSimplyContent()
-		return
-	} else if (testRequest === "Simplyin apikey is empty") {
-		isValid = false
+	} else if (testRequest === "Error: Simplyin API key is empty") {
 		deleteSimplyContent()
 		console.log("SIMPLYIN API KEY IS EMPTY");
-		return
 	}
 	else {
-		isValid = true
 		console.log("SIMPLYIN API KEY VALID");
 	}
 

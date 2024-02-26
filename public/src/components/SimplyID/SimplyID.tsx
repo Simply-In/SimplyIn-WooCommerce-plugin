@@ -45,19 +45,18 @@ export const SimplyID = () => {
 	useEffect(() => {
 		const YodaInput = document.getElementById("billing_email") || document.getElementById("email");
 
-		// console.log('YodaInput', YodaInput);
 		YodaInput?.remove();
 
 		const attributes: any = YodaInput?.attributes;
 		const attributeKeeper: any = {};
-		for (let i = 0; i < attributes.length; i++) {
-			const attributeName = attributes[i].name;
-			const attributeValue = attributes[i].value;
+		for (const attribute of attributes) {
+			const attributeName = attribute.name;
+			const attributeValue = attribute.value;
 			attributeKeeper[attributeName] = attributeValue;
 		}
 		setAttributeObject(attributeKeeper);
 
-		// setSimplyInput(attributeKeeper?.value || "")
+
 	}, []);
 
 

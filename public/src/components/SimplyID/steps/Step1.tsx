@@ -1,16 +1,7 @@
 /* eslint-disable no-constant-condition */
 import { useContext, useEffect, useState } from 'react'
-
-// import { Divider } from '@mui/material'
-// import { Link } from '@mui/material'
 import Countdown from 'react-countdown'
-// import { AndroidIcon } from '../../../assets/AndroidIcon'
-// import { IosIcon } from '../../../assets/IosIcon'
-// , PopupCountDownContainer, PopupCodeNotDelivered, PopupSendAgain, MobileSystemsLinksContainer, SingleSystemLink
-// import { PopupTitle, PopupTextMain, PinInputContainer, PopupTextSecondary } from '../SimplyID.styled'
-// import { PopupTitle, PopupTextMain, PopupTextSecondary, PinInputContainer } from '../SimplyID.styled'
 import { PopupTitle, PopupTextMain, PinInputContainer, PopupTextSecondary, PopupCountDownContainer, PopupCodeNotDelivered, PopupSendAgain } from '../SimplyID.styled'
-
 import { middlewareApi } from '../../../services/middlewareApi'
 import { PopupTextError } from '../../PhoneField/PhoneField.styled'
 import { removeDataSessionStorage, saveDataSessionStorage } from '../../../services/sessionStorageApi'
@@ -73,8 +64,7 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 		}).then(async (res) => {
 			console.log(res);
 			setModalError("")
-			// if (res.message === "Code doesnt exist") {
-			if (!res.data ?? res.message === "Code doesnt exist" ?? res.message === "INTERNAL_SERVER_ERROR") {
+			if (!res?.data || res?.message === "Code doesnt exist" || res?.message === "INTERNAL_SERVER_ERROR") {
 				setModalError(t('modal-step-1.codeInvalid'))
 				throw new Error(res.message)
 
@@ -176,7 +166,6 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 					sessionStorage.setItem("BillingIndex", `0`)
 					sessionStorage.setItem("ShippingIndex", `null`)
 					sessionStorage.setItem("ParcelIndex", `0`)
-					//todo
 					setSameDeliveryAddress(true)
 
 					setSelectedUserData((prev: any) => {
@@ -235,7 +224,7 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 
 	// type sendPinAgainMethodType = "sms" | "email"
 
-	const handleSendPinAgain = (e: any) => {
+	const handleSendPinAgain = () => {
 		setCountdown(true)
 		setCountdownTime(Date.now() + countdownTimeSeconds * 1000)
 
@@ -249,19 +238,10 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 
 		})
 
-
-
-
-		console.log(e.target.value);
-
 	}
 	const handleCountdownCompleted = () => {
 		setCountdown(false)
 	}
-
-	// const handleChangePinInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-	// 	console.log('handle change pin input');
-	// }
 
 
 	useEffect(() => {

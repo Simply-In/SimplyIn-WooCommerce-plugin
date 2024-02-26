@@ -19,7 +19,7 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 					name="addressName"
 					control={control}
 					render={({ field }) =>
-						<TextField {...field} label={t('modal-form.addressNamePlaceholder')} fullWidth error={!!errors.addressName} helperText={errors?.addressName?.message as any} />
+						<TextField {...field} label={t('modal-form.addressNamePlaceholder')} fullWidth error={!!errors.addressName} helperText={errors?.addressName?.message} />
 					}
 				/>
 			</Grid>
@@ -28,7 +28,7 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 					name="name"
 					control={control}
 					render={({ field }) =>
-						<TextField {...field} label={t('modal-form.name')} fullWidth error={!!errors.name} helperText={errors?.name?.message as any} />
+						<TextField {...field} label={t('modal-form.name')} fullWidth error={!!errors.name} helperText={errors?.name?.message} />
 					}
 				/>
 			</Grid>
@@ -37,7 +37,7 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 					name="surname"
 					control={control}
 					render={({ field }) =>
-						<TextField {...field} label={t('modal-form.surname')} fullWidth error={!!errors.surname} helperText={errors?.surname?.message as any} />
+						<TextField {...field} label={t('modal-form.surname')} fullWidth error={!!errors.surname} helperText={errors?.surname?.message} />
 					}
 				/>
 			</Grid>
@@ -46,7 +46,7 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 					name="companyName"
 					control={control}
 					render={({ field }) =>
-						<TextField {...field} label={t('modal-form.companyName')} fullWidth error={!!errors.companyName} helperText={errors?.companyName?.message as any} />
+						<TextField {...field} label={t('modal-form.companyName')} fullWidth error={!!errors.companyName} helperText={errors?.companyName?.message} />
 					}
 				/>
 			</Grid >
@@ -56,7 +56,7 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 						name="taxId"
 						control={control}
 						render={({ field }) =>
-							<TextField {...field} label={t('modal-form.taxId')} fullWidth error={!!errors.taxId} helperText={errors?.taxId?.message as any} />
+							<TextField {...field} label={t('modal-form.taxId')} fullWidth error={!!errors.taxId} helperText={errors?.taxId?.message} />
 						}
 					/>
 				</Grid>}
@@ -65,7 +65,7 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 					name="street"
 					control={control}
 					render={({ field }) =>
-						<TextField {...field} label={t('modal-form.streetAndNumber')} fullWidth error={!!errors.street} helperText={errors?.street?.message as any} />
+						<TextField {...field} label={t('modal-form.streetAndNumber')} fullWidth error={!!errors.street} helperText={errors?.street?.message} />
 					}
 				/>
 			</Grid>
@@ -74,7 +74,7 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 					name="appartmentNumber"
 					control={control}
 					render={({ field }) =>
-						<TextField {...field} label={t('modal-form.appartment')} fullWidth error={!!errors.appartmentNumber} helperText={errors?.appartmentNumber?.message as any} />
+						<TextField {...field} label={t('modal-form.appartment')} fullWidth error={!!errors.appartmentNumber} helperText={errors?.appartmentNumber?.message} />
 					}
 				/>
 			</Grid>
@@ -83,7 +83,7 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 					name="postalCode"
 					control={control}
 					render={({ field }) =>
-						<TextField {...field} label={t('modal-form.postalCode')} fullWidth error={!!errors.postalCode} helperText={errors?.postalCode?.message as any} />
+						<TextField {...field} label={t('modal-form.postalCode')} fullWidth error={!!errors.postalCode} helperText={errors?.postalCode?.message} />
 					}
 				/>
 			</Grid>
@@ -92,12 +92,12 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 					name="city"
 					control={control}
 					render={({ field }) =>
-						<TextField {...field} label={t('modal-form.city')} fullWidth error={!!errors.city} helperText={errors?.city?.message as any} />
+						<TextField {...field} label={t('modal-form.city')} fullWidth error={!!errors.city} helperText={errors?.city?.message} />
 					}
 				/>
 			</Grid>
 			<Grid item xs={12} style={{ marginBottom: "16px" }}>
-				<FormControl fullWidth error={errors.country ? true : false}>
+				<FormControl fullWidth error={errors.country}>
 					<Controller
 						render={({ field }) =>
 							<>
@@ -110,7 +110,7 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 										</MenuItem>
 									))}
 								</Select >
-								<FormHelperText>{errors?.country?.message as any}</FormHelperText>
+								<FormHelperText>{errors?.country?.message}</FormHelperText>
 							</>
 						}
 

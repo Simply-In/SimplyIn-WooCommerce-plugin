@@ -70,8 +70,8 @@ export const selectPickupPointInpost = async ({ deliveryPointID }: IselectIPicku
 							return /^easypack_parcel_machines:\d+$/.test(name as string);
 						});
 
-						if (filteredInputs && filteredInputs[0]) {
-							const inpostLabel = (filteredInputs[0].parentNode as any).querySelector('label')
+						if (filteredInputs?.[0]) {
+							const inpostLabel = (filteredInputs[0]?.parentNode as any)?.querySelector('label')
 
 							inpostLabel.click();
 							const event = new Event("label", { bubbles: true });
@@ -85,10 +85,6 @@ export const selectPickupPointInpost = async ({ deliveryPointID }: IselectIPicku
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		//@ts-ignore
 	})(jQuery);
-
-	return
-
-
 
 }
 
@@ -110,8 +106,8 @@ export const resetDeliveryMethod = () => {
 						isFunctionCalled = true;
 						const inputs = document.querySelectorAll('#shipping_method li>input ');
 
-						if (inputs && inputs[0]) {
-							const inpostLabel = (inputs[0].parentNode as any).querySelector('label')
+						if (inputs?.[0]) {
+							const inpostLabel = (inputs[0].parentNode as any)?.querySelector('label')
 
 							inpostLabel.click();
 							const event = new Event("label", { bubbles: true });

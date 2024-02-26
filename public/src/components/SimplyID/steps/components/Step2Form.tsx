@@ -55,7 +55,6 @@ export const Step2Form = ({
 
 	console.log('editItem', editItem);
 
-	editItem?.property === "parcelLockers"
 	const SignupSchema = Yup.object().shape(editItem?.property === "parcelLockers" ? {
 		addressName: Yup.string().notRequired(),
 		address: Yup.string().required(t('modal-form.parcelAddressError')),

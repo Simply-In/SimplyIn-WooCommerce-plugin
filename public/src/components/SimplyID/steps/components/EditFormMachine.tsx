@@ -1,5 +1,5 @@
 import { CircularProgress, FormLabel, Grid, Typography } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { Controller } from 'react-hook-form'
 import { loadDataFromSessionStorage, saveDataSessionStorage } from '../../../../services/sessionStorageApi'
@@ -75,7 +75,6 @@ export const EditFormMachine = ({
 					setLoading(false)
 					setIsMapVisible(true)
 					saveDataSessionStorage({ key: 'isInpostKeyValid', data: true })
-					// console.log("object");
 				} else {
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					//@ts-ignore
@@ -114,6 +113,13 @@ export const EditFormMachine = ({
 	}, [])
 
 
+	// const mapVisiblity = useMemo(() => isMapVisible ? "visible" : "hidden", [isMapVisible])
+	const mapContainerVisibility = useMemo(() => isMapVisible ? "visible" : "hidden", [isMapVisible])
+	const addressSearchVisibility = useMemo(() => isMapVisible ? "hidden" : "visible", [isMapVisible])
+	const containerHeight = useMemo(() => isMapVisible ? "700px" : "0", [isMapVisible])
+	const addressSearchVisiblity = useMemo(() => isMapVisible ? "none" : "block", [isMapVisible])
+
+
 	return (
 
 		<>
@@ -138,11 +144,11 @@ export const EditFormMachine = ({
 
 			<div id="map-container"
 				style={{
-					visibility: loading ? "hidden" : isMapVisible ? "visible" : "hidden",
+					visibility: loading ? "hidden" : mapContainerVisibility,
 					inset: "100% auto auto 400px",
 					width: "calc(100% + 16px)",
 					maxHeight: "65vh",
-					height: loading ? "" : isMapVisible ? "700px" : "0",
+					height: loading ? "" : containerHeight,
 					marginTop: "8px",
 					marginRight: "-17px",
 					transition: "max-width 0.3s ease, max-height 0.3s ease, height 0.3s ease"
@@ -161,8 +167,8 @@ export const EditFormMachine = ({
 			</div>
 
 			<div id={"address-search"} style={{
-				visibility: loading ? "hidden" : isMapVisible ? "hidden" : "visible",
-				display: loading ? "none" : isMapVisible ? "none" : "block",
+				visibility: loading ? "hidden" : addressSearchVisibility,
+				display: loading ? "none" : addressSearchVisiblity,
 				inset: "100% auto auto 400px",
 				width: "calc(100% + 16px)",
 				marginTop: "8px",
@@ -184,8 +190,7 @@ export const EditFormMachine = ({
 					name="addressName"
 					control={control}
 					render={({ field }) =>
-						// InputLabelProps={{ shrink: true }}
-						<StyledTextField  {...field} label={t('modal-form.pickupPointName')} fullWidth error={!!errors.addressName} helperText={errors?.addressName?.message as any} ref={addressNameRef as any} />
+						<StyledTextField  {...field} label={t('modal-form.pickupPointName')} fullWidth error={!!errors.addressName} helperText={errors?.addressName?.message} ref={addressNameRef} />
 					}
 				/>
 			</Grid>
@@ -193,10 +198,10 @@ export const EditFormMachine = ({
 				<FormLabel style={{ fontSize: '14px', fontFamily: "Inter, sans-serif", color: "#707070" }}>{t('modal-form.selectedPickUpPoint')}</FormLabel>
 			</Grid>
 			<Grid item xs={12}>
-				<Typography variant="body1" align='left' style={{ fontSize: '14px', fontFamily: "Inter, sans-serif", color: "#707070" }}><>{t('modal-form.number')}: <span style={{ fontWeight: 'bold', color: 'black' }}><>{getValues("lockerId") || ""}</></span></></Typography>
+				<Typography variant="body1" align='left' style={{ fontSize: '14px', fontFamily: "Inter, sans-serif", color: "#707070" }}><>{t('modal-form.number')}: <span style={{ fontWeight: 'bold', color: 'black' }}>{getValues("lockerId") || ""}</span></></Typography>
 			</Grid>
 			<Grid item xs={12}>
-				<Typography variant="body1" align="left" style={{ fontSize: '14px', fontFamily: "Inter, sans-serif", color: "#707070" }}><>{t('modal-form.address')}: <span style={{ fontWeight: 'bold', color: 'black' }}><>{getValues("address") || ""}</></span></></Typography>
+				<Typography variant="body1" align="left" style={{ fontSize: '14px', fontFamily: "Inter, sans-serif", color: "#707070" }}><>{t('modal-form.address')}: <span style={{ fontWeight: 'bold', color: 'black' }}>{getValues("address") || ""}</span></></Typography>
 			</Grid>
 			<Grid item xs={12} style={{ marginBottom: "16px" }}>
 				<Typography variant="body1" align="left" style={{ fontSize: '14px', fontFamily: "Inter, sans-serif", color: "#707070" }}><>{t('modal-form.additionalInfo')}: <span style={{ fontWeight: 'bold', color: 'black' }}>{additionalInfo || ""}</span></></Typography>

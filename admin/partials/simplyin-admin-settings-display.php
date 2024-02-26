@@ -88,9 +88,9 @@ $allowedposttags['i']        = $allowed_atts;
 					
 					do_settings_sections('settings_simply_inpost');
 					?>
-				</div>  
-			    <?php submit_button(); ?>  
-				</form> 
+				</div>
+				<?php submit_button(); ?>
+				</form>
 		</div>
 	</div>
 

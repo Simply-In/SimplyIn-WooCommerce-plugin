@@ -41,6 +41,8 @@ export const AddressSearch = ({
 		setSearchInput(val)
 	}
 
+	console.log('machineData', machineData);
+
 	const getAddress = debounce(() => {
 		middlewareApi({
 			endpoint: "addresses/find",
@@ -148,7 +150,7 @@ export const AddressSearch = ({
 						?
 						machineData?.filter(Boolean)?.slice(0, 5)?.map((machine: any, index: number) => {
 							return (
-								<RadioElementContainerSelectMachine key={index}>
+								<RadioElementContainerSelectMachine key={machine?.locker?._id}>
 									<FormControlLabel value={index} control={<Radio />}
 										label={
 											<div style={{ display: "flex" }}>
