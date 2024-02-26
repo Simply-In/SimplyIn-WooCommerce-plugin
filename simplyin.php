@@ -494,8 +494,6 @@ function customRestApiCallback()
 		return;
 	}
 
-
-
 	update_option('Backend_SimplyIn', $simplyin_config['backendSimplyIn']);
 
 	if (!empty($token)) {
@@ -503,9 +501,6 @@ function customRestApiCallback()
 	} else {
 		$url = $simplyin_config['backendSimplyIn'] . $endpoint;
 	}
-
-
-
 
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $url);
@@ -540,44 +535,50 @@ add_action('rest_api_init', 'customRestApiEndpoint');
 
 
 
-function enqueue_custom_script()
-{
-	global $wp;
-	global $woocommerce;
-	wc_enqueue_js("console.log('TEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEST');");
+// function enqueue_custom_script()
+// {
+// 	global $wp;
+// 	global $woocommerce;
+// 	wc_enqueue_js("console.log('TEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEST');");
 
-	if (isset($wp->query_vars['order-received'])) {
-		$order_id = absint($wp->query_vars['order-received']);
-		// Get the WC_Order object
-		$order = wc_get_order($order_id);
+// 	if (isset($wp->query_vars['order-received'])) {
+// 		$order_id = absint($wp->query_vars['order-received']);
+// 		// Get the WC_Order object
+// 		$order = wc_get_order($order_id);
 
-		// Get the order number
-		$order_number = $order->get_order_number();
-		$order = wc_get_order($order_number);
-		$total = $order->get_data();
-	} else {
-		$order_number = 'no data';
-		$order = 'no order';
-		$total = 'total';
+// 		// Get the order number
+// 		$order_number = $order->get_order_number();
+// 		$order = wc_get_order($order_number);
+// 		$total = $order->get_data();
+// 	} else {
+// 		$order_number = 'no data';
+// 		$order = 'no order';
+// 		$total = 'total';
 
-	}
+// 	}
 
 
-	wp_enqueue_script('thankyou-script', plugin_dir_url(__FILE__) . 'public/js/thankyouscript.js', array('jquery'), '1.0', true);
-	wp_localize_script(
-		'thankyou-script',
-		'custom_script_params',
-		array(
-			'order_number' => $order_number,
-			'order' => $order,
-			'total' => $total,
-		)
+// wp_enqueue_script(
+// 	'thankyou-script',
+// 	plugin_dir_url(__FILE__) . 'public/js/thankyouscript.js',
+// 	array('jquery'),
+// 	'1.0',
+// 	true
+// );
+// 	wp_localize_script(
+// 		'thankyou-script',
+// 		'custom_script_params',
+// 		array(
+// 			'order_number' => $order_number,
+// 			'order' => $order,
+// 			'total' => $total,
+// 		)
 
-	);
-}
+// 	);
+// }
 
-// Hook the function to the wp_enqueue_scripts action
-add_action('wp_enqueue_scripts', 'enqueue_custom_script');
+// // Hook the function to the wp_enqueue_scripts action
+// add_action('wp_enqueue_scripts', 'enqueue_custom_script');
 
 
 add_action('woocommerce_new_order', 'onOrderCreate', 10, 1);
