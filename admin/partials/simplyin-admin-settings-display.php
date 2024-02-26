@@ -76,14 +76,12 @@ $allowedposttags['i']        = $allowed_atts;
 		</div>
 
 		<div class="form-group form-pw">
-		<?php settings_errors(); ?>  
+		<?php settings_errors(); ?>
 		        <form method="POST" action="options.php">  
-				<div class="form-pw">					
+				<div class="form-pw">
 		            <?php
-					// settings_fields( 'simplyin_admin_api_key' );
-						echo wp_kses('<img src='.$dir.'../img/icons/view.png alt="" onclick="showhides()" class="show-pass eye-icon"><img src='.$dir.'../img/icons/hidden.png alt="" onclick="showhides()" class="hide-pass eye-icon" style=" display: none; ">',$allowedposttags);
-					// do_settings_sections('simplyin_admin_api_key');
-
+					echo wp_kses('<img src=' . $dir . '../img/icons/view.png alt="" onclick="showhides()" class="show-pass eye-icon"><img src=' . $dir . '../img/icons/hidden.png alt="" onclick="showhides()" class="hide-pass eye-icon" style=" display: none; ">', $allowedposttags);
+				
 					settings_fields('settings_simply_inpost');
 					
 					do_settings_sections('settings_simply_inpost');

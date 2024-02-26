@@ -301,7 +301,8 @@ add_action('woocommerce_after_order_notes', 'add_phone_token_input_field');
 
 function add_phone_token_input_field($checkout)
 {
-	echo '<div id="simply_token_input_field" style="visibility: hidden; display: none" ><h2>' . __('Simply Token') . '</h2>';
+	echo '<div id="simply_token_input_field" style="visibility: hidden; display: none" >'
+		. '<h2>' . __('Simply Token') . '</h2>';
 	woocommerce_form_field('simplyinTokenInput', array(
 		'type' => 'hidden',
 		'class' => array('input-hidden'),
@@ -354,7 +355,7 @@ function bks_remove_values($value, $input)
 	return $value;
 }
 
-function your_extension_translate($string)
+function taxIdFieldTranslate($string)
 {
 	$translations = array(
 		'pl_PL' => array(
@@ -379,8 +380,8 @@ function add_tax_id_to_billing($fields)
 {
 	$fields['billing']['billing_tax_id_simply'] = array(
 		'type' => 'text',
-		'label' => your_extension_translate('Tax ID'),
-		'placeholder' => your_extension_translate('Enter your Tax ID'),
+		'label' => taxIdFieldTranslate('Tax ID'),
+		'placeholder' => taxIdFieldTranslate('Enter your Tax ID'),
 		'required' => false,
 		'class' => array('form-row-wide'),
 	);
@@ -445,19 +446,19 @@ function display_custom_order_data($order)
 }
 
 
-function custom_rest_api_endpoint()
+function customRestApiEndpoint()
 {
 	register_rest_route(
 		'simplyin',
 		'/data/',
 		array(
 			'methods' => array('GET', 'POST'),
-			'callback' => 'custom_rest_api_callback',
+			'callback' => 'customRestApiCallback',
 		)
 	);
 }
 
-function custom_rest_api_callback()
+function customRestApiCallback()
 {
 
 	$data = json_decode(file_get_contents("php://input"), true);
@@ -489,13 +490,13 @@ function custom_rest_api_callback()
 	}
 
 
-	$Backend_SimplyIn = 'https://dev.backend.simplyin.app/api/';
-	update_option('Backend_SimplyIn', $Backend_SimplyIn);
+	$backendSimplyIn = 'https://dev.backend.simplyin.app/api/';
+	update_option('Backend_SimplyIn', $backendSimplyIn);
 
 	if (!empty($token)) {
-		$url = $Backend_SimplyIn . $endpoint . '?api_token=' . urlencode($token);
+		$url = $backendSimplyIn . $endpoint . '?api_token=' . urlencode($token);
 	} else {
-		$url = $Backend_SimplyIn . $endpoint;
+		$url = $backendSimplyIn . $endpoint;
 	}
 
 
@@ -529,7 +530,7 @@ function custom_rest_api_callback()
 	echo $response;
 }
 
-add_action('rest_api_init', 'custom_rest_api_endpoint');
+add_action('rest_api_init', 'customRestApiEndpoint');
 
 
 
@@ -558,9 +559,6 @@ function enqueue_custom_script()
 	}
 
 
-
-
-
 	wp_enqueue_script('thankyou-script', plugin_dir_url(__FILE__) . 'public/js/thankyouscript.js', array('jquery'), '1.0', true);
 	wp_localize_script(
 		'thankyou-script',
@@ -578,13 +576,9 @@ function enqueue_custom_script()
 add_action('wp_enqueue_scripts', 'enqueue_custom_script');
 
 
+add_action('woocommerce_new_order', 'onOrderCreate', 10, 1);
 
-
-// add_action('woocommerce_payment_complete', 'custom_process_order', 10, 1);
-
-add_action('woocommerce_new_order', 'custom_function_on_order_create', 10, 1);
-
-function custom_function_on_order_create($order_id)
+function onOrderCreate($order_id)
 {
 
 	$create_new_account = get_post_meta($order_id, 'simply-save-checkbox', true);

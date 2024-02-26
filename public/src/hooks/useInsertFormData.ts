@@ -126,7 +126,16 @@ const fillBillingData = (userData: any, shopDefaultNipField: Element | null) => 
 
 	}
 }
+const updateShippingFields = (shippingAddress: any) => {
 
+	updateField("name", 'shipping_first_name', shippingAddress);
+	updateField("surname", 'shipping_last_name', shippingAddress);
+	updateField("city", 'shipping_city', shippingAddress);
+	updateField("companyName", 'shipping_company', shippingAddress);
+	updateField("street", 'shipping_address_1', shippingAddress);
+	updateField("appartmentNumber", 'shipping_address_2', shippingAddress);
+	updateField("postalCode", 'shipping_postcode', shippingAddress);
+}
 
 const fillShippingData = (userData: any) => {
 	const checkbox = document.getElementById('ship-to-different-address-checkbox');
@@ -145,14 +154,7 @@ const fillShippingData = (userData: any) => {
 	document.querySelector('.shipping_address')?.removeAttribute('style')
 	const shippingAddress = userData.shippingAddresses
 
-	updateField("name", 'shipping_first_name', shippingAddress);
-	updateField("surname", 'shipping_last_name', shippingAddress);
-	updateField("city", 'shipping_city', shippingAddress);
-	updateField("companyName", 'shipping_company', shippingAddress);
-	updateField("street", 'shipping_address_1', shippingAddress);
-	updateField("appartmentNumber", 'shipping_address_2', shippingAddress);
-	updateField("postalCode", 'shipping_postcode', shippingAddress);
-
+	updateShippingFields(shippingAddress)
 
 	if ("country" in shippingAddress) {
 		const savedCountryCode = shippingAddress.country || "";
