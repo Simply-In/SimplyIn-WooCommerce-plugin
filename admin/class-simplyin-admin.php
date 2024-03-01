@@ -120,7 +120,6 @@ class SimplyIn_Admin {
 			'value_type' => 'normal',
 			'wp_data' => 'option'
 		);
-		$dir = plugin_dir_url(__FILE__);
 		add_settings_field(
 			'simply_inpost_apikey',
 			'',
@@ -148,6 +147,75 @@ class SimplyIn_Admin {
 	public function settings_page_display_general_account_1() {
 		echo '<p>Inpost api key</p>';
 	}
+
+
+	public $allowed_tags = array(
+		'form',
+		'label',
+		'input',
+		'textarea',
+		'iframe',
+		'script',
+		'style',
+		'strong',
+		'small',
+		'table',
+		'span',
+		'abbr',
+		'code',
+		'pre',
+		'div',
+		'img',
+		'h1',
+		'h2',
+		'h3',
+		'h4',
+		'h5',
+		'h6',
+		'ol',
+		'ul',
+		'li',
+		'em',
+		'hr',
+		'br',
+		'tr',
+		'td',
+		'p',
+		'a',
+		'b',
+		'i'
+	);
+
+	// Define the allowed HTML attributes
+	public $allowed_atts = array(
+		'align',
+		'class',
+		'type',
+		'id',
+		'dir',
+		'lang',
+		'style',
+		'xml:lang',
+		'src',
+		'alt',
+		'href',
+		'rel',
+		'rev',
+		'target',
+		'novalidate',
+		'value',
+		'name',
+		'tabindex',
+		'action',
+		'method',
+		'for',
+		'width',
+		'height',
+		'data',
+		'title'
+	);
+
+
 	public function settings_page_render_settings_field($args) {
 
 		if($args['wp_data'] == 'option') {
@@ -157,69 +225,11 @@ class SimplyIn_Admin {
 		}
 
 		global $allowedposttags;
-		$allowed_atts = array(
-			'align' => array(),
-			'class' => array(),
-			'type' => array(),
-			'id' => array(),
-			'dir' => array(),
-			'lang' => array(),
-			'style' => array(),
-			'xml:lang' => array(),
-			'src' => array(),
-			'alt' => array(),
-			'href' => array(),
-			'rel' => array(),
-			'rev' => array(),
-			'target' => array(),
-			'novalidate' => array(),
-			'type' => array(),
-			'value' => array(),
-			'name' => array(),
-			'tabindex' => array(),
-			'action' => array(),
-			'method' => array(),
-			'for' => array(),
-			'width' => array(),
-			'height' => array(),
-			'data' => array(),
-			'title' => array(),
-		);
-		$allowedposttags['form'] = $allowed_atts;
-		$allowedposttags['label'] = $allowed_atts;
-		$allowedposttags['input'] = $allowed_atts;
-		$allowedposttags['textarea'] = $allowed_atts;
-		$allowedposttags['iframe'] = $allowed_atts;
-		$allowedposttags['script'] = $allowed_atts;
-		$allowedposttags['style'] = $allowed_atts;
-		$allowedposttags['strong'] = $allowed_atts;
-		$allowedposttags['small'] = $allowed_atts;
-		$allowedposttags['table'] = $allowed_atts;
-		$allowedposttags['span'] = $allowed_atts;
-		$allowedposttags['abbr'] = $allowed_atts;
-		$allowedposttags['code'] = $allowed_atts;
-		$allowedposttags['pre'] = $allowed_atts;
-		$allowedposttags['div'] = $allowed_atts;
-		$allowedposttags['img'] = $allowed_atts;
-		$allowedposttags['h1'] = $allowed_atts;
-		$allowedposttags['h2'] = $allowed_atts;
-		$allowedposttags['h3'] = $allowed_atts;
-		$allowedposttags['h4'] = $allowed_atts;
-		$allowedposttags['h5'] = $allowed_atts;
-		$allowedposttags['h6'] = $allowed_atts;
-		$allowedposttags['ol'] = $allowed_atts;
-		$allowedposttags['ul'] = $allowed_atts;
-		$allowedposttags['li'] = $allowed_atts;
-		$allowedposttags['em'] = $allowed_atts;
-		$allowedposttags['hr'] = $allowed_atts;
-		$allowedposttags['br'] = $allowed_atts;
-		$allowedposttags['tr'] = $allowed_atts;
-		$allowedposttags['td'] = $allowed_atts;
-		$allowedposttags['p'] = $allowed_atts;
-		$allowedposttags['a'] = $allowed_atts;
-		$allowedposttags['b'] = $allowed_atts;
-		$allowedposttags['i'] = $allowed_atts;
 
+
+		foreach ($this->allowed_tags as $tag) {
+			$allowedposttags[$tag] = array_combine($this->allowed_atts, array_fill(0, count($this->allowed_atts), true));
+		}
 
 
 		switch($args['type']) {
@@ -260,68 +270,11 @@ class SimplyIn_Admin {
 		}
 
 		global $allowedposttags;
-		$allowed_atts = array(
-			'align' => array(),
-			'class' => array(),
-			'type' => array(),
-			'id' => array(),
-			'dir' => array(),
-			'lang' => array(),
-			'style' => array(),
-			'xml:lang' => array(),
-			'src' => array(),
-			'alt' => array(),
-			'href' => array(),
-			'rel' => array(),
-			'rev' => array(),
-			'target' => array(),
-			'novalidate' => array(),
-			'type' => array(),
-			'value' => array(),
-			'name' => array(),
-			'tabindex' => array(),
-			'action' => array(),
-			'method' => array(),
-			'for' => array(),
-			'width' => array(),
-			'height' => array(),
-			'data' => array(),
-			'title' => array(),
-		);
-		$allowedposttags['form'] = $allowed_atts;
-		$allowedposttags['label'] = $allowed_atts;
-		$allowedposttags['input'] = $allowed_atts;
-		$allowedposttags['textarea'] = $allowed_atts;
-		$allowedposttags['iframe'] = $allowed_atts;
-		$allowedposttags['script'] = $allowed_atts;
-		$allowedposttags['style'] = $allowed_atts;
-		$allowedposttags['strong'] = $allowed_atts;
-		$allowedposttags['small'] = $allowed_atts;
-		$allowedposttags['table'] = $allowed_atts;
-		$allowedposttags['span'] = $allowed_atts;
-		$allowedposttags['abbr'] = $allowed_atts;
-		$allowedposttags['code'] = $allowed_atts;
-		$allowedposttags['pre'] = $allowed_atts;
-		$allowedposttags['div'] = $allowed_atts;
-		$allowedposttags['img'] = $allowed_atts;
-		$allowedposttags['h1'] = $allowed_atts;
-		$allowedposttags['h2'] = $allowed_atts;
-		$allowedposttags['h3'] = $allowed_atts;
-		$allowedposttags['h4'] = $allowed_atts;
-		$allowedposttags['h5'] = $allowed_atts;
-		$allowedposttags['h6'] = $allowed_atts;
-		$allowedposttags['ol'] = $allowed_atts;
-		$allowedposttags['ul'] = $allowed_atts;
-		$allowedposttags['li'] = $allowed_atts;
-		$allowedposttags['em'] = $allowed_atts;
-		$allowedposttags['hr'] = $allowed_atts;
-		$allowedposttags['br'] = $allowed_atts;
-		$allowedposttags['tr'] = $allowed_atts;
-		$allowedposttags['td'] = $allowed_atts;
-		$allowedposttags['p'] = $allowed_atts;
-		$allowedposttags['a'] = $allowed_atts;
-		$allowedposttags['b'] = $allowed_atts;
-		$allowedposttags['i'] = $allowed_atts;
+
+
+		foreach ($this->allowed_tags as $tag) {
+			$allowedposttags[$tag] = array_combine($this->allowed_atts, array_fill(0, count($this->allowed_atts), true));
+		}
 
 		switch($args['type']) {
 
