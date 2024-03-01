@@ -69,6 +69,7 @@ export const AddressSearch = ({
 	}, [searchInput]);
 
 
+	//handling change of autocomplete input
 	const handleAutocompleteChange = (_: any, val: any) => {
 
 		setSelectedValue(val)
@@ -90,8 +91,8 @@ export const AddressSearch = ({
 
 	}
 
+	//change of parcel machine handling function
 	const handleChangeMachine = (e: any) => {
-
 		const selectedPoint = machineData[e.target.value]
 		setLockerIdValue(selectedPoint?.locker?.lockerId || "")
 		setValue("lockerId", selectedPoint.locker?.lockerId || "")
@@ -105,15 +106,13 @@ export const AddressSearch = ({
 			const inputElement = addressNameRef.current?.querySelector('input');
 
 			if (inputElement) {
-				// Now you can interact with the inputElement
 				inputElement.focus();
 				const containerElement = document.getElementById('containerSimply');
 				if (containerElement) {
 
-
 					setTimeout(() => containerElement.scrollTo({
 						top: document.body.scrollHeight,
-						behavior: 'smooth',     // You can use 'center', 'end', or 'nearest'
+						behavior: 'smooth',   
 					}), 50)
 				}
 			}

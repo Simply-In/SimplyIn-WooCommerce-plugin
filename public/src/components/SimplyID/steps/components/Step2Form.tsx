@@ -39,6 +39,7 @@ interface IStep2Form {
 	setSameDeliveryAddress: any
 }
 
+//editing/adding address form
 export const Step2Form = ({
 	userData,
 	setUserData,
@@ -51,9 +52,6 @@ export const Step2Form = ({
 	setSameDeliveryAddress
 }: IStep2Form) => {
 	const { t } = useTranslation();
-
-
-	console.log('editItem', editItem);
 
 	const SignupSchema = Yup.object().shape(editItem?.property === "parcelLockers" ? {
 		addressName: Yup.string().notRequired(),
@@ -109,7 +107,6 @@ export const Step2Form = ({
 	});
 
 	const onSubmit = (data: any) => {
-
 		handleSave(data)
 	}
 
@@ -119,10 +116,7 @@ export const Step2Form = ({
 
 
 	useEffect(() => {
-
-
 		setCountryListSelect(countriesList)
-
 	}, [])
 
 
@@ -135,12 +129,14 @@ export const Step2Form = ({
 	const addressChange = watch("address")
 
 	useEffect(() => {
-
-
 		if ((manuallyChangeLockerId && label === "INPOST")) {
 			const debouncedRequest = debounce(async () => {
 				try {
+
 					const inpostPointData = await getInpostPointData({ deliveryPointID: manuallyChangeLockerId as string })
+
+					console.log('inpostPointData', inpostPointData);
+
 					if (inpostPointData?.status === 404) {
 						setValue('address', "")
 						setError('lockerId', { message: t('modal-form.shippingPointError') })
@@ -167,12 +163,10 @@ export const Step2Form = ({
 
 	const handleCancel = () => { setEditItemIndex(null) }
 
+	//saving address data function
 	const handleSave = (editedData: any) => {
-		console.log('editedData', editedData);
-		console.log('editItem', editItem);
 		if (editItem && 'property' in editItem && 'itemIndex' in editItem) {
 
-			console.log('true');
 			const clonnedArray = [...userData[editItem.property]]
 			clonnedArray[editItem?.itemIndex] = {
 				...editedData
@@ -190,7 +184,7 @@ export const Step2Form = ({
 					setUserData(res.data)
 					saveDataSessionStorage({ key: 'UserData', data: res.data })
 
-					//created to select newly created item
+					//Select just created item
 					if (isNewData) {
 						if (editItem.property === "billingAddresses") {
 							setSelectedBillingIndex(res.data.billingAddresses.length - 1 || 0)
@@ -210,10 +204,8 @@ export const Step2Form = ({
 		}
 
 		setEditItemIndex(null)
-
-
 	}
-
+	//form title change depending on edited property
 	const editItemTitle = () => {
 		if (editItem?.property === "billingAddresses") { return t('modal-form.billingData') }
 		if (editItem?.property === "shippingAddresses") { return t('modal-form.shippingData') }
@@ -230,11 +222,10 @@ export const Step2Form = ({
 	useEffect(() => {
 		const script = document.createElement('script');
 		script.src = 'https://geowidget.inpost.pl/inpost-geowidget.js';
-		// script.src = 'https://sandbox-easy-geowidget-sdk.easypack24.net/inpost-geowidget.js';
+
 		script.async = true;
 		document.head.appendChild(script);
 
-		// Make sure the function is defined on the window object
 		if (window) {
 			window.afterPointSelected = function (point) {
 
@@ -252,13 +243,12 @@ export const Step2Form = ({
 						const inputElement = addressNameRef.current?.querySelector('input');
 
 						if (inputElement) {
-							// Now you can interact with the inputElement
 							inputElement.focus();
 							const containerElement = document.getElementById('containerSimply');
 							if (containerElement) {
 								setTimeout(() => containerElement.scrollTo({
 									top: document.body.scrollHeight,
-									behavior: 'smooth',     // You can use 'center', 'end', or 'nearest'
+									behavior: 'smooth',    
 								}), 50)
 							}
 						}
@@ -271,15 +261,12 @@ export const Step2Form = ({
 
 		const containerElement = document.getElementById('containerSimply');
 		if (containerElement) {
-
-			console.log('SCROLL top');
 			containerElement?.scrollTo({
 				top: 0,
-				behavior: 'instant',     // You can use 'center', 'end', or 'nearest'
+				behavior: 'instant',   
 			});
 		}
 		return () => {
-			// Cleanup on component unmount
 			document.head.removeChild(script);
 		};
 
@@ -295,8 +282,8 @@ export const Step2Form = ({
 
 			<form onSubmit={handleSubmit(onSubmit)}>
 				<Grid container spacing={2}>
+					{/* edit address */}
 					{!isDeliveryPoint &&
-
 						<EditFormAddress
 							control={control}
 							errors={errors}
@@ -305,9 +292,8 @@ export const Step2Form = ({
 						/>
 					}
 
+					{/* edit parcel machine */}
 					{isDeliveryPoint &&
-
-
 						<EditFormMachine
 							control={control}
 							errors={errors}
@@ -318,11 +304,8 @@ export const Step2Form = ({
 							setValue={setValue}
 							setAdditionalInfo={setAdditionalInfo}
 
-						/>
-
+					/>
 					}
-
-
 				</Grid>
 				<EditFormFooter
 					isNewData={isNewData}

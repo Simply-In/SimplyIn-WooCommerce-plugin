@@ -28,6 +28,8 @@ let WPformElements: { name: string, value: string }[]
 })(jQuery);
 
 
+
+//simply modal
 export const PinCodeModal = ({ phoneNumber, visible, setVisible, setToken, simplyInput,
 }: IPinCodePopup) => {
 
@@ -64,7 +66,7 @@ export const PinCodeModal = ({ phoneNumber, visible, setVisible, setToken, simpl
 	}
 
 
-	//funkcja wybierająca
+	//form-filling function
 	useInsertFormData(selectedUserData, WPformElements)
 
 	return (<>

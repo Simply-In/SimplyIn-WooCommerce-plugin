@@ -9,7 +9,7 @@
  * @wordpress-plugin
  * Plugin Name: SimplyIn  
  * Plugin URI:       
- * Description: SimplyIn application. 23.02.2024 17.00
+ * Description: SimplyIn application. New order handling. 01.03.2024 12.00
  * Version:           1.0.0
  * Author:            Simply.in
  * Author URI:        https://simply.in
@@ -29,43 +29,12 @@ function run_simplyin()
 {
 	$plugin = new SimplyIn();
 	$plugin->run();
-	
-	
+
+
 }
-
-
-
 
 
 run_simplyin();
-
-
-add_action('wp_ajax_my_plugin_function', 'my_plugin_function');
-add_action('wp_ajax_nopriv_my_plugin_function', 'my_plugin_function');
-
-
-$ajaxurl = admin_url('admin-ajax.php');
-
-
-add_action('woocommerce_before_customer_login_form', 'beforeLogin');
-
-
-function hook_tschaki_ajax()
-{
-	wp_enqueue_script('script-checker', plugin_dir_url(__FILE__) . 'js/script-checker.js');
-	wp_localize_script(
-		'script-checker',
-		'account_script_checker',
-		array(
-			'ajaxurl' => admin_url('admin-ajax.php'),
-			'fail_message' => __('Connection to server failed. Check the mail credentials.', 'script-checker'),
-			'success_message' => __('Connection successful. ', 'script-checker')
-		)
-	);
-}
-add_action('enqueue_scripts', 'hook_tschaki_ajax');
-add_action('admin_enqueue_scripts', 'hook_tschaki_ajax');
-
 
 
 function custom_override_checkout_fields($fields)
@@ -85,10 +54,10 @@ function custom_override_checkout_fields($fields)
 }
 add_filter('woocommerce_checkout_fields', 'custom_override_checkout_fields', 100, 1);
 
-add_action('woocommerce_after_checkout_form', 'load_scripts');
+add_action('woocommerce_after_checkout_form', 'load_Simply_React_App');
 
 
-function load_scripts()
+function load_Simply_React_App()
 {
 	wp_enqueue_script(
 		'AppData',
@@ -98,18 +67,16 @@ function load_scripts()
 		true
 	);
 
-
 	global $woocommerce;
 
 	$shipping_methods = $woocommerce->shipping->load_shipping_methods();
 
 	$methods = array();
 
-	
 	foreach ($shipping_methods as $method) {
-		
+
 		$methods[] = array(
-			
+
 			"id" => $method->id,
 			"title" => $method->title,
 			"method_title" => $method->method_title,
@@ -156,124 +123,11 @@ function load_scripts()
 		'base_url' => $base_url,
 		'plugin_url' => plugin_dir_url(__FILE__)
 	]);
-
-
-
-
-
-	// print_r($shipping_methods);
-}
-
-add_action('woocommerce_thankyou', 'enqueue_and_localize_order_created_script', 10);
-
-function enqueue_and_localize_order_created_script($order_id)
-{
-
-	$order = wc_get_order($order_id);
-
-
-	foreach ($order->get_items('shipping') as $item_id => $shipping_item_obj) {
-		$item_data = $shipping_item_obj->get_data();
-	}
-
-	$base_url = home_url();
-
-
-	$billing_tax_id = get_post_meta($order_id, '_billing_tax_id_simply', true);
-
-
-	
-
-	$myplugin_checkbox_value = get_post_meta($order_id, 'simply-save-checkbox', true);
-	$currentShopUrl = wc_get_page_permalink('shop');
-	$order_data = array(
-		'base_url' => $base_url,
-		'create_new_account' => $myplugin_checkbox_value,
-		'order_id' => $order_id,
-		'total' => $order->get_total(),
-		'date_created' => $order->get_date_created()->date('Y-m-d H:i:s'),
-		'billingAddresses' => array(
-			'first_name' => $order->get_billing_first_name(),
-			'last_name' => $order->get_billing_last_name(),
-			'email' => $order->get_billing_email(),
-			'phone' => $order->get_billing_phone(),
-			'address_1' => $order->get_billing_address_1(),
-			'address_2' => $order->get_billing_address_2(),
-			'city' => $order->get_billing_city(),
-			'state' => $order->get_billing_state(),
-			'postcode' => $order->get_billing_postcode(),
-			'companyName' => $order->get_billing_company(),
-			'country' => $order->get_billing_country(),
-			'tax_id' => $billing_tax_id
-		),
-		'shippingAddresses' => array(
-			'first_name' => $order->get_shipping_first_name(),
-			'last_name' => $order->get_shipping_last_name(),
-			'address_1' => $order->get_shipping_address_1(),
-			'address_2' => $order->get_shipping_address_2(),
-			'city' => $order->get_shipping_city(),
-			'state' => $order->get_shipping_state(),
-			'postcode' => $order->get_shipping_postcode(),
-			'companyName' => $order->get_shipping_company(),
-			'country' => $order->get_shipping_country(),
-
-		),
-		'line_items' => array(),
-		'payment_method' => $order->get_payment_method_title(),
-		'shipping_method' => isset($item_data) ? $item_data : null,
-		'order' => $order->get_shipping_company(),
-		'orderTotal' => $order->get_data(),
-		'language' => get_locale(),
-		'shopName' => get_bloginfo('name'),
-		'shopUrl' => $currentShopUrl
-	);
-
-	foreach ($order->get_items() as $item_id => $item) {
-		$product = $item->get_product();
-		$order_data['line_items'][] = array(
-			'product_id' => $item->get_product_id(),
-			'name' => $item->get_name(),
-			'quantity' => $item->get_quantity(),
-			'price' => $order->get_item_total($item),
-			'subtotal' => $item->get_subtotal(),
-			'total' => $item->get_total(),
-			'image_url' => wp_get_attachment_image_url($product->get_image_id(), 'thumbnail'),
-			'product_url' => $product->get_permalink(),
-			'product' => $product->get_data(),
-		);
-	}
-
-	wp_enqueue_script(
-		'order-created',
-		plugin_dir_url(__FILE__) . 'includes/js/order-created.js',
-		array('jquery'),
-		'1.0.0',
-		true
-	);
-
-	wp_localize_script('order-created', 'orderData', $order_data);
 }
 
 
-function myplugin_add_checkout_checkbox_field($checkout_fields)
-{
-	$checkout_fields['extra_fields'] = array(
-		'simply-save-checkbox' => array(
-			'type' => 'checkbox',
-			'label' => __('My Checkbox Field Label', 'myplugin'),
-			'required' => false,
-			'class' => array('form-row-wide'),
-			'clear' => true
-		),
 
-	);
-
-	return $checkout_fields;
-}
-
-add_filter('woocommerce_checkout_fields', 'myplugin_add_checkout_checkbox_field');
-
-function myplugin_display_checkout_checkbox_field()
+function add_checkbox_flag_field()
 {
 	$checkout = WC()->checkout();
 
@@ -283,10 +137,10 @@ function myplugin_display_checkout_checkbox_field()
 		}
 	}
 }
-add_action('woocommerce_checkout_after_order_review', 'myplugin_display_checkout_checkbox_field');
+add_action('woocommerce_checkout_after_order_review', 'add_checkbox_flag_field');
 
 
-function myplugin_save_checkout_checkbox_value($order_id)
+function save_Simply_Flag_Checkbox_Value($order_id)
 {
 
 	$checkbox_status = isset($_POST['simply-save-checkbox']) && !empty($_POST['simply-save-checkbox']);
@@ -294,34 +148,11 @@ function myplugin_save_checkout_checkbox_value($order_id)
 
 }
 
-add_action('woocommerce_checkout_update_order_meta', 'myplugin_save_checkout_checkbox_value');
+add_action('woocommerce_checkout_update_order_meta', 'save_Simply_Flag_Checkbox_Value');
 
+add_filter('woocommerce_checkout_get_value', 'on_Start_Clear_Form', 10, 2);
 
-add_action('woocommerce_after_order_notes', 'add_phone_token_input_field');
-
-function add_phone_token_input_field($checkout)
-{
-	echo '<div id="simply_token_input_field" style="visibility: hidden; display: none" >'
-		. '<h2>' . __('Simply Token') . '</h2>';
-	woocommerce_form_field('simplyinTokenInput', array(
-		'type' => 'hidden',
-		'class' => array('input-hidden'),
-		'label' => __('Simply Token Input'),
-	), $checkout->get_value('simplyinTokenInput'));
-	echo '</div>';
-	echo '<div id="phone_token_input_field" style="visibility: hidden; display: none" ><h2>' . __('Phone Token') . '</h2>';
-	woocommerce_form_field('simplyinPhoneTokenInput', array(
-		'type' => 'hidden',
-		'class' => array('input-hidden'),
-		'label' => __('Phone Token Input'),
-	), $checkout->get_value('simplyinPhoneTokenInput'));
-	echo '</div>';
-}
-
-
-add_filter('woocommerce_checkout_get_value', 'bks_remove_values', 10, 2);
-
-function bks_remove_values($value, $input)
+function on_Start_Clear_Form($value, $input)
 {
 	$item_to_set_null = array(
 		'billing_first_name',
@@ -336,6 +167,8 @@ function bks_remove_values($value, $input)
 		'billing_email',
 		'billing_phone',
 		'billing_tax_id',
+		'billing_tax_id_simply',
+		'_billing_tax_id_simply',
 		'tax_id',
 		'shipping_first_name',
 		'shipping_last_name',
@@ -385,14 +218,49 @@ function add_tax_id_to_billing($fields)
 		'required' => false,
 		'class' => array('form-row-wide'),
 	);
-  
+	$fields['billing']['simplyinTokenInput'] = array(
+		'type' => 'hidden',
+		'class' => array('input-hidden'),
+		'label' => __('Simply Token Input'),
+	);
+
+	$fields['extra_fields']['simply-save-checkbox'] = array(
+		'type' => 'checkbox',
+		'label' => __('My Checkbox Field Label', 'myplugin'),
+		'required' => false,
+		'class' => array('form-row-wide'),
+		'clear' => true
+	);
+	$fields['extra_fields']['simply_tax_label_id'] = array(
+		'type' => 'text',
+		'label' => __('simply_tax_label_id'),
+		'required' => false,
+		'class' => array('form-row-wide'),
+		'clear' => true
+	);
+
 	return $fields;
 }
 
 add_filter('woocommerce_checkout_fields', 'add_tax_id_to_billing');
 
 
+add_action('wp_head', 'custom_checkout_css');
 
+function custom_checkout_css()
+{
+	?>
+			<style>
+				#simplyinTokenInput_field {
+					display: none;
+				}
+
+				#simply_tax_label_id_field {
+					display: none;
+				}
+			</style>
+			<?php
+}
 
 
 
@@ -406,6 +274,17 @@ function save_tax_id_to_order($order_id)
 		update_post_meta($order_id, '_billing_tax_id_simply', sanitize_text_field($_POST['billing_tax_id_simply']));
 	}
 
+	if (!empty($_POST['simplyinTokenInput'])) {
+		update_post_meta($order_id, '_simplyinTokenInput', sanitize_text_field($_POST['simplyinTokenInput']));
+	}
+	if (!empty($_POST['simply_tax_label_id'])) {
+		update_post_meta($order_id, '_simply_tax_label_id', sanitize_text_field($_POST['simply_tax_label_id']));
+	}
+	if (!empty($_POST['phoneAppInputField'])) {
+		update_post_meta($order_id, '_phoneAppInputField', sanitize_text_field($_POST['phoneAppInputField']));
+	}
+	update_post_meta($order_id, '_simply-save-checkbox', sanitize_text_field($_POST['simply-save-checkbox']));
+
 }
 
 
@@ -415,7 +294,6 @@ function add_custom_string_to_order_details_customer($order)
 {
 
 	$billing_tax_id = get_post_meta($order->id, '_billing_tax_id_simply', true);
-	
 
 	echo '<script>const areaname = document.querySelector(".woocommerce-column--billing-address").querySelector(".woocommerce-customer-details--email");
 	const newNode = document.createElement("div");
@@ -533,88 +411,219 @@ add_action('rest_api_init', 'customRestApiEndpoint');
 
 
 
-
-
-// function enqueue_custom_script()
-// {
-// 	global $wp;
-// 	global $woocommerce;
-// 	wc_enqueue_js("console.log('TEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEST');");
-
-// 	if (isset($wp->query_vars['order-received'])) {
-// 		$order_id = absint($wp->query_vars['order-received']);
-// 		// Get the WC_Order object
-// 		$order = wc_get_order($order_id);
-
-// 		// Get the order number
-// 		$order_number = $order->get_order_number();
-// 		$order = wc_get_order($order_number);
-// 		$total = $order->get_data();
-// 	} else {
-// 		$order_number = 'no data';
-// 		$order = 'no order';
-// 		$total = 'total';
-
-// 	}
-
-
-// wp_enqueue_script(
-// 	'thankyou-script',
-// 	plugin_dir_url(__FILE__) . 'public/js/thankyouscript.js',
-// 	array('jquery'),
-// 	'1.0',
-// 	true
-// );
-// 	wp_localize_script(
-// 		'thankyou-script',
-// 		'custom_script_params',
-// 		array(
-// 			'order_number' => $order_number,
-// 			'order' => $order,
-// 			'total' => $total,
-// 		)
-
-// 	);
-// }
-
-// // Hook the function to the wp_enqueue_scripts action
-// add_action('wp_enqueue_scripts', 'enqueue_custom_script');
-
-
-add_action('woocommerce_new_order', 'onOrderCreate', 10, 1);
-
-function onOrderCreate($order_id)
+function sendPostRequest($bodyData, $endpoint, $token)
 {
 
-	$create_new_account = get_post_meta($order_id, 'simply-save-checkbox', true);
+	$merchantToken = get_option('simplyin_api_key');
 
-	$order = wc_get_order($order_id);
-	$email = $order->get_billing_email();
-
-
-	error_log('Custom script executed for order ID: ' . $order_id);
-	echo 'Custom script executed!';
-
-
-	echo '----------- new acc' . $create_new_account . '----------' . '\n';
-	echo '----------- email' . $email . '----------' . '\n';
-	echo '----------- order' . $order . '----------' . '\n';
-
-
-
-	$log_message = 'Custom script executed for order ID: ' . $order_id;
-	$logs_directory = plugin_dir_path(__FILE__) . 'logs/';
-
-	if (!file_exists($logs_directory)) {
-		mkdir($logs_directory, 0755, true);
+	if (empty($merchantToken)) {
+		http_response_code(400);  // Bad Request
+		echo "Error: Simplyin API key is empty";
+		return;
 	}
-	$log_file = $logs_directory . 'custom_log.log';
-	file_put_contents($log_file, $log_message . PHP_EOL, FILE_APPEND);
+	$bodyData['merchantApiKey'] = $merchantToken;
 
-	if ($create_new_account == "1") {
-		file_put_contents($log_file, "new account has been created with email" . $email . PHP_EOL, FILE_APPEND);
+	$headers = array('Content-Type: application/json');
 
+	global $simplyin_config;
+	update_option('Backend_SimplyIn', $simplyin_config['backendSimplyIn']);
+	if (!empty($token)) {
+		$url = $simplyin_config['backendSimplyIn'] . $endpoint . '?api_token=' . urlencode($token);
 	} else {
-		file_put_contents($log_file, "new account has not been created with email" . $email . PHP_EOL, FILE_APPEND);
+		$url = $simplyin_config['backendSimplyIn'] . $endpoint;
 	}
+
+	// Convert data to JSON format
+	$jsonData = json_encode($bodyData);
+
+
+	print_r($jsonData);
+	// Initialize cURL session
+	$ch = curl_init();
+
+	// Set cURL options
+	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Return the response as a string instead of outputting it
+
+	// Execute cURL session
+	$response = curl_exec($ch);
+
+	// Check for cURL errors
+	if (curl_errno($ch)) {
+		echo 'Curl error: ' . curl_error($ch);
+	}
+
+	// Close cURL session
+	curl_close($ch);
+
+	print_r($response);
+
+	// Return the response
+	return $response;
 }
+
+add_action('woocommerce_checkout_order_created', 'onOrderCreate', 10, 3);
+
+function onOrderCreate($order)
+{
+
+
+	global $woocommerce;
+
+	$items_data = [];
+	if ($order) {
+		$items = $order->get_items();
+		foreach ($items as $item) {
+			$product_id = $item->get_product_id();
+			$product = wc_get_product($product_id);
+			$items_data[] = [
+				'name' => $item->get_name(),
+				'url' => get_permalink($product_id),
+				'price' => (float) $order->get_item_total($item),
+				'quantity' => $item->get_quantity(),
+				'thumbnailUrl' => wp_get_attachment_image_url($product->get_image_id(), 'thumbnail') ?? "",
+				"currency" => $order->get_currency(),
+			];
+		}
+	}
+
+
+	$phoneAppInputField = isset($_POST['phoneAppInputField']) ? sanitize_text_field($_POST['phoneAppInputField']) : '';
+
+	//user authToken
+	$simplyin_Token_Input_Value = isset($_POST['simplyinTokenInput']) ? sanitize_text_field($_POST['simplyinTokenInput']) : '';
+	//create new account checkbox
+	$create_new_accountVal = isset($_POST['simply-save-checkbox']) ? sanitize_text_field($_POST['simply-save-checkbox']) : '';
+	//parcel machine id
+	$parcel_machine_id = isset($_POST['parcel_machine_id']) ? sanitize_text_field($_POST['parcel_machine_id']) : '';
+	//identify custom or default tax id field
+	$custom_tax_field_id = isset($_POST['simply_tax_label_id']) ? sanitize_text_field($_POST['simply_tax_label_id']) : '';
+	//get tax id from field in form
+	$taxId = isset($_POST[$custom_tax_field_id]) ? sanitize_text_field($_POST[$custom_tax_field_id]) : '';
+
+
+	if ($create_new_accountVal === "on" && empty($simplyin_Token_Input_Value)) {
+		echo 'new account';
+		$locale = get_locale();
+		$languageCode = strtoupper(substr($locale, 0, 2));
+
+		$body_data = array(
+			"newAccountData" => array(
+				"name" => $order->get_billing_first_name(),
+				"surname" => $order->get_billing_last_name(),
+				"phoneNumber" => $phoneAppInputField,
+				"email" => $order->get_billing_email(),
+				"uniqueId" => "string",
+				"language" => $languageCode,
+				"marketingConsent" => false,
+			),
+			"newOrderData" => array(
+				"price" => (float) $order->get_total(),
+				"currency" => $order->get_currency(),
+				"items" => $items_data,
+				"placedDuringAccountCreation" => true,
+				"billingData" => array(
+					"icon" => "🏡",
+					"addressName" => "",
+					"name" => $order->get_billing_first_name(),
+					"surname" => $order->get_billing_last_name(),
+					"street" => $order->get_billing_address_1(),
+					"appartmentNumber" => $order->get_billing_address_2(),
+					"city" => $order->get_billing_city(),
+					"postalCode" => $order->get_billing_postcode(),
+					"country" => $order->get_billing_country(),
+					"state" => $order->get_billing_state(),
+					"companyName" => $order->get_billing_company(),
+					"taxId" => $taxId
+				),
+
+				"shopName" => get_bloginfo('name'),
+			),
+		);
+		if (!empty($parcel_machine_id)) {
+			$body_data["newOrderData"]["parcelLockerMinimalInfo"] = array(
+				"lockerId" => $parcel_machine_id,
+				"providerName" => "inpost"
+			);
+		}
+		if (empty($parcel_machine_id)) {
+			$body_data["newOrderData"]["shippingData"] = array(
+				"icon" => "🏡",
+				"addressName" => "",
+				"name" => $order->get_shipping_first_name(),
+				"surname" => $order->get_shipping_last_name(),
+				"street" => $order->get_shipping_address_1(),
+				"appartmentNumber" => $order->get_shipping_address_2(),
+				"city" => $order->get_shipping_city(),
+				"postalCode" => $order->get_shipping_postcode(),
+				"country" => $order->get_shipping_country(),
+				"state" => $order->get_shipping_state(),
+				"companyName" => $order->get_shipping_company(),
+			);
+		}
+
+		sendPostRequest($body_data, 'checkout/createOrderAndAccount', "");
+	}
+
+	if (isset($simplyin_Token_Input_Value) && $simplyin_Token_Input_Value !== "") {
+		echo 'simplyin_Token_Input_Value HAS VALUE: ' . $simplyin_Token_Input_Value;
+
+		$body_data = array(
+			"newOrderData" => array(
+				"price" => (float) $order->get_total(),
+				"currency" => $order->get_currency(),
+				"items" => $items_data,
+				"placedDuringAccountCreation" => true,
+				"billingData" =>
+					array(
+						"name" => $order->get_billing_first_name(),
+						"surname" => $order->get_billing_last_name(),
+						"street" => $order->get_billing_address_1(),
+						"appartmentNumber" => $order->get_billing_address_2(),
+						"city" => $order->get_billing_city(),
+						"postalCode" => $order->get_billing_postcode(),
+						"country" => $order->get_billing_country(),
+						"state" => $order->get_billing_state(),
+						"companyName" => $order->get_billing_company(),
+						"taxId" => $taxId
+
+					),
+
+				"shopName" => get_bloginfo('name'),
+
+			),
+		);
+
+		if (!empty($parcel_machine_id)) {
+			$body_data["newOrderData"]["parcelLockerMinimalInfo"] = array(
+				"lockerId" => $parcel_machine_id,
+				"providerName" => "inpost"
+			);
+		}
+		if (empty($parcel_machine_id)) {
+			$body_data["newOrderData"]["shippingData"] = array(
+				"icon" => "🏡",
+				"addressName" => "",
+				"name" => $order->get_shipping_first_name(),
+				"surname" => $order->get_shipping_last_name(),
+				"street" => $order->get_shipping_address_1(),
+				"appartmentNumber" => $order->get_shipping_address_2(),
+				"city" => $order->get_shipping_city(),
+				"postalCode" => $order->get_shipping_postcode(),
+				"country" => $order->get_shipping_country(),
+				"state" => $order->get_shipping_state(),
+				"companyName" => $order->get_shipping_company(),
+			);
+		}
+
+		sendPostRequest($body_data, 'checkout/createOrderWithoutAccount', $simplyin_Token_Input_Value);
+
+	}
+
+
+}
+

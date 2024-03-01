@@ -75,7 +75,7 @@
 			"countryNotFound": "Country select element not found",
 			"shippingPointError": "Selected shipping point is invalid",
 			"billingData": "Billing data",
-			"shippingData": "Shipiing data",
+			"shippingData": "Shipping data",
 			"parcelData": "Pick-up point",
 			"pickupPointName": "Pick-up point name",
 			"selectedPickUpPoint": "Selected pick-up point",

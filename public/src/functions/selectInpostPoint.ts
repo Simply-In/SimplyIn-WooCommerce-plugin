@@ -1,6 +1,8 @@
 import axios from "axios";
 import { saveDataLocalStorage } from "../services/sessionStorageApi";
 
+
+//get inpost data from inpost endpoint
 export const getInpostPointData = async ({ deliveryPointID }: IselectIPickupPointInpost) => {
 	try {
 		const res = await axios(`https://api-pl-points.easypack24.net/v1/points/${deliveryPointID}`);
@@ -21,17 +23,14 @@ interface IselectIPickupPointInpost {
 	deliveryPointID: string
 }
 
+//function for selecting pickup point in inpost extension
 export const selectPickupPointInpost = async ({ deliveryPointID }: IselectIPickupPointInpost) => {
+	if (!deliveryPointID) { return }
 	const inpostPointData = await getInpostPointData({ deliveryPointID: deliveryPointID })
-
-	console.log(inpostPointData);
 	if (!inpostPointData.name) {
 		console.log('Selected shipping point is invalid')
-
-
 		return;
 	}
-
 
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	//@ts-ignore
@@ -40,9 +39,9 @@ export const selectPickupPointInpost = async ({ deliveryPointID }: IselectIPicku
 	saveDataLocalStorage({
 		key: 'EasyPackPointObject',
 		data: {
-			pointName: inpostPointData?.name,
-			pointDesc: inpostPointData?.address?.line1,
-			pointAddDesc: inpostPointData?.location_description
+			pointName: inpostPointData?.name || deliveryPointID || "",
+			pointDesc: inpostPointData?.address?.line1 || "",
+			pointAddDesc: inpostPointData?.location_description || ""
 		}
 	});
 
@@ -87,13 +86,11 @@ export const selectPickupPointInpost = async ({ deliveryPointID }: IselectIPicku
 	})(jQuery);
 
 }
-
+//function for reseting delivery method
 export const resetDeliveryMethod = () => {
 
 	let isFunctionCalled = false;
-
 	(function ($) {
-
 		$(document).ready(
 			function () {
 				$(document.body).on(

@@ -41,20 +41,37 @@ const waitForElementToRender = (data: data) => {
 	});
 }
 
+// checking if there is a custom or built taxId/nip in field
 const nipFieldHandling = () => {
-	const nipField = document.querySelector('[placeholder*="nip" i]') || document.querySelector('[id*="nip" i]')
+	const nipField = document.querySelector('[placeholder*="nip" i]:not([id="billing_tax_id_simply" i], [id*="nip" i]:not([id="billing_tax_id_simply" i]');
 
-	saveDataSessionStorage({ key: "nipField", data: nipField?.id })
+	const customNipFieldId = document.getElementById("simply_tax_label_id") as HTMLInputElement
 
-	if (nipField && nipField.id !== "billing_tax_id_simply") {
+	if (nipField) {
 		const taxIdField = document.getElementById('billing_tax_id_simply_field');
+		saveDataSessionStorage({ key: "nipField", data: nipField?.id })
 		if (taxIdField) {
 			taxIdField.style.display = 'none';
-		} 
-	} 
+		}
+		if (customNipFieldId && nipField?.id) {
+			try {
+				customNipFieldId.value = nipField?.id
+			} catch (err) { console.log(err); }
+		}
+	} else {
+		if (customNipFieldId) {
+			try {
+				customNipFieldId.value = "billing_tax_id_simply"
+			} catch (err) { console.log(err); }
+		}
+	}
+
+
+
+
 
 }
-
+// moving email container field to top function
 const placingEmailField = () => {
 
 	const container = document.querySelector('.woocommerce-billing-fields__field-wrapper');
@@ -74,9 +91,6 @@ const placingEmailField = () => {
 			container.children[indexOfEmailFieldInContainer + 1].classList.remove("form-row-last")
 			container.children[indexOfEmailFieldInContainer + 1].classList.add("form-row-wide")
 		}
-
-
-
 	}
 
 	// moving email container field to top
@@ -122,6 +136,12 @@ document.addEventListener("DOMContentLoaded", (async (): any => {
 		document.getElementById("reactAppContainer")
 	);
 
+
+	const phoneAppInputField = document.getElementById("phoneAppInputField_field");
+	if (phoneAppInputField) {
+		phoneAppInputField.remove();
+	}
+
 	const phoneContainer = document.getElementById("order_review");
 	const phoneAppContainer = document.createElement("div");
 	phoneAppContainer.setAttribute("id", "phoneAppContainer");
@@ -136,8 +156,7 @@ document.addEventListener("DOMContentLoaded", (async (): any => {
 
 
 
-	//Logo
-
+	//Logo simply inserting
 	const BillingSection = document.querySelector('.woocommerce-billing-fields__field-wrapper');
 	const simplyLogoContainer = document.createElement("div");
 	simplyLogoContainer.setAttribute("id", "simplyLogoContainer");
@@ -164,11 +183,13 @@ document.addEventListener("DOMContentLoaded", (async (): any => {
 
 
 	nipFieldHandling()
-	//if there is nip field, do not render taxIdField
+	//if there is a nip/taxId field, do not render taxIdField
 
+
+	//manually placing email field at the top
 	placingEmailField()
 
-
+	//test request for checking if simplyin api key is valid
 	const testRequest = await middlewareApi({
 		endpoint: "checkout/submitEmail",
 		method: 'POST',
@@ -178,11 +199,11 @@ document.addEventListener("DOMContentLoaded", (async (): any => {
 	})
 
 
-	const deleteSimplyContent = () => {
 
+	//function for deleting visual simply content when it shouldn't be rendered - no api key or invalid api key
+	const deleteSimplyContent = () => {
 		document.querySelector("#simplyLogoContainer")?.remove()
 		document.querySelector("#phoneAppContainer")?.remove()
-
 	}
 
 	if (testRequest?.message === "Merchant api key not found") {
@@ -195,15 +216,6 @@ document.addEventListener("DOMContentLoaded", (async (): any => {
 	else {
 		console.log("SIMPLYIN API KEY VALID");
 	}
-
-
-
-
-
-
-
-
-
 
 })());
 

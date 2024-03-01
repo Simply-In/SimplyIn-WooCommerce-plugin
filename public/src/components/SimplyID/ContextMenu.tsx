@@ -47,6 +47,7 @@ interface IContextMenu {
 	selectedPropertyIndex: any
 	setSelectedPropertyIndex: any
 }
+//context menu of addresse or parcel locker item
 export const ContextMenu = ({ userData, item, setEditItemIndex, property, setUserData, selectedPropertyIndex, setSelectedPropertyIndex }: IContextMenu) => {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const [openDialog, setOpenDialog] = useState(false);
@@ -61,12 +62,10 @@ export const ContextMenu = ({ userData, item, setEditItemIndex, property, setUse
 		setAnchorEl(null);
 	};
 
-
 	const handleEdit = () => {
 		setEditItemIndex({ property: property, itemIndex: item })
 		handleClose()
 	}
-
 
 	const handleDelete = () => {
 		handleOpenDialog();
@@ -81,10 +80,11 @@ export const ContextMenu = ({ userData, item, setEditItemIndex, property, setUse
 		setOpenDialog(false);
 	};
 
+
+
+	//deleting selected address
 	const handleDeleteConfirmed = () => {
-
 		const selectedRadioItem = userData[property].find((el: any) => el._id === userData[property][selectedPropertyIndex]?._id) || null
-
 		const selectedId = userData[property][item]._id
 		const updatedProperty = userData[property]?.filter((el: any) => {
 			return el._id !== selectedId
@@ -105,7 +105,6 @@ export const ContextMenu = ({ userData, item, setEditItemIndex, property, setUse
 				setUserData(res.data)
 				saveDataSessionStorage({ key: 'UserData', data: res.data })
 
-
 				//selection of previously selected radio element
 				if (res.data[property].length) {
 					const filteredPropertyArray = res.data[property].filter((el: any, id: number) => {
@@ -116,14 +115,11 @@ export const ContextMenu = ({ userData, item, setEditItemIndex, property, setUse
 					})
 
 					if (selectedRadioItem && !filteredPropertyArray.length) {
-						console.log('no length', filteredPropertyArray);
 						setSelectedPropertyIndex(0)
-
 					}
 				} else {
 					setSelectedPropertyIndex(null)
 				}
-
 			}
 		})
 
@@ -131,7 +127,7 @@ export const ContextMenu = ({ userData, item, setEditItemIndex, property, setUse
 		handleClose();
 	};
 
-
+	//check if address is "deletable"
 	const isDeletable = () => {
 		if (property !== "billingAddresses") { return true }
 		if (userData?.billingAddresses.length === 1) return false

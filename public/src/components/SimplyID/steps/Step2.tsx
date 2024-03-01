@@ -30,7 +30,6 @@ interface IStep2 {
 	setSelectedUserData: any,
 	editItemIndex: any,
 	setEditItemIndex: any,
-
 }
 
 interface ExpandMoreProps extends IconButtonProps {
@@ -60,9 +59,6 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 		deliveryPoint: true
 	});
 
-
-
-
 	const {
 		selectedBillingIndex,
 		setSelectedBillingIndex,
@@ -85,9 +81,8 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 		});
 	};
 
+	//handling of selected address change
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement>, type: "billing" | "shipping" | "parcelLockers") => {
-
-
 		if (type === "billing") {
 			setSelectedBillingIndex(+(event.target as HTMLInputElement).value);
 		}
@@ -109,23 +104,15 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 
 	const handleSelectData = () => {
 
-		console.log('selected data change');
-
 		if (!userData?.billingAddresses[selectedBillingIndex]) {
 			return
 		}
-
 		if (deliveryType === "address") {
-
 			resetDeliveryMethod()
-
-
 			setSelectedUserData((prev: any) => {
-
 				sessionStorage.setItem("BillingIndex", `${selectedBillingIndex}`)
 				sessionStorage.setItem("ShippingIndex", `${selectedShippingIndex}`)
 				sessionStorage.setItem("ParcelIndex", `null`)
-
 
 				return ({
 					...prev,
@@ -137,7 +124,6 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 			})
 		} else {
 			setSelectedUserData((prev: any) => {
-
 				sessionStorage.setItem("BillingIndex", `${selectedBillingIndex}`)
 				sessionStorage.setItem("ShippingIndex", `null`)
 				sessionStorage.setItem("ParcelIndex", `${selectedDeliveryPointIndex}`)
@@ -151,16 +137,12 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 			if (selectedDeliveryPointIndex !== undefined) {
 				selectPickupPointInpost({ deliveryPointID: userData?.parcelLockers[selectedDeliveryPointIndex]?.lockerId });
 			}
-
-
 		}
 		handleClosePopup()
-
 	}
 
-
+	// function for expanding and collapsing sections in modal
 	const handleChangeShippingCheckbox = (event: React.ChangeEvent<HTMLInputElement>) => {
-
 		setSameDeliveryAddress(() => {
 			handleExpandClick("shipping", !event.target.checked)
 			if (event.target.checked) {
@@ -173,7 +155,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 		});
 	};
 
-
+	// function for handling delivery type change - shipping or pickup point
 	const handleChangeDelivery = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setDeliveryType((event.target as HTMLInputElement).value as DeliveryType);
 
@@ -186,13 +168,9 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 	};
 
 	useEffect(() => {
-
 		if (selectedDeliveryPointIndex !== null && selectedShippingIndex == null) {
-			console.log("MACHINE")
-
 			return setDeliveryType("machine")
 		}
-		console.log('address');
 		setDeliveryType("address")
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])

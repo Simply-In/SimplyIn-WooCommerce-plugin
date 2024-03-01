@@ -14,9 +14,10 @@ import { useTranslation } from "react-i18next";
 export const ApiContext = createContext("");
 export const SelectedDataContext = createContext<any>(null);
 
+
+//main simply app - email field
 export const SimplyID = () => {
 	const { t } = useTranslation();
-
 	const [simplyInput, setSimplyInput] = useState("");
 	const [attributeObject, setAttributeObject] = useState({});
 	const [visible, setVisible] = useState<boolean>(true)
@@ -60,10 +61,12 @@ export const SimplyID = () => {
 	}, []);
 
 
+	//opening simply modal
 	const handleOpenSmsPopup = () => {
 		setVisible((prev) => !prev)
 	};
 
+	//handling simply email field change 
 	const handleSimplyInputChange = (e: ChangeEvent<HTMLInputElement>) => {
 		setSimplyInput(e.target.value)
 		sessionStorage.removeItem("simplyinToken")

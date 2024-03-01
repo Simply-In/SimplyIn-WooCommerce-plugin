@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+//hook used for storing and providing account addresses data
 export const useSelectedSimplyData = () => {
 
 	const [selectedBillingIndex, setSelectedBillingIndex] = useState(0);

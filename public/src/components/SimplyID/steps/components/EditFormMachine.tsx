@@ -45,7 +45,7 @@ const config = {
 	},
 };
 
-
+//edit machine component
 export const EditFormMachine = ({
 	control,
 	errors,
@@ -62,6 +62,7 @@ export const EditFormMachine = ({
 	const [loading, setLoading] = useState(true)
 	const [isMapVisible, setIsMapVisible] = useState(true)
 
+	//checking if inpost key is valid
 	const isInpostKeyValid = () => {
 		const url = `${apiUrl}?${params}`;
 		fetch(url, config)

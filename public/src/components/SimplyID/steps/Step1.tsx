@@ -16,10 +16,6 @@ const countdownRenderer = ({ formatted: { minutes, seconds } }: any) => {
 };
 const countdownTimeSeconds = 10
 
-
-
-
-
 interface IStep1 {
 	handleClosePopup: () => void;
 	phoneNumber: string;
@@ -42,7 +38,6 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 	const { t } = useTranslation();
 
 	const [countdown, setCountdown] = useState<boolean>(false)
-
 	const [countdownTime, setCountdownTime] = useState<number>(0)
 	const [modalError, setModalError] = useState("")
 	const [pinCode, setPinCode] = useState('');
@@ -55,7 +50,8 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 	} = useContext(SelectedDataContext)
 
 
-
+	//validating pin code function
+	// auto fill without opening for modal for specific cases 
 	const handlePinComplete = (value: string) => {
 		middlewareApi({
 			endpoint: "checkout/submitCheckoutCode",
@@ -69,26 +65,25 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 				throw new Error(res.message)
 
 			} else if (res.data) {
-				console.log('DATA', res.data);
-				setUserData({ ...res.data })
 
+
+				console.log('DATA', res.data);
+
+				setUserData({ ...res.data })
 				saveDataSessionStorage({ key: 'UserData', data: res.data })
 				saveDataSessionStorage({ key: 'simplyinToken', data: res.authToken })
 				removeDataSessionStorage({ key: 'phoneToken' })
 				setToken(res.authToken)
 				changeInputValue(simplyinTokenInputField, res.authToken);
 
-
 				const { billingAddresses, shippingAddresses, parcelLockers } = res.data
 
 				if (billingAddresses.length === 0) {
-					console.log('init case 1 0XX');
 					setModalStep(2)
 					return
 				}
 
 				if (billingAddresses.length === 1 && shippingAddresses.length === 1 && parcelLockers.length === 0) {
-					console.log('init case 2 110');
 
 					setSelectedBillingIndex(0)
 					setSelectedShippingIndex(0)
@@ -113,7 +108,7 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 					return
 				}
 				if (billingAddresses.length === 1 && shippingAddresses.length && parcelLockers.length === 0) {
-					console.log('init case 2 1X0');
+
 
 					setSelectedBillingIndex(0)
 					setSelectedShippingIndex(0)
@@ -135,7 +130,7 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 				}
 
 				if (billingAddresses.length === 1 && shippingAddresses.length === 0 && parcelLockers.length === 0) {
-					console.log('init case 3 100');
+
 
 					setSelectedBillingIndex(0)
 					setSelectedShippingIndex(null)
@@ -158,7 +153,6 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 					return
 				}
 				if (billingAddresses.length === 1 && shippingAddresses.length === 0 && parcelLockers.length === 1) {
-					console.log('init case 4 101');
 
 					setSelectedBillingIndex(0)
 					setSelectedShippingIndex(null)
@@ -184,8 +178,6 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 				}
 
 				if (billingAddresses.length === 1 && shippingAddresses.length === 0 && parcelLockers.length) {
-					console.log('init case 5 10X');
-
 					setSelectedBillingIndex(0)
 					setSelectedShippingIndex(null)
 					setSelectedDeliveryPointIndex(0)
@@ -214,7 +206,6 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 	};
 
 	useEffect(() => {
-		console.log('pinCode', pinCode);
 		if (pinCode?.length > 3) {
 			handlePinComplete(pinCode)
 		}
@@ -224,6 +215,8 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 
 	// type sendPinAgainMethodType = "sms" | "email"
 
+
+	//send ping again execution
 	const handleSendPinAgain = () => {
 		setCountdown(true)
 		setCountdownTime(Date.now() + countdownTimeSeconds * 1000)
@@ -239,6 +232,7 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 		})
 
 	}
+
 	const handleCountdownCompleted = () => {
 		setCountdown(false)
 	}
@@ -268,10 +262,7 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 			<PopupTextMain> {t('modal-step-1.insertCode')} </PopupTextMain>
 			<PopupTextMain> {phoneNumber} </PopupTextMain>
 
-
 			<PinInputContainer  >
-
-
 				<div>
 					<form id="OTPForm">
 						<OtpInputReactJS
@@ -292,12 +283,8 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 							isInputNum={true}
 							shouldAutoFocus="false"
 							renderInput={(props: any, id: any) => <input {...props} type="number" pattern="\d*" autoComplete='one-time-code' id={`otp-input-${id + 1}`} inputMode='numeric' />}
-
 							inputType='numeric'
 							pattern="\d*"
-
-
-
 						/>
 
 					</form>

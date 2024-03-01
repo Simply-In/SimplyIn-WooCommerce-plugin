@@ -1,6 +1,8 @@
 import { useEffect } from 'react'
 import { selectPickupPointInpost } from '../functions/selectInpostPoint';
 
+
+//function to insert selected data into `elementId` field
 const updateField = (addressField: string, elementId: string, data: any) => {
 	if (addressField in data) {
 		const element = document.getElementById(elementId) as HTMLInputElement;
@@ -12,6 +14,7 @@ const updateField = (addressField: string, elementId: string, data: any) => {
 		}
 	}
 }
+
 
 const fillBillingData = (userData: any, shopDefaultNipField: Element | null) => {
 	const address = userData.billingAddresses
@@ -72,12 +75,10 @@ const fillBillingData = (userData: any, shopDefaultNipField: Element | null) => 
 					//causing shipping method update
 					const changeEvent = new Event('change', { bubbles: true });
 					countrySelect.dispatchEvent(changeEvent);
-
 					break;
 				}
 			}
 		}
-
 	}
 
 	updateField("appartmentNumber", 'billing_address_2', address);
@@ -95,10 +96,7 @@ const fillBillingData = (userData: any, shopDefaultNipField: Element | null) => 
 
 	updateField("postalCode", 'billing_postcode', address);
 
-
-
 	if ("state" in address) {
-
 		const stateElement: HTMLElement | null = document.getElementById('billing_state')
 
 		if (stateElement?.nodeName) {
@@ -108,12 +106,10 @@ const fillBillingData = (userData: any, shopDefaultNipField: Element | null) => 
 				stateElement.value = address.state
 
 			} else if (stateElementType === 'SELECT' && stateElement instanceof HTMLSelectElement) {
-
 				const stateSpan = document.getElementById('select2-billing_state-container') as HTMLSpanElement
 				for (let i = 0; i < stateElement.options.length; i++) {
 					if (stateElement.options[i].value === address.state) {
 						stateElement.selectedIndex = i;
-
 						if (stateSpan?.innerText) {
 							stateSpan.innerText = stateElement.options[i].innerText || ""
 						}
@@ -126,8 +122,11 @@ const fillBillingData = (userData: any, shopDefaultNipField: Element | null) => 
 
 	}
 }
-const updateShippingFields = (shippingAddress: any) => {
 
+
+
+
+const updateShippingFields = (shippingAddress: any) => {
 	updateField("name", 'shipping_first_name', shippingAddress);
 	updateField("surname", 'shipping_last_name', shippingAddress);
 	updateField("city", 'shipping_city', shippingAddress);
@@ -137,6 +136,7 @@ const updateShippingFields = (shippingAddress: any) => {
 	updateField("postalCode", 'shipping_postcode', shippingAddress);
 }
 
+//function to fill in all shipping data
 const fillShippingData = (userData: any) => {
 	const checkbox = document.getElementById('ship-to-different-address-checkbox');
 	try {
@@ -181,11 +181,11 @@ const fillShippingData = (userData: any) => {
 }
 
 
+
+//hook for inserting data into form fields 
 export const useInsertFormData = (userData: any, formElements: any) => {
 
-
-
-	const shopDefaultNipField = document.querySelector('[placeholder*="nip" i]') ?? document.querySelector('[id*="nip" i]')
+	const shopDefaultNipField = document.querySelector('[placeholder*="nip" i]:not([id="billing_tax_id_simply" i], [id*="nip" i]:not([id="billing_tax_id_simply" i]')
 
 	useEffect((): void => {
 
@@ -199,12 +199,8 @@ export const useInsertFormData = (userData: any, formElements: any) => {
 			}
 		}
 
-
-
 		if (userData?.billingAddresses) {
-
 			fillBillingData(userData, shopDefaultNipField)
-
 		}
 
 		if (userData?.shippingAddresses) {
@@ -217,7 +213,6 @@ export const useInsertFormData = (userData: any, formElements: any) => {
 				checkbox?.click();
 			}
 			try {
-
 				if (checkbox) {
 					(checkbox as HTMLInputElement).checked = false;
 				}
@@ -225,7 +220,6 @@ export const useInsertFormData = (userData: any, formElements: any) => {
 			catch (err) {
 				console.log(err);
 			}
-
 		}
 
 

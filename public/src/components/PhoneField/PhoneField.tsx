@@ -17,6 +17,9 @@ const MyCustomInput = React.forwardRef((props, ref: any) => (
 	</div>
 ))
 
+
+
+//Function to rendering and validate phone number input
 export const PhoneField = () => {
 	const [attributeObject, setAttributeObject] = useState<unknown>({});
 	const [phoneInput, setPhoneInput] = useState<string>("");
@@ -58,23 +61,20 @@ export const PhoneField = () => {
 		setError("")
 		const phoneInputField = document.getElementById("billing_phone") as HTMLInputElement
 
-		//jesli ma 0 00 to zamieniane na +
+		//if there is 0 or 00 replace with +
 		const phoneVal = phoneInputField?.value.replace(/^00|^0/, '+') || ""
 		if (!phoneVal) return
 
 		try {
 			if (isValidPhoneNumber(phoneVal || "")) {
 				// Condition 1: Valid phone number
-				console.log("Condition 1");
 				setPhoneInput(phoneVal || "");
 			} else if (phoneVal.startsWith("+")) {
 				// Condition 2: Phone number starts with '+'
-				console.log("Condition 2");
 				setPhoneInput(phoneVal || "");
 				setError(t("payment.checkPhoneNumber"));
 			} else {
 				// Condition 3: Phone number does not start with '+' and is not valid
-				console.log("Condition 3");
 
 				// Retrieve the selected country code from the billing_country element
 				const countrySelect = document.getElementById('billing_country') as HTMLSelectElement;
@@ -103,7 +103,6 @@ export const PhoneField = () => {
 			console.error('Error:', err);
 		}
 		checkedRef.current = true;
-		// }
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [attributeObject, checked])
 
@@ -188,6 +187,8 @@ export const PhoneField = () => {
 			{checked && <>
 				<SimplyInFullLogo style={{ marginBottom: "8px" }} />
 				<PhoneInput
+					name="phoneAppInputField"
+					id="phoneAppInputField"
 					style={{ padding: 5 }}
 					autocomplete="off"
 					international

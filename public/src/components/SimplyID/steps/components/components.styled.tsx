@@ -40,7 +40,6 @@ export const RadioElementContainerSelectMachine = styled.div`
 	flex-direction:row;
 	justify-content: space-between;
 	align-items: center;
-	/* margin-bottom:12px; */
 	label {
 		display: flex;
 		gap: 20px;
