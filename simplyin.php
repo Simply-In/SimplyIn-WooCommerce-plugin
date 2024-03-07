@@ -577,7 +577,7 @@ function onOrderCreate($order)
 				"price" => (float) $order->get_total(),
 				"currency" => $order->get_currency(),
 				"items" => $items_data,
-				"placedDuringAccountCreation" => true,
+				"placedDuringAccountCreation" => false,
 				"billingData" =>
 					array(
 						"name" => $order->get_billing_first_name(),

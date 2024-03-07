@@ -35,7 +35,7 @@ export const changeInputValue = (inputElement: any, newValue: any) => {
 export const simplyinTokenInputField = document.getElementById('simplyinTokenInput')
 
 export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData, setToken, setSelectedUserData, simplyInput }: IStep1) => {
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
 
 	const [countdown, setCountdown] = useState<boolean>(false)
 	const [countdownTime, setCountdownTime] = useState<number>(0)
@@ -60,12 +60,16 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 		}).then(async (res) => {
 			console.log(res);
 			setModalError("")
-			if (!res?.data || res?.message === "Code doesnt exist" || res?.message === "INTERNAL_SERVER_ERROR") {
+			if (res?.isCodeValid === false) {
 				setModalError(t('modal-step-1.codeInvalid'))
 				throw new Error(res.message)
 
-			} else if (res.data) {
+			} else if (res?.data) {
 
+				if (res.data?.language) {
+					console.log(res.data?.language);
+					i18n.changeLanguage(res.data?.language.toLowerCase())
+				}
 
 				console.log('DATA', res.data);
 
@@ -209,6 +213,8 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 		if (pinCode?.length > 3) {
 			handlePinComplete(pinCode)
 		}
+		setModalError("")
+
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [pinCode])
 
@@ -266,6 +272,7 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 				<div>
 					<form id="OTPForm">
 						<OtpInputReactJS
+
 							value={pinCode}
 							onChange={setPinCode}
 							numInputs={4}
@@ -273,11 +280,12 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 							inputStyle={{
 								width: "40px",
 								height: "56px",
-								border: "1px solid #D9D9D9",
+								border: modalError ? "1px solid red" : "1px solid #D9D9D9",
 								borderRadius: "8px",
 								fontSize: "30px",
 								textAlign: "center",
-								padding: 0
+								padding: 0,
+								outlineWidth: "0px",
 
 							}}
 							isInputNum={true}

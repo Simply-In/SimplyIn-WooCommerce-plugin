@@ -43,19 +43,24 @@ const waitForElementToRender = (data: data) => {
 
 // checking if there is a custom or built taxId/nip in field
 const nipFieldHandling = () => {
-	const nipField = document.querySelector('[placeholder*="nip" i]:not([id="billing_tax_id_simply" i], [id*="nip" i]:not([id="billing_tax_id_simply" i]');
+
+	const defaultNipField = document.querySelectorAll('input[placeholder*="nip" i]:not([id="billing_tax_id_simply"]), input[id*="nip" i]:not([id="billing_tax_id_simply"])')
+	//saving nipField id to session storage
+	const existingNipElement = [...defaultNipField][0];
+
+	console.log('existingNipElement', existingNipElement);
 
 	const customNipFieldId = document.getElementById("simply_tax_label_id") as HTMLInputElement
 
-	if (nipField) {
+	if (existingNipElement) {
 		const taxIdField = document.getElementById('billing_tax_id_simply_field');
-		saveDataSessionStorage({ key: "nipField", data: nipField?.id })
+		saveDataSessionStorage({ key: "nipField", data: existingNipElement?.id })
 		if (taxIdField) {
 			taxIdField.style.display = 'none';
 		}
-		if (customNipFieldId && nipField?.id) {
+		if (customNipFieldId && existingNipElement?.id) {
 			try {
-				customNipFieldId.value = nipField?.id
+				customNipFieldId.value = existingNipElement?.id
 			} catch (err) { console.log(err); }
 		}
 	} else {
@@ -204,6 +209,7 @@ document.addEventListener("DOMContentLoaded", (async (): any => {
 	const deleteSimplyContent = () => {
 		document.querySelector("#simplyLogoContainer")?.remove()
 		document.querySelector("#phoneAppContainer")?.remove()
+		document.querySelector("#billing_tax_id_simply_field")?.remove()
 	}
 
 	if (testRequest?.message === "Merchant api key not found") {
