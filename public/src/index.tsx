@@ -48,7 +48,7 @@ const nipFieldHandling = () => {
 	//saving nipField id to session storage
 	const existingNipElement = [...defaultNipField][0];
 
-	console.log('existingNipElement', existingNipElement);
+	// console.log('existingNipElement', existingNipElement);
 
 	const customNipFieldId = document.getElementById("simply_tax_label_id") as HTMLInputElement
 
@@ -115,13 +115,14 @@ const placingEmailField = () => {
 		}
 
 	} else {
-		console.log('Container or element not found');
+		// console.log('Container or element not found');
 	}
 
 }
 
 
 
+//function that is waiting for DOM to load and then rendering react components
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore
 document.addEventListener("DOMContentLoaded", (async (): any => {
@@ -135,7 +136,6 @@ document.addEventListener("DOMContentLoaded", (async (): any => {
 	const formContainer = document.getElementById("billing_email_field");
 	formContainer?.appendChild(reactAppContainer);
 
-	console.log('reactAppContainer', reactAppContainer);
 	ReactDOM.render(
 		<SimplyID />,
 		document.getElementById("reactAppContainer")
@@ -219,9 +219,7 @@ document.addEventListener("DOMContentLoaded", (async (): any => {
 		deleteSimplyContent()
 		console.log("SIMPLYIN API KEY IS EMPTY");
 	}
-	else {
-		console.log("SIMPLYIN API KEY VALID");
-	}
+
 
 })());
 

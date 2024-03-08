@@ -58,7 +58,7 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 			method: 'POST',
 			requestBody: { "code": value }
 		}).then(async (res) => {
-			console.log(res);
+
 			setModalError("")
 			if (res?.isCodeValid === false) {
 				setModalError(t('modal-step-1.codeInvalid'))
@@ -67,11 +67,10 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 			} else if (res?.data) {
 
 				if (res.data?.language) {
-					console.log(res.data?.language);
 					i18n.changeLanguage(res.data?.language.toLowerCase())
 				}
 
-				console.log('DATA', res.data);
+
 
 				setUserData({ ...res.data })
 				saveDataSessionStorage({ key: 'UserData', data: res.data })
@@ -188,7 +187,7 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 					sessionStorage.setItem("BillingIndex", `0`)
 					sessionStorage.setItem("ShippingIndex", `null`)
 					sessionStorage.setItem("ParcelIndex", `0`)
-					console.log('delivery point index selection');
+
 					setSameDeliveryAddress(true)
 					setPickupPointDelivery(true)
 					setSelectedUserData((prev: any) => {

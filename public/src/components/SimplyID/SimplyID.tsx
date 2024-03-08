@@ -92,12 +92,7 @@ export const SimplyID = () => {
 
 					setPhoneNumber(res.data)
 					setVisible(true)
-					console.log(res)
-
-					if (res.error) {
-
-						console.log('error', res.error);
-					}
+					// console.log(res)
 				}).catch((err) => {
 					console.log(err);
 				})

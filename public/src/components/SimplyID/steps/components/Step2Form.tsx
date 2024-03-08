@@ -133,9 +133,7 @@ export const Step2Form = ({
 			const debouncedRequest = debounce(async () => {
 				try {
 
-					const inpostPointData = await getInpostPointData({ deliveryPointID: manuallyChangeLockerId as string })
-
-					console.log('inpostPointData', inpostPointData);
+					const inpostPointData = await getInpostPointData({ deliveryPointID: manuallyChangeLockerId as string })	
 
 					if (inpostPointData?.status === 404) {
 						setValue('address', "")
@@ -148,7 +146,7 @@ export const Step2Form = ({
 					setValue('address', `${inpostPointData?.address?.line1 || ""}, ${inpostPointData?.address?.line2 || ""}`)
 				}
 				catch (err) {
-					console.log('ERROR', err);
+					console.log(err);
 				}
 			}, 1000);
 
@@ -229,7 +227,6 @@ export const Step2Form = ({
 		if (window) {
 			window.afterPointSelected = function (point) {
 
-				console.log('point', point);
 				if (manuallyChangeLockerId !== point.name) {
 					setLockerIdValue(point.name)
 					setValue('lockerId', point.name)

@@ -175,7 +175,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 
-	console.log('modal data', userData);
+
 
 	return (
 		<>

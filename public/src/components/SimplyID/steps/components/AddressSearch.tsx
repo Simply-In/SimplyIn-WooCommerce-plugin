@@ -41,8 +41,6 @@ export const AddressSearch = ({
 		setSearchInput(val)
 	}
 
-	console.log('machineData', machineData);
-
 	const getAddress = debounce(() => {
 		middlewareApi({
 			endpoint: "addresses/find",

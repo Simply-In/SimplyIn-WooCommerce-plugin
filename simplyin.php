@@ -9,7 +9,7 @@
  * @wordpress-plugin
  * Plugin Name: SimplyIn  
  * Plugin URI:       
- * Description: SimplyIn application. New order handling. 01.03.2024 12.00
+ * Description: SimplyIn application. New order handling. 07.03.2024 17.00
  * Version:           1.0.0
  * Author:            Simply.in
  * Author URI:        https://simply.in

@@ -28,7 +28,6 @@ export const selectPickupPointInpost = async ({ deliveryPointID }: IselectIPicku
 	if (!deliveryPointID) { return }
 	const inpostPointData = await getInpostPointData({ deliveryPointID: deliveryPointID })
 	if (!inpostPointData.name) {
-		console.log('Selected shipping point is invalid')
 		return;
 	}
 
@@ -56,7 +55,7 @@ export const selectPickupPointInpost = async ({ deliveryPointID }: IselectIPicku
 					'updated_checkout',
 					function () {
 						if (isFunctionCalled) {
-							console.log('function has been allready called');
+
 							return
 						}
 						isFunctionCalled = true;
@@ -65,7 +64,7 @@ export const selectPickupPointInpost = async ({ deliveryPointID }: IselectIPicku
 						// Filter the selected inputs to include only those that end with numbers only
 						const filteredInputs = Array.from(inputs).filter(input => {
 							const name = input.getAttribute('value');
-							console.log(name);
+
 							return /^easypack_parcel_machines:\d+$/.test(name as string);
 						});
 
@@ -97,7 +96,7 @@ export const resetDeliveryMethod = () => {
 					'updated_checkout',
 					function () {
 						if (isFunctionCalled) {
-							console.log('function has been allready called');
+
 							return
 						}
 						isFunctionCalled = true;
