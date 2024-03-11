@@ -249,15 +249,22 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 
 		if (inputElement[0]) {
 			inputElement[0].blur();
-
+			setTimeout(() => {
+				inputElement[0].focus()
+			}, 300)
 		}
+
 		inputElement.forEach((el) => {
 			el.pattern = "\\d*"
 			el.inputMode = "numeric"
+			el.type = "text"
+			el.ariaRequired = "false"
 		})
 
 
 	}, [phoneNumber])
+
+
 
 
 
@@ -271,11 +278,9 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 				<div>
 					<form id="OTPForm">
 						<OtpInputReactJS
-
 							value={pinCode}
 							onChange={setPinCode}
 							numInputs={4}
-
 							inputStyle={{
 								width: "40px",
 								height: "56px",
@@ -288,10 +293,22 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 
 							}}
 							isInputNum={true}
-							shouldAutoFocus="false"
-							renderInput={(props: any, id: any) => <input {...props} type="number" pattern="\d*" autoComplete='one-time-code' id={`otp-input-${id + 1}`} inputMode='numeric' />}
+							shouldAutoFocus={true}
+							renderInput={
+								(props: any, id: any) =>
+									<input
+										{...props}
+										type="number"
+										pattern="\d*"
+										autoComplete='one-time-code'
+										id={`otp-input-${id + 1}`}
+										inputMode='numeric' />
+							}
 							inputType='numeric'
+							inputMode='numeric'
 							pattern="\d*"
+
+
 						/>
 
 					</form>
