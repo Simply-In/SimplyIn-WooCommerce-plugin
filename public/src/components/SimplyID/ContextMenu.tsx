@@ -90,8 +90,8 @@ export const ContextMenu = ({ userData, item, setEditItemIndex, property, setUse
 			return el._id !== selectedId
 		});
 
-		const requestData = { ...userData, [property]: updatedProperty }
-
+		// const requestData = { ...userData, [property]: updatedProperty }
+		const requestData = { userData: { ...userData, [property]: updatedProperty } }
 		middlewareApi({
 			endpoint: "userData",
 			method: 'PATCH',

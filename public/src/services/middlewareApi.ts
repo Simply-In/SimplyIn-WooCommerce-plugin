@@ -11,10 +11,16 @@ interface IRequestBoodyCoordinates {
 interface IMiddlewareApi {
 	endpoint: "checkout/submitEmail" | "checkout/resend-checkout-code-via-email" | "checkout/submitCheckoutCode" | "checkout/createUserData" | "userData" | "createOrder" | "addresses/find" | "parcelLockers/getClosest",
 	method: "GET" | "POST" | "PATCH",
-	requestBody: { email: string } | { code: string } | { phoneNumber: string } | { searchAddressBy: string, token: string } | IRequestBoodyCoordinates
+	requestBody: any
 	token?: string
 
 }
+
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-ignore
+const { woocommerce_version, plugin_version } = appLocalizer
+
 
 export const middlewareApi = ({ endpoint, method, requestBody, token }: IMiddlewareApi) => {
 
@@ -23,7 +29,8 @@ export const middlewareApi = ({ endpoint, method, requestBody, token }: IMiddlew
 		return axios.post(`${shopBase}/wp-json/simplyin/data/`, {
 			endpoint,
 			method,
-			requestBody,
+
+			requestBody: { ...requestBody, shopVersion: woocommerce_version, plugin_version: plugin_version },
 			token: token ?? "",
 		})
 			.then((response) => {

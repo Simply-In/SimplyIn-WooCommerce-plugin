@@ -3,14 +3,14 @@
 /**
  *
  * @link              https://simply.in
- * @since             1.0.0
+ * @since             1.0.1
  * @package           Simplyin
  *
  * @wordpress-plugin
- * Plugin Name: SimplyIn  
+ * Plugin Name: SimplyIn
  * Plugin URI:       
  * Description: SimplyIn application. New order handling. 07.03.2024 17.00
- * Version:           1.0.0
+ * Version:           1.0.1
  * Author:            Simply.in
  * Author URI:        https://simply.in
  * License:           GPL-2.0+
@@ -21,7 +21,7 @@
 if (!defined('WPINC')) {
 	die;
 }
-define('SIMPLYIN_VERSION', '1.0.0');
+define('SIMPLYIN_VERSION', '1.0.1');
 
 require_once plugin_dir_path(__FILE__) . 'includes/class-simplyin.php';
 
@@ -33,8 +33,59 @@ function run_simplyin()
 
 }
 
+// global $plugin_data, $plugin_version, $woocommerce_version;
+
+// $plugin_data = get_plugin_data(__FILE__);
+// $plugin_version = $plugin_data['Version'];
+// $woocommerce_version = get_option('woocommerce_version');
 
 run_simplyin();
+
+
+// function onOrderUpdate($order_id, $old_status, $new_status, $order)
+// {
+
+// $real_order = wc_get_order($order_id);
+// error_log('STATUS UPDATE: ' . $order_id);
+
+// $order_status = $order->get_status();
+
+// $log_message = 'Custom script executed for order ID: ' . $order_id;
+// $logs_directory = plugin_dir_path(__FILE__) . 'logs/';
+
+// $log_file = $logs_directory . 'custom_log.log';
+// file_put_contents($log_file, $log_message . PHP_EOL, FILE_APPEND);
+
+// file_put_contents($log_file, "order" . $order_id . "old status: " . $old_status . "new status: " . $new_status . PHP_EOL, FILE_APPEND);
+
+
+// file_put_contents($log_file, $log_message . PHP_EOL, FILE_APPEND);
+
+// file_put_contents($log_file, json_encode($real_order->get_data()), FILE_APPEND);
+// file_put_contents($log_file, "order" . $order_id . "old status: " . $old_status . "new status: " . $new_status . PHP_EOL, FILE_APPEND);
+
+
+
+//tracking
+// file_put_contents($log_file, $order->get_items(), FILE_APPEND);
+// file_put_contents($log_file, '-------', FILE_APPEND);
+
+
+// echo json_encode($order);
+
+
+
+// }
+
+// add_action('woocommerce_order_status_changed', 'onOrderUpdate', 1, 4);
+
+
+
+
+
+
+
+
 
 
 function custom_override_checkout_fields($fields)
@@ -111,8 +162,12 @@ function load_Simply_React_App()
 
 	$base_url = home_url();
 
-
+	$plugin_data = get_plugin_data(__FILE__);
+	$plugin_version = $plugin_data['Version'];
+	$woocommerce_version = get_option('woocommerce_version');
 	wp_localize_script('AppData', 'appLocalizer', [
+		'woocommerce_version' => $woocommerce_version,
+		'plugin_version' => $plugin_version,
 		'apiUrl' => home_url('/wp-json'),
 		'nonce' => wp_create_nonce('wp_rest'),
 		'language' => get_locale(),
@@ -238,6 +293,20 @@ function add_tax_id_to_billing($fields)
 		'class' => array('form-row-wide'),
 		'clear' => true
 	);
+	$fields['extra_fields']['simply_billing_id'] = array(
+		'type' => 'text',
+		'label' => __('simply_billing_id'),
+		'required' => false,
+		'class' => array('form-row-wide'),
+		'clear' => true
+	);
+	$fields['extra_fields']['simply_shipping_id'] = array(
+		'type' => 'text',
+		'label' => __('simply_shipping_id'),
+		'required' => false,
+		'class' => array('form-row-wide'),
+		'clear' => true
+	);
 
 	return $fields;
 }
@@ -250,16 +319,16 @@ add_action('wp_head', 'custom_checkout_css');
 function custom_checkout_css()
 {
 	?>
-			<style>
-				#simplyinTokenInput_field {
-					display: none;
-				}
+	<style>
+		#simplyinTokenInput_field {
+			display: none;
+		}
 
-				#simply_tax_label_id_field {
-					display: none;
-				}
-			</style>
-			<?php
+		#simply_tax_label_id_field, #simply_billing_id_field, #simply_shipping_id_field{
+			display: none;
+		}
+	</style>
+	<?php
 }
 
 
@@ -279,6 +348,12 @@ function save_tax_id_to_order($order_id)
 	}
 	if (!empty($_POST['simply_tax_label_id'])) {
 		update_post_meta($order_id, '_simply_tax_label_id', sanitize_text_field($_POST['simply_tax_label_id']));
+	}
+	if (!empty($_POST['simply_billing_id'])) {
+		update_post_meta($order_id, '_simply_billing_id', sanitize_text_field($_POST['simply_billing_id']));
+	}
+	if (!empty($_POST['simply_shipping_id'])) {
+		update_post_meta($order_id, '_simply_shipping_id', sanitize_text_field($_POST['simply_shipping_id']));
 	}
 	if (!empty($_POST['phoneAppInputField'])) {
 		update_post_meta($order_id, '_phoneAppInputField', sanitize_text_field($_POST['phoneAppInputField']));
@@ -502,9 +577,14 @@ function onOrderCreate($order)
 	$parcel_machine_id = isset($_POST['parcel_machine_id']) ? sanitize_text_field($_POST['parcel_machine_id']) : '';
 	//identify custom or default tax id field
 	$custom_tax_field_id = isset($_POST['simply_tax_label_id']) ? sanitize_text_field($_POST['simply_tax_label_id']) : '';
+	$simply_billing_id = isset($_POST['simply_billing_id']) ? sanitize_text_field($_POST['simply_billing_id']) : '';
+	$simply_shipping_id = isset($_POST['simply_shipping_id']) ? sanitize_text_field($_POST['simply_shipping_id']) : '';
 	//get tax id from field in form
 	$taxId = isset($_POST[$custom_tax_field_id]) ? sanitize_text_field($_POST[$custom_tax_field_id]) : '';
 
+	$plugin_data = get_plugin_data(__FILE__);
+	$plugin_version = $plugin_data['Version'];
+	$woocommerce_version = get_option('woocommerce_version');
 
 	if ($create_new_accountVal === "on" && empty($simplyin_Token_Input_Value)) {
 		echo 'new account';
@@ -542,8 +622,11 @@ function onOrderCreate($order)
 				),
 
 				"shopName" => get_bloginfo('name'),
+				"pluginVersion" => $plugin_version,
+				"shopVersion" => $woocommerce_version
 			),
 		);
+
 		if (!empty($parcel_machine_id)) {
 			$body_data["newOrderData"]["parcelLockerMinimalInfo"] = array(
 				"lockerId" => $parcel_machine_id,
@@ -580,6 +663,7 @@ function onOrderCreate($order)
 				"placedDuringAccountCreation" => false,
 				"billingData" =>
 					array(
+						"_id" => $simply_billing_id,
 						"name" => $order->get_billing_first_name(),
 						"surname" => $order->get_billing_last_name(),
 						"street" => $order->get_billing_address_1(),
@@ -590,10 +674,11 @@ function onOrderCreate($order)
 						"state" => $order->get_billing_state(),
 						"companyName" => $order->get_billing_company(),
 						"taxId" => $taxId
-
 					),
 
 				"shopName" => get_bloginfo('name'),
+				"pluginVersion" => $plugin_version,
+				"shopVersion" => $woocommerce_version
 
 			),
 		);
@@ -606,6 +691,7 @@ function onOrderCreate($order)
 		}
 		if (empty($parcel_machine_id)) {
 			$body_data["newOrderData"]["shippingData"] = array(
+				"_id" => $simply_shipping_id,
 				"icon" => "🏡",
 				"addressName" => "",
 				"name" => $order->get_shipping_first_name(),

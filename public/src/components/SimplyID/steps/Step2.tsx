@@ -104,6 +104,10 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 
 	const handleSelectData = () => {
 
+
+
+
+
 		if (!userData?.billingAddresses[selectedBillingIndex]) {
 			return
 		}
