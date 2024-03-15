@@ -188,9 +188,6 @@ export const useInsertFormData = (userData: any, formElements: any) => {
 	const shopDefaultNipField = document.querySelector('[placeholder*="nip" i]:not([id="billing_tax_id_simply" i], [id*="nip" i]:not([id="billing_tax_id_simply" i]')
 
 
-	console.log("selected data", userData);
-
-
 	if (userData?.billingAddresses?._id) {
 		const billingIdField = document.getElementById('simply_billing_id') as HTMLInputElement;
 		if (billingIdField) {

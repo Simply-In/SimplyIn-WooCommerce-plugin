@@ -6,6 +6,7 @@ import Step2 from './steps/Step2';
 import { CloseContainer, PopupContainer, PopupHeader, StyledBox } from './SimplyID.styled';
 import { CloseIcon } from '../../assets/CloseIcon';
 import { SimplyinSmsPopupOpenerIcon } from '../../assets/SimplyinSmsPopupOpenerIcon';
+import { TypedLoginType } from './SimplyID';
 
 
 
@@ -15,7 +16,8 @@ interface IPinCodePopup {
 	visible: boolean
 	setVisible: (arg: boolean) => void
 	setToken: any,
-	simplyInput: string
+	simplyInput: string,
+	loginType: TypedLoginType
 
 }
 
@@ -30,7 +32,7 @@ let WPformElements: { name: string, value: string }[]
 
 
 //simply modal
-export const PinCodeModal = ({ phoneNumber, visible, setVisible, setToken, simplyInput,
+export const PinCodeModal = ({ phoneNumber, visible, setVisible, setToken, simplyInput, loginType
 }: IPinCodePopup) => {
 
 	const [userData, setUserData] = useState({})
@@ -93,7 +95,8 @@ export const PinCodeModal = ({ phoneNumber, visible, setVisible, setToken, simpl
 								setModalStep={setModalStep}
 								setUserData={setUserData}
 								setSelectedUserData={setSelectedUserData}
-								simplyInput={simplyInput} />}
+								simplyInput={simplyInput}
+								loginType={loginType} />}
 						{modalStep === 2 &&
 							<Step2
 								handleClosePopup={handleClosePopup}

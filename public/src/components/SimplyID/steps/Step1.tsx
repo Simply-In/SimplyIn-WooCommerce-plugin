@@ -1,15 +1,17 @@
 /* eslint-disable no-constant-condition */
 import { useContext, useEffect, useState } from 'react'
 import Countdown from 'react-countdown'
-import { PopupTitle, PopupTextMain, PinInputContainer, PopupTextSecondary, PopupCountDownContainer, PopupCodeNotDelivered, PopupSendAgain } from '../SimplyID.styled'
+import { PopupTitle, PopupTextMain, PinInputContainer, PopupTextSecondary, PopupCountDownContainer, PopupCodeNotDelivered, PopupSendAgain, MobileSystemsLinksContainer, SingleSystemLink } from '../SimplyID.styled'
 import { middlewareApi } from '../../../services/middlewareApi'
 import { PopupTextError } from '../../PhoneField/PhoneField.styled'
 import { removeDataSessionStorage, saveDataSessionStorage } from '../../../services/sessionStorageApi'
-import { SelectedDataContext } from '../SimplyID'
+import { SelectedDataContext, TypedLoginType } from '../SimplyID'
 import { OtpInput as OtpInputReactJS } from 'reactjs-otp-input'
-import { Link } from '@mui/material'
+import { Divider, Link } from '@mui/material'
 import { selectPickupPointInpost } from '../../../functions/selectInpostPoint'
 import { useTranslation } from "react-i18next";
+import { AndroidIcon } from '../../../assets/AndroidIcon'
+import { IosIcon } from '../../../assets/IosIcon'
 
 const countdownRenderer = ({ formatted: { minutes, seconds } }: any) => {
 	return <span>{minutes}:{seconds}</span>;
@@ -24,6 +26,8 @@ interface IStep1 {
 	setToken: any
 	setSelectedUserData: any
 	simplyInput: string
+	loginType: TypedLoginType
+
 }
 // eslint-disable-next-line react-refresh/only-export-components
 export const changeInputValue = (inputElement: any, newValue: any) => {
@@ -34,7 +38,7 @@ export const changeInputValue = (inputElement: any, newValue: any) => {
 // eslint-disable-next-line react-refresh/only-export-components
 export const simplyinTokenInputField = document.getElementById('simplyinTokenInput')
 
-export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData, setToken, setSelectedUserData, simplyInput }: IStep1) => {
+export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData, setToken, setSelectedUserData, simplyInput, loginType }: IStep1) => {
 	const { t, i18n } = useTranslation();
 
 	const [countdown, setCountdown] = useState<boolean>(false)
@@ -220,7 +224,6 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 
 	// type sendPinAgainMethodType = "sms" | "email"
 
-
 	//send ping again execution
 	const handleSendPinAgain = () => {
 		setCountdown(true)
@@ -231,9 +234,7 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 			method: 'POST',
 			requestBody: { "email": simplyInput }
 		}).catch((err) => {
-
 			console.log(err);
-
 		})
 
 	}
@@ -271,9 +272,11 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 	return (
 		<>
 			<PopupTitle>	{t('modal-step-1.confirm')}</PopupTitle>
-			<PopupTextMain> {t('modal-step-1.insertCode')} </PopupTextMain>
-			<PopupTextMain> {phoneNumber} </PopupTextMain>
 
+			{loginType === "pinCode" &&
+				<>
+			<PopupTextMain> {t('modal-step-1.insertCode')} </PopupTextMain>
+				<PopupTextMain> {phoneNumber} </PopupTextMain>
 			<PinInputContainer  >
 				<div>
 					<form id="OTPForm">
@@ -315,16 +318,32 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 				</div>
 
 			</PinInputContainer>
+				</>
+			}
 
 
-			<PopupTextError >
+			{loginType === "app" &&
+
+				<PopupTextMain>
+					{t('modal-step-1.checkInApp')}
+				</PopupTextMain>
+
+			}
+			{modalError && <PopupTextError >
 				{modalError}
 			</PopupTextError>
-			<PopupTextSecondary>
+			}
+
+
+
+
+			<PopupTextSecondary style={{ paddingBottom: loginType === "app" ? '32px' : "inherit" }}>
 				{t('modal-step-1.editAfterLogin')}
 			</PopupTextSecondary>
 
-			{(countdown) ?
+			{loginType === "pinCode" && <> {
+
+				(countdown) ?
 
 				<PopupCountDownContainer>
 					<PopupCodeNotDelivered>
@@ -352,17 +371,20 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 							{t('modal-step-1.sendViaEmail')}
 						</Link>
 					</PopupSendAgain>
-				</>
+					</>}</>
 			}
 
-			{/* <Divider style={{ marginTop: 24, marginBottom: 12 }} />
+			{loginType === "pinCode" &&
+				<>
+					<Divider style={{ marginTop: 24, marginBottom: 12 }} />
 			<PopupTextSecondary>
 				Loguj się za pomocą aplikacji. Pobierz teraz.
 			</PopupTextSecondary>
 			<MobileSystemsLinksContainer>
 				<SingleSystemLink href='#'><AndroidIcon />Android</SingleSystemLink>
 				<SingleSystemLink href='#'><IosIcon />iOS</SingleSystemLink>
-			</MobileSystemsLinksContainer> */}
+					</MobileSystemsLinksContainer>
+				</>}
 		</>
 	)
 }

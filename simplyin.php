@@ -166,6 +166,8 @@ function load_Simply_React_App()
 	$plugin_version = $plugin_data['Version'];
 	$woocommerce_version = get_option('woocommerce_version');
 	wp_localize_script('AppData', 'appLocalizer', [
+		"current_user" => wp_get_current_user(),
+		"logged_in" => is_user_logged_in(),
 		'woocommerce_version' => $woocommerce_version,
 		'plugin_version' => $plugin_version,
 		'apiUrl' => home_url('/wp-json'),
@@ -623,7 +625,8 @@ function onOrderCreate($order)
 
 				"shopName" => get_bloginfo('name'),
 				"pluginVersion" => $plugin_version,
-				"shopVersion" => $woocommerce_version
+				"shopVersion" => $woocommerce_version,
+				"shopUserEmail" => wp_get_current_user()->data->user_email ?? ""
 			),
 		);
 
@@ -678,7 +681,8 @@ function onOrderCreate($order)
 
 				"shopName" => get_bloginfo('name'),
 				"pluginVersion" => $plugin_version,
-				"shopVersion" => $woocommerce_version
+				"shopVersion" => $woocommerce_version,
+				"shopUserEmail" => wp_get_current_user()->data->user_email ?? "",
 
 			),
 		);

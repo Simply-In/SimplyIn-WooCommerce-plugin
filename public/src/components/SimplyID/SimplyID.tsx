@@ -15,6 +15,7 @@ export const ApiContext = createContext("");
 export const SelectedDataContext = createContext<any>(null);
 
 
+export type TypedLoginType = "pinCode" | "app" | undefined
 //main simply app - email field
 export const SimplyID = () => {
 	const { t } = useTranslation();
@@ -23,6 +24,8 @@ export const SimplyID = () => {
 	const [visible, setVisible] = useState<boolean>(true)
 	const [phoneNumber, setPhoneNumber] = useState("")
 	const [token, setToken] = useState("")
+
+	const [loginType, setLoginType] = useState<TypedLoginType>()
 
 	const {
 		selectedBillingIndex,
@@ -92,6 +95,11 @@ export const SimplyID = () => {
 
 					setPhoneNumber(res.data)
 					setVisible(true)
+
+					setLoginType("pinCode")
+					// setLoginType(res?.data?.loginType)
+
+
 					// console.log(res)
 				}).catch((err) => {
 					console.log(err);
@@ -173,6 +181,7 @@ export const SimplyID = () => {
 						phoneNumber={phoneNumber}
 						visible={visible}
 						setVisible={setVisible}
+						loginType={loginType}
 
 
 					/>}

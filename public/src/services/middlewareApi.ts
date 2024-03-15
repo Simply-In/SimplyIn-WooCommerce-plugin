@@ -19,7 +19,7 @@ interface IMiddlewareApi {
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore
-const { woocommerce_version, plugin_version } = appLocalizer
+const { woocommerce_version, plugin_version, current_user } = appLocalizer
 
 
 export const middlewareApi = ({ endpoint, method, requestBody, token }: IMiddlewareApi) => {
@@ -30,7 +30,12 @@ export const middlewareApi = ({ endpoint, method, requestBody, token }: IMiddlew
 			endpoint,
 			method,
 
-			requestBody: { ...requestBody, shopVersion: woocommerce_version, plugin_version: plugin_version },
+			requestBody: {
+				...requestBody,
+				shopVersion: woocommerce_version,
+				plugin_version: plugin_version,
+				shopUserEmail: current_user?.data?.user_email || ""
+			},
 			token: token ?? "",
 		})
 			.then((response) => {
