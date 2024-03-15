@@ -34,7 +34,7 @@ export const middlewareApi = ({ endpoint, method, requestBody, token }: IMiddlew
 				...requestBody,
 				shopVersion: woocommerce_version,
 				plugin_version: plugin_version,
-				shopUserEmail: current_user?.data?.user_email || ""
+				shopUserEmail: current_user?.data?.user_email || undefined
 			},
 			token: token ?? "",
 		})

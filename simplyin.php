@@ -626,7 +626,7 @@ function onOrderCreate($order)
 				"shopName" => get_bloginfo('name'),
 				"pluginVersion" => $plugin_version,
 				"shopVersion" => $woocommerce_version,
-				"shopUserEmail" => wp_get_current_user()->data->user_email ?? ""
+				"shopUserEmail" => wp_get_current_user()->data->user_email ?? ''
 			),
 		);
 
