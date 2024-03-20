@@ -3,14 +3,14 @@
 /**
  *
  * @link              https://simply.in
- * @since             1.0.1
+ * @since             1.0.0
  * @package           Simplyin
  *
  * @wordpress-plugin
  * Plugin Name: SimplyIn
  * Plugin URI:       
- * Description: SimplyIn application. New order handling. 07.03.2024 17.00
- * Version:           1.0.1
+ * Description: SimplyIn application. New order handling. 20.03.2024 08.00
+ * Version:           1.0.0
  * Author:            Simply.in
  * Author URI:        https://simply.in
  * License:           GPL-2.0+
@@ -21,7 +21,7 @@
 if (!defined('WPINC')) {
 	die;
 }
-define('SIMPLYIN_VERSION', '1.0.1');
+define('SIMPLYIN_VERSION', '1.0.0');
 
 require_once plugin_dir_path(__FILE__) . 'includes/class-simplyin.php';
 
@@ -45,33 +45,33 @@ run_simplyin();
 // function onOrderUpdate($order_id, $old_status, $new_status, $order)
 // {
 
-// $real_order = wc_get_order($order_id);
-// error_log('STATUS UPDATE: ' . $order_id);
+// 	$real_order = wc_get_order($order_id);
+// 	error_log('STATUS UPDATE: ' . $order_id);
 
-// $order_status = $order->get_status();
+// 	$order_status = $order->get_status();
 
-// $log_message = 'Custom script executed for order ID: ' . $order_id;
-// $logs_directory = plugin_dir_path(__FILE__) . 'logs/';
+// 	$log_message = 'Custom script executed for order ID: ' . $order_id;
+// 	$logs_directory = plugin_dir_path(__FILE__) . 'logs/';
 
-// $log_file = $logs_directory . 'custom_log.log';
-// file_put_contents($log_file, $log_message . PHP_EOL, FILE_APPEND);
+// 	$log_file = $logs_directory . 'order_log.log';
+// 	// file_put_contents($log_file, $log_message . PHP_EOL, FILE_APPEND);
 
-// file_put_contents($log_file, "order" . $order_id . "old status: " . $old_status . "new status: " . $new_status . PHP_EOL, FILE_APPEND);
-
-
-// file_put_contents($log_file, $log_message . PHP_EOL, FILE_APPEND);
-
-// file_put_contents($log_file, json_encode($real_order->get_data()), FILE_APPEND);
-// file_put_contents($log_file, "order" . $order_id . "old status: " . $old_status . "new status: " . $new_status . PHP_EOL, FILE_APPEND);
+// 	// file_put_contents($log_file, "order" . $order_id . "old status: " . $old_status . "new status: " . $new_status . PHP_EOL, FILE_APPEND);
 
 
+// 	// file_put_contents($log_file, $log_message . PHP_EOL, FILE_APPEND);
 
-//tracking
-// file_put_contents($log_file, $order->get_items(), FILE_APPEND);
-// file_put_contents($log_file, '-------', FILE_APPEND);
+// 	// file_put_contents($log_file, json_encode($real_order->get_data()), FILE_APPEND);
+// 	file_put_contents($log_file, "order" . $order_id . "old status: " . $old_status . "new status: " . $new_status . PHP_EOL, FILE_APPEND);
 
 
-// echo json_encode($order);
+
+// 	// tracking
+// 	// file_put_contents($log_file, $order->get_items(), FILE_APPEND);
+// 	// file_put_contents($log_file, '-------', FILE_APPEND);
+
+
+// 	echo json_encode($order);
 
 
 
@@ -529,6 +529,16 @@ function sendPostRequest($bodyData, $endpoint, $token)
 	// Execute cURL session
 	$response = curl_exec($ch);
 
+
+	// $log_message = $jsonData;
+
+	// $logs_directory = plugin_dir_path(__FILE__) . 'logs/';
+
+	// $log_file = $logs_directory . 'order_log.log';
+	// file_put_contents($log_file, $log_message . PHP_EOL, FILE_APPEND);
+
+
+
 	// Check for cURL errors
 	if (curl_errno($ch)) {
 		echo 'Curl error: ' . curl_error($ch);
@@ -711,6 +721,8 @@ function onOrderCreate($order)
 		}
 
 		sendPostRequest($body_data, 'checkout/createOrderWithoutAccount', $simplyin_Token_Input_Value);
+
+		
 
 	}
 
