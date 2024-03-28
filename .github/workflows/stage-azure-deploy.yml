@@ -31,6 +31,7 @@ jobs:
         cd public
         rm -rf node_modules
         rm -rf src
+
   create-zip-file:
     needs: [build-app]
     steps:
@@ -38,6 +39,7 @@ jobs:
       run: |
         zip -r simplyin-woo-stage.zip .
         # This will zip the entire current directory
+        
   deploy-zip-file-in-azure:
     needs: [create-zip-file]
     steps:
