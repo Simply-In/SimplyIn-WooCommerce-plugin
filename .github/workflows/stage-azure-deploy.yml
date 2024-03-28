@@ -31,7 +31,8 @@ jobs:
         cd public
         rm -rf node_modules
         rm -rf src
- create-zip-file:
+
+  create-zip-file:
     runs-on: ubuntu-latest
     needs: [build-app]
 
@@ -39,7 +40,8 @@ jobs:
     - name: Zip files
       run: |
         zip -r simplyin-woo-stage.zip .
- deploy-zip-file-in-azure:
+        
+  deploy-zip-file-in-azure:
     runs-on: ubuntu-latest
     needs: [create-zip-file]
 
