@@ -31,9 +31,19 @@ jobs:
         cd public
         rm -rf node_modules
         rm -rf src
-
+  create-zip-file:
+    needs: [build-app]
+    steps:
     - name: Zip files
       run: |
         zip -r simplyin-woo-stage.zip .
         # This will zip the entire current directory
+  deploy-zip-file-in-azure:
+    needs: [create-zip-file]
+    steps:
+   - name: Install Azure CLI
+        run: |
+          curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+      
 
