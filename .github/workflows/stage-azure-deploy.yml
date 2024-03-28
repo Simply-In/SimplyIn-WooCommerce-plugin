@@ -1,0 +1,27 @@
+name: Stage Azure deploy
+
+on:
+  push:
+    branches:
+      - stage  # Modify this to match your repository's main branch
+
+env: 
+  ENV: "stage"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Zip files
+      run: |
+        zip -r my_files.zip path/to/your/files
+      # Replace 'path/to/your/files' with the path to the files you want to zip.
+
+    - name: Upload ZIP
+      uses: actions/upload-artifact@v2
+      with:
+        name: my_files
+        path: my_files.zip
