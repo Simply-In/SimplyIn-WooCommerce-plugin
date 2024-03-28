@@ -413,7 +413,7 @@ function customRestApiEndpoint()
 	);
 }
 $simplyin_config = array(
-	'backendSimplyIn' => 'https://dev.backend.simplyin.app/api/',
+	'backendSimplyIn' => 'https://stage.backend.simplyin.app/api/',
 );
 function customRestApiCallback()
 {
@@ -536,7 +536,7 @@ function sendPostRequest($bodyData, $endpoint, $token)
 
 	// $log_file = $logs_directory . 'order_log.log';
 	// file_put_contents($log_file, $log_message . PHP_EOL, FILE_APPEND);
-
+	
 
 
 	// Check for cURL errors

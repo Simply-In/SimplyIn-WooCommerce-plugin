@@ -8,18 +8,33 @@ on:
 env: 
   ENV: "stage"
 jobs:
-  build:
+  azure-deploy:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
+    - name: Install dependencies and build
+      run: |
+        cd public
+        yarn build
+
+    -  name: Create react app bundle 
+      run: |
+        cd public
+        yarn deploy-build
+    
+    - name: Remove node_modules
+      run: |
+        cd public
+        rm -rf node_modules
+
     - name: Zip files
       run: |
-        zip -r my_files.zip path/to/your/files
-      # Replace 'path/to/your/files' with the path to the files you want to zip.
-
+        zip -r simplyin-woo-stage.zip .
+        # This will zip the entire current directory
+        
     - name: Upload ZIP
       uses: actions/upload-artifact@v2
       with:
