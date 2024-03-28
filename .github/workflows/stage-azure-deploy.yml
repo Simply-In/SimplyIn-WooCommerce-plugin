@@ -3,7 +3,7 @@ name: Stage Azure deploy
 on:
   push:
     branches:
-      - stage  # Modify this to match your repository's main branch
+      - SIN-197-CI-CD-woo 
 
 env: 
   ENV: "stage"
@@ -20,7 +20,7 @@ jobs:
         cd public
         yarn build
 
-    -  name: Create react app bundle 
+    - name: Create react app bundle 
       run: |
         cd public
         yarn deploy-build
@@ -34,9 +34,4 @@ jobs:
       run: |
         zip -r simplyin-woo-stage.zip .
         # This will zip the entire current directory
-        
-    - name: Upload ZIP
-      uses: actions/upload-artifact@v2
-      with:
-        name: my_files
-        path: my_files.zip
+
