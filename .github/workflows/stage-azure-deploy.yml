@@ -15,6 +15,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
+    - name: Dependencies install 
+      run: |
+        cd public
+        yarn install
+
     - name: Create react app bundle 
       run: |
         cd public
