@@ -8,7 +8,7 @@ on:
 env: 
   ENV: "stage"
 jobs:
-  azure-deploy:
+  build-app:
     runs-on: ubuntu-latest
 
     steps:
