@@ -13,12 +13,12 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Create react app bundle 
       run: |
         cd public
-        yarn deploy-build
+        pnpm tsc && pnpm vite build
     
     - name: Remove node_modules
       run: |
