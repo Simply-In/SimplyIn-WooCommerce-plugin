@@ -8,9 +8,6 @@ import { useSelectedSimplyData } from "../../hooks/useSelectedSimplyData.ts";
 import PinCodeModal from "./PinCodeModal.tsx";
 import { useTranslation } from "react-i18next";
 
-
-
-
 export const ApiContext = createContext("");
 export const SelectedDataContext = createContext<any>(null);
 
