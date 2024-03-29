@@ -10,7 +10,7 @@
  * Plugin Name: SimplyIn
  * Plugin URI:       
  * Description: SimplyIn application. New order handling. 20.03.2024 08.00
- * Version:           1.0.0
+ * Version:            1.0.0
  * Author:            Simply.in
  * Author URI:        https://simply.in
  * License:           GPL-2.0+
@@ -21,9 +21,17 @@
 if (!defined('WPINC')) {
 	die;
 }
-define('SIMPLYIN_VERSION', '1.0.0');
+
 
 require_once plugin_dir_path(__FILE__) . 'includes/class-simplyin.php';
+
+$env = parse_ini_file('.env');
+$backendEnvironment = $env['BACKEND_ENVIRONMENT_STAGE'];
+$appVersionPrefix = $env['APP_VERSION_PREFIX_STAGE'];
+
+
+define('SIMPLYIN_VERSION', $appVersionPrefix . '1.0.0');
+echo $backendEnvironment;
 
 function run_simplyin()
 {
@@ -178,7 +186,8 @@ function load_Simply_React_App()
 		'inpostApiKey' => $inpostApiKey,
 		'shipping' => $shipping_titles,
 		'base_url' => $base_url,
-		'plugin_url' => plugin_dir_url(__FILE__)
+		'plugin_url' => plugin_dir_url(__FILE__),
+		'test' => getenv('BACKEND_ENVIRONMENT')
 	]);
 }
 
@@ -326,7 +335,9 @@ function custom_checkout_css()
 			display: none;
 		}
 
-		#simply_tax_label_id_field, #simply_billing_id_field, #simply_shipping_id_field{
+		#simply_tax_label_id_field,
+		#simply_billing_id_field,
+		#simply_shipping_id_field {
 			display: none;
 		}
 	</style>
@@ -412,8 +423,9 @@ function customRestApiEndpoint()
 		)
 	);
 }
+
 $simplyin_config = array(
-	'backendSimplyIn' => 'https://stage.backend.simplyin.app/api/',
+	'backendSimplyIn' => 'https://' . $backendEnvironment . '.backend.simplyin.app/api/',
 );
 function customRestApiCallback()
 {
@@ -536,7 +548,7 @@ function sendPostRequest($bodyData, $endpoint, $token)
 
 	// $log_file = $logs_directory . 'order_log.log';
 	// file_put_contents($log_file, $log_message . PHP_EOL, FILE_APPEND);
-	
+
 
 
 	// Check for cURL errors
@@ -722,7 +734,7 @@ function onOrderCreate($order)
 
 		sendPostRequest($body_data, 'checkout/createOrderWithoutAccount', $simplyin_Token_Input_Value);
 
-		
+
 
 	}
 

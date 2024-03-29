@@ -6,7 +6,8 @@ on:
       - SIN-197-CI-CD-woo 
 
 env: 
-  ENV: "stage"
+  BACKEND_ENVIRONMENT_STAGE: ${{vars.BACKEND_ENVIRONMENT_STAGE}}
+  APP_VERSION_PREFIX_STAGE: ${{vars.APP_VERSION_PREFIX_STAGE}}
   AZURE_CREDENTIALS: ${{vars.AZURE_CREDENTIALS}}
 jobs:
   build-app:
