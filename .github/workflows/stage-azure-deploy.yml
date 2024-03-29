@@ -7,6 +7,7 @@ on:
 
 env: 
   ENV: "stage"
+  AZURE_CREDENTIALS: ${{vars.AZURE_CREDENTIALS}}
 jobs:
   build-app:
     runs-on: ubuntu-latest
