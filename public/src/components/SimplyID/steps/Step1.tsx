@@ -281,7 +281,7 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 
 	return (
 		<>
-			<PopupTitle>	{t('modal-step-1.confirm')}</PopupTitle>
+			<PopupTitle style={{ margin: loginType === "pinCode" ? "inherit" : "4px auto 12px" }}>	{t('modal-step-1.confirm')}</PopupTitle>
 
 			{loginType === "pinCode" &&
 				<>
@@ -347,7 +347,7 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 
 
 
-			<PopupTextSecondary style={{ paddingBottom: loginType === "app" ? '32px' : "inherit" }}>
+			<PopupTextSecondary style={{ paddingBottom: loginType === "app" ? '24px' : "inherit" }}>
 				{t('modal-step-1.editAfterLogin')}
 			</PopupTextSecondary>
 

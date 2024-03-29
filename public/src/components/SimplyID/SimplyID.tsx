@@ -91,12 +91,15 @@ export const SimplyID = () => {
 					endpoint: "checkout/submitEmail",
 					method: 'POST',
 					requestBody: { "email": simplyInput.trim().toLowerCase() }
-				}).then(res => {
+				}).then(({ data: phoneNumber, userUsedPushNotifications }) => {
 
-					setPhoneNumber(res.data)
+
+
+					setPhoneNumber(phoneNumber)
 					setVisible(true)
 
-					setLoginType("pinCode")
+					setLoginType(userUsedPushNotifications ? "app" : "pinCode")
+					// setLoginType("app")
 					// setLoginType(res?.data?.loginType)
 
 

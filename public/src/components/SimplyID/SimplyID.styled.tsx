@@ -13,7 +13,7 @@ export const SimplyinContainer = styled.div`
 
 
 export const PopupContainer = styled.div`
-	padding: 8px 16px 16px 16px;
+	padding: 8px 16px 8px 16px;
 	z-index:1000;
 `;
 export const CloseContainer = styled.div`
@@ -29,7 +29,7 @@ export const PopupHeader = styled.div`
   background: white;
   top:-1px;
   z-index:10;
-  border-bottom: 1px solid #F1F7FF;
+  /* border-bottom: 1px solid #F1F7FF; */
   
 `;
 

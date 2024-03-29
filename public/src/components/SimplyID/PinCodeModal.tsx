@@ -86,7 +86,7 @@ export const PinCodeModal = ({ phoneNumber, visible, setVisible, setToken, simpl
 							<CloseIcon />
 						</CloseContainer>
 					</PopupHeader>
-					<PopupContainer>
+					<PopupContainer style={{ margin: loginType === "pinCode" ? "8px 16px 16px" : "inherit" }}>
 						{modalStep === 1 &&
 							<Step1
 								setToken={setToken}
