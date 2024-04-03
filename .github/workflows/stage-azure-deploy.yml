@@ -67,3 +67,7 @@ jobs:
       uses: azure/login@v1
       with:
         creds: ${{ env.AZURE_CREDENTIALS }}
+    
+    - name: Upload files to Azure Storage
+      run: |
+        az storage blob upload-batch --account-name ${{ env.AZURE_STORAGE_ACCOUNT }} --destination ${{ env.AZURE_STORAGE_CONTAINER_NAME }} --source . --pattern "*.zip"
