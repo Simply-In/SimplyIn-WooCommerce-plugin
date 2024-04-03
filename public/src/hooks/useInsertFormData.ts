@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { selectPickupPointInpost } from '../functions/selectInpostPoint';
+import { isSameShippingAndBillingAddresses } from '../components/SimplyID/steps/functions';
 
 
 //function to insert selected data into `elementId` field
@@ -17,7 +18,7 @@ const updateField = (addressField: string, elementId: string, data: any) => {
 
 
 const fillBillingData = (userData: any, shopDefaultNipField: Element | null) => {
-	const address = userData.billingAddresses
+	const address = userData?.billingAddresses
 	const companyCheckbox = document.querySelector("[value='company' i]") ?? document.querySelector("[value='firma' i]") ?? null
 
 	const radioNodeList = companyCheckbox?.parentNode?.querySelectorAll('input[type="radio"]')
@@ -137,11 +138,19 @@ const updateShippingFields = (shippingAddress: any) => {
 }
 
 //function to fill in all shipping data
-const fillShippingData = (userData: any) => {
+const fillShippingData = (userData: any, fillWithBilling = false) => {
 	const checkbox = document.getElementById('ship-to-different-address-checkbox');
+
+	const shippingAddress = fillWithBilling ? userData?.billingAddresses : userData?.shippingAddresses
+
+	if (!shippingAddress && !Object.keys(shippingAddress || []).length) {
+		return
+	}
+	if (fillWithBilling) {
+
 	try {
 		if (checkbox) {
-			(checkbox as HTMLInputElement).checked = true;
+			(checkbox as HTMLInputElement).checked = false;
 
 			const changeEvent = new Event('change', { bubbles: true });
 			checkbox.dispatchEvent(changeEvent);
@@ -151,11 +160,8 @@ const fillShippingData = (userData: any) => {
 	} catch (err) {
 		console.log(err);
 	}
-	document.querySelector('.shipping_address')?.removeAttribute('style')
-	const shippingAddress = userData.shippingAddresses
-
+	}
 	updateShippingFields(shippingAddress)
-
 	if ("country" in shippingAddress) {
 		const savedCountryCode = shippingAddress.country || "";
 
@@ -178,6 +184,27 @@ const fillShippingData = (userData: any) => {
 		}
 
 	}
+
+	if (fillWithBilling) {
+		return
+	}
+
+	try {
+		if (checkbox) {
+			(checkbox as HTMLInputElement).checked = true;
+
+			const changeEvent = new Event('change', { bubbles: true });
+			checkbox.dispatchEvent(changeEvent);
+
+
+		}
+	} catch (err) {
+		console.log(err);
+	}
+	document.querySelector('.shipping_address')?.removeAttribute('style')
+
+
+
 }
 
 
@@ -219,8 +246,18 @@ export const useInsertFormData = (userData: any, formElements: any) => {
 			fillBillingData(userData, shopDefaultNipField)
 		}
 
-		if (userData?.shippingAddresses) {
-			fillShippingData(userData)
+		if (isSameShippingAndBillingAddresses({ billingAddress: userData?.billingAddresses, shippingAddress: userData?.shippingAddresses })) {
+			if (Object.keys(userData.billingAddresses || []).length) {
+				fillShippingData(userData, true)
+			}
+		} else {
+			if (userData?.shippingAddresses) {
+				fillShippingData(userData)
+			} else {
+				if (Object.keys(userData.billingAddresses || []).length) {
+					fillShippingData(userData, true)
+				}
+			}
 		}
 
 		if (userData?.shippingAddresses === null) {
