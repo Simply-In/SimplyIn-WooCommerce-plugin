@@ -39,7 +39,7 @@ jobs:
     - name: Upload files
       uses: actions/upload-artifact@v2
       with:
-        name: app-files
+        name: simplyin-woo-stage
         path: public
 
   create-zip-file:
