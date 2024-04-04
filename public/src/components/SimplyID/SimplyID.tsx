@@ -18,6 +18,8 @@ export const SelectedDataContext = createContext<any>(null);
 export type TypedLoginType = "pinCode" | "app" | undefined
 //main simply app - email field
 export const SimplyID = () => {
+	const [modalStep, setModalStep] = useState(1)
+	const [userData, setUserData] = useState({})
 	const { t } = useTranslation();
 	const [simplyInput, setSimplyInput] = useState("");
 	const [attributeObject, setAttributeObject] = useState({});
@@ -76,6 +78,51 @@ export const SimplyID = () => {
 		sessionStorage.removeItem("UserData")
 	}
 
+
+
+	const isLoginAccepted = (notificationTokenId: string) => {
+
+		let attempts = 0;
+		const maxAttempts = 30 * 1000 / 500; // 30 seconds divided by 500ms
+
+		const checkingInterval = setInterval(() => {
+			attempts++;
+
+			if (modalStep !== 1 || visible === false) {
+				clearInterval(checkingInterval);
+			}
+			middlewareApi({
+				endpoint: "checkout/checkIfSubmitEmailPushNotificationWasConfirmed",
+				method: 'POST',
+				requestBody: { "email": simplyInput.trim().toLowerCase(), "notificationTokenId": notificationTokenId, language: "EN" }
+			})
+				.then((data) => {
+					console.log('data request', data);
+					console.log({ modalStep, visible });
+
+					if (data?.ok) {
+						clearInterval(checkingInterval);
+						setUserData(data?.userData)
+						setModalStep(2)
+						console.log('Login accepted');
+					} else if (attempts >= maxAttempts) {
+						clearInterval(checkingInterval);
+						console.log('Login not accepted within 30 seconds');
+					}
+				})
+				.catch(error => {
+					clearInterval(checkingInterval);
+					console.error('Error checking login status:', error);
+				});
+		}, 1000);
+		return checkingInterval;
+	}
+
+
+
+
+
+
 	useEffect(() => {
 		setVisible(false)
 		setPhoneNumber("")
@@ -91,14 +138,22 @@ export const SimplyID = () => {
 					endpoint: "checkout/submitEmail",
 					method: 'POST',
 					requestBody: { "email": simplyInput.trim().toLowerCase() }
-				}).then(({ data: phoneNumber, userUsedPushNotifications }) => {
+				}).then(({ data: phoneNumber, userUsedPushNotifications, notificationTokenId }) => {
 
-
+					console.log(userUsedPushNotifications);
 
 					setPhoneNumber(phoneNumber)
 					setVisible(true)
 
 					setLoginType(userUsedPushNotifications ? "app" : "pinCode")
+
+					if (userUsedPushNotifications) {
+						isLoginAccepted(notificationTokenId)
+					}
+
+
+
+
 					// setLoginType("app")
 					// setLoginType(res?.data?.loginType)
 
@@ -116,6 +171,11 @@ export const SimplyID = () => {
 
 		}
 	}, [simplyInput]);
+
+
+
+
+
 
 
 
@@ -179,6 +239,10 @@ export const SimplyID = () => {
 					</SimplyinContainer>
 
 					{phoneNumber && <PinCodeModal
+						modalStep={modalStep}
+						setModalStep={setModalStep}
+						userData={userData}
+						setUserData={setUserData}
 						simplyInput={simplyInput}
 						setToken={setToken}
 						phoneNumber={phoneNumber}

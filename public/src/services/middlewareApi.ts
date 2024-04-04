@@ -9,7 +9,7 @@ interface IRequestBoodyCoordinates {
 	lat: string, lng: string
 }
 interface IMiddlewareApi {
-	endpoint: "checkout/submitEmail" | "checkout/resend-checkout-code-via-email" | "checkout/submitCheckoutCode" | "checkout/createUserData" | "userData" | "createOrder" | "addresses/find" | "parcelLockers/getClosest",
+	endpoint: "checkout/submitEmail" | "checkout/resend-checkout-code-via-email" | "checkout/submitCheckoutCode" | "checkout/createUserData" | "userData" | "createOrder" | "addresses/find" | "parcelLockers/getClosest" | "checkout/checkIfSubmitEmailPushNotificationWasConfirmed",
 	method: "GET" | "POST" | "PATCH",
 	requestBody: any
 	token?: string
