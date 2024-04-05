@@ -1,4 +1,4 @@
-import { useState, useEffect, ChangeEvent, createContext, useMemo } from "react";
+import { useState, useEffect, ChangeEvent, createContext, useMemo, useCallback } from "react";
 import { SimplyinSmsPopupOpenerIcon } from "../../assets/SimplyinSmsPopupOpenerIcon.tsx";
 import { SimplyinContainer, } from "./SimplyID.styled";
 import { middlewareApi } from '../../services/middlewareApi.ts'
@@ -26,8 +26,12 @@ export const SimplyID = () => {
 	const [visible, setVisible] = useState<boolean>(true)
 	const [phoneNumber, setPhoneNumber] = useState("")
 	const [token, setToken] = useState("")
+	const [notificationTokenId, setNotificationTokenId] = useState("")
 
 	const [loginType, setLoginType] = useState<TypedLoginType>()
+
+	const [counter, setCounter] = useState(0)
+
 
 	const {
 		selectedBillingIndex,
@@ -48,11 +52,10 @@ export const SimplyID = () => {
 	} = useSelectedSimplyData();
 
 
+
 	useEffect(() => {
 		const YodaInput = document.getElementById("billing_email") || document.getElementById("email");
-
 		YodaInput?.remove();
-
 		const attributes: any = YodaInput?.attributes;
 		const attributeKeeper: any = {};
 		for (const attribute of attributes) {
@@ -78,45 +81,80 @@ export const SimplyID = () => {
 		sessionStorage.removeItem("UserData")
 	}
 
+	const maxAttempts = 30 * 1000 / 500; // 30 seconds divided by 500ms
 
 
-	const isLoginAccepted = (notificationTokenId: string) => {
 
-		let attempts = 0;
-		const maxAttempts = 30 * 1000 / 500; // 30 seconds divided by 500ms
+	// const checkLoginStatus = useCallback(({ notificationTokenId }: { notificationTokenId: string }) => {
+	// 	console.log({ modalStep, visible });
+	// 	console.log('counter', counter)
+	// 	middlewareApi({
+	// 		endpoint: "checkout/checkIfSubmitEmailPushNotificationWasConfirmed",
+	// 		method: 'POST',
+	// 		requestBody: { "email": simplyInput.trim().toLowerCase(), "notificationTokenId": notificationTokenId, language: "EN" }
+	// 	})
+	// 		.then((data) => {
+	// 			console.log('data request', data);
 
-		const checkingInterval = setInterval(() => {
-			attempts++;
+	// 			if (data?.ok) {
+	// 				setUserData(data?.userData)
+	// 				setModalStep(2)
+	// 				console.log('Login accepted');
+	// 			} else if (counter < maxAttempts) {
+	// 				setCounter((prev) => prev + 1)
+	// 				setTimeout(() => checkLoginStatus({ notificationTokenId: notificationTokenId }), 1000);
+	// 			} else {
+	// 				console.log('Login not accepted within 30 seconds');
+	// 			}
+	// 		})
+	// 		.catch(error => {
+	// 			console.error('Error checking login status:', error);
+	// 		});
+	// }, [counter, modalStep, visible]); // Add dependencies here
 
-			if (modalStep !== 1 || visible === false) {
-				clearInterval(checkingInterval);
-			}
-			middlewareApi({
-				endpoint: "checkout/checkIfSubmitEmailPushNotificationWasConfirmed",
-				method: 'POST',
-				requestBody: { "email": simplyInput.trim().toLowerCase(), "notificationTokenId": notificationTokenId, language: "EN" }
+
+
+	useEffect(() => {
+		console.log({ notificationTokenId, modalStep, visible })
+		if (!notificationTokenId || modalStep !== 1 || !visible) {
+			console.log('return');
+			return
+		}
+		console.log('current counter', counter);
+		middlewareApi({
+			endpoint: "checkout/checkIfSubmitEmailPushNotificationWasConfirmed",
+			method: 'POST',
+			requestBody: { "email": simplyInput.trim().toLowerCase(), "notificationTokenId": notificationTokenId, language: "EN" }
+		})
+			.then((data) => {
+				console.log('data request', data);
+
+				if (data?.ok) {
+					setUserData(data?.userData)
+					setModalStep(2)
+					console.log('Login accepted');
+				} else if (counter < maxAttempts) {
+
+					setTimeout(() => setCounter((prev) => prev + 1), 1000);
+				} else {
+					console.log('Login not accepted within 30 seconds');
+				}
 			})
-				.then((data) => {
-					console.log('data request', data);
-					console.log({ modalStep, visible });
+			.catch(error => {
+				console.error('Error checking login status:', error);
+			});
 
-					if (data?.ok) {
-						clearInterval(checkingInterval);
-						setUserData(data?.userData)
-						setModalStep(2)
-						console.log('Login accepted');
-					} else if (attempts >= maxAttempts) {
-						clearInterval(checkingInterval);
-						console.log('Login not accepted within 30 seconds');
-					}
-				})
-				.catch(error => {
-					clearInterval(checkingInterval);
-					console.error('Error checking login status:', error);
-				});
-		}, 1000);
-		return checkingInterval;
-	}
+
+	}, [notificationTokenId, counter, visible])
+
+
+
+
+	// const isLoginAccepted = (notificationTokenId: string) => {
+
+	// 	// Start checking login status
+	// 	checkLoginStatus({ notificationTokenId: notificationTokenId });
+	// }
 
 
 
@@ -131,6 +169,7 @@ export const SimplyID = () => {
 		setSelectedBillingIndex(0)
 		setSelectedShippingIndex(null)
 		setSelectedDeliveryPointIndex(null)
+		setNotificationTokenId("")
 
 		if (!token) {
 			const debouncedRequest = debounce(() => {
@@ -148,17 +187,9 @@ export const SimplyID = () => {
 					setLoginType(userUsedPushNotifications ? "app" : "pinCode")
 
 					if (userUsedPushNotifications) {
-						isLoginAccepted(notificationTokenId)
+						setNotificationTokenId(notificationTokenId)
+						// isLoginAccepted(notificationTokenId)
 					}
-
-
-
-
-					// setLoginType("app")
-					// setLoginType(res?.data?.loginType)
-
-
-					// console.log(res)
 				}).catch((err) => {
 					console.log(err);
 				})
