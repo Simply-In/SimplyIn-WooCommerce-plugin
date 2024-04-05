@@ -127,7 +127,9 @@ const placingEmailField = () => {
 //@ts-ignore
 document.addEventListener("DOMContentLoaded", (async (): any => {
 
+	console.log("start creating reactAppContainer");
 	const reactAppContainer = document.createElement("div");
+	console.log(reactAppContainer);
 	reactAppContainer.setAttribute("id", "reactAppContainer");
 	reactAppContainer.setAttribute("class", "woocommerce-input-wrapper");
 
@@ -159,8 +161,6 @@ document.addEventListener("DOMContentLoaded", (async (): any => {
 	//@ts-ignore
 	ReactDOM.render(<PhoneField />, document.getElementById("phoneAppContainer"));
 
-
-
 	//Logo simply inserting
 	const BillingSection = document.querySelector('.woocommerce-billing-fields__field-wrapper');
 	const simplyLogoContainer = document.createElement("div");
@@ -183,8 +183,6 @@ document.addEventListener("DOMContentLoaded", (async (): any => {
 	if (BillingFieldsH3) {
 		BillingFieldsH3.style.marginBottom = "0";
 	}
-
-
 
 
 	nipFieldHandling()
@@ -212,7 +210,7 @@ document.addEventListener("DOMContentLoaded", (async (): any => {
 		document.querySelector("#billing_tax_id_simply_field")?.remove()
 	}
 
-	if (testRequest?.message === "Merchant api key not found") {
+	if (testRequest?.message === "Merchant api key not found" || testRequest?.code === "UNAUTHORIZED") {
 		console.log("SIMPLYIN API KEY INVALID");
 		deleteSimplyContent()
 	} else if (testRequest === "Error: Simplyin API key is empty") {
