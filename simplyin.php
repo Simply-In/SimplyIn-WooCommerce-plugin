@@ -419,7 +419,8 @@ function customRestApiCallback()
 {
 	global $simplyin_config;
 
-	$headers = array('Content-Type: application/json');
+	$base_url = home_url();
+	$headers = array('Content-Type: application/json', 'Origin: ' . $base_url);
 
 	$data = json_decode(file_get_contents("php://input"), true);
 	$endpoint = $data['endpoint'];
@@ -500,7 +501,9 @@ function sendPostRequest($bodyData, $endpoint, $token)
 	}
 	$bodyData['merchantApiKey'] = $merchantToken;
 
-	$headers = array('Content-Type: application/json');
+	// $headers = array('Content-Type: application/json');
+	$base_url = home_url();
+	$headers = array('Content-Type: application/json', 'Origin: ' . $base_url);
 
 	global $simplyin_config;
 	update_option('Backend_SimplyIn', $simplyin_config['backendSimplyIn']);
