@@ -127,7 +127,9 @@ const placingEmailField = () => {
 //@ts-ignore
 document.addEventListener("DOMContentLoaded", (async (): any => {
 
+	console.log("start creating reactAppContainer");
 	const reactAppContainer = document.createElement("div");
+	console.log(reactAppContainer);
 	reactAppContainer.setAttribute("id", "reactAppContainer");
 	reactAppContainer.setAttribute("class", "woocommerce-input-wrapper");
 

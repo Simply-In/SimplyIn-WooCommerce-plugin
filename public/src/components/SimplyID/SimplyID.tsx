@@ -9,8 +9,6 @@ import PinCodeModal from "./PinCodeModal.tsx";
 import { useTranslation } from "react-i18next";
 
 
-
-
 export const ApiContext = createContext("");
 export const SelectedDataContext = createContext<any>(null);
 
@@ -71,6 +69,7 @@ export const SimplyID = () => {
 
 	//handling simply email field change 
 	const handleSimplyInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+		console.log('simply inmput change', e.target.value);
 		setSimplyInput(e.target.value)
 		sessionStorage.removeItem("simplyinToken")
 		sessionStorage.removeItem("UserData")
@@ -87,13 +86,15 @@ export const SimplyID = () => {
 
 		if (!token) {
 			const debouncedRequest = debounce(() => {
+
 				middlewareApi({
 					endpoint: "checkout/submitEmail",
 					method: 'POST',
 					requestBody: { "email": simplyInput.trim().toLowerCase() }
+
 				}).then(res => {
 
-					setPhoneNumber(res.data)
+					setPhoneNumber(res?.data || "")
 					setVisible(true)
 
 					setLoginType("pinCode")
@@ -101,9 +102,11 @@ export const SimplyID = () => {
 
 
 					// console.log(res)
-				}).catch((err) => {
-					console.log(err);
 				})
+					.catch((err) => {
+						console.log('my err', err);
+					})
+
 			}, 500);
 
 			debouncedRequest();
@@ -116,14 +119,12 @@ export const SimplyID = () => {
 
 
 
-
 	useEffect(() => {
 
 		const simplyinTokenInput = document.getElementById('simplyinTokenInput');
 		const handleSimplyTokenChange = () => {
 			setToken((simplyinTokenInput as HTMLInputElement)?.value)
 		}
-
 
 		simplyinTokenInput?.addEventListener('input', handleSimplyTokenChange);
 
