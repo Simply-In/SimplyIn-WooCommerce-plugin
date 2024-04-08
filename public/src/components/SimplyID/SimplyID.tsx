@@ -29,9 +29,7 @@ export const SimplyID = () => {
 	const [notificationTokenId, setNotificationTokenId] = useState("")
 
 	const [loginType, setLoginType] = useState<TypedLoginType>()
-
 	const [counter, setCounter] = useState(0)
-
 
 	const {
 		selectedBillingIndex,
@@ -83,43 +81,14 @@ export const SimplyID = () => {
 
 	const maxAttempts = 30 * 1000 / 500; // 30 seconds divided by 500ms
 
-
-
-	// const checkLoginStatus = useCallback(({ notificationTokenId }: { notificationTokenId: string }) => {
-	// 	console.log({ modalStep, visible });
-	// 	console.log('counter', counter)
-	// 	middlewareApi({
-	// 		endpoint: "checkout/checkIfSubmitEmailPushNotificationWasConfirmed",
-	// 		method: 'POST',
-	// 		requestBody: { "email": simplyInput.trim().toLowerCase(), "notificationTokenId": notificationTokenId, language: "EN" }
-	// 	})
-	// 		.then((data) => {
-	// 			console.log('data request', data);
-
-	// 			if (data?.ok) {
-	// 				setUserData(data?.userData)
-	// 				setModalStep(2)
-	// 				console.log('Login accepted');
-	// 			} else if (counter < maxAttempts) {
-	// 				setCounter((prev) => prev + 1)
-	// 				setTimeout(() => checkLoginStatus({ notificationTokenId: notificationTokenId }), 1000);
-	// 			} else {
-	// 				console.log('Login not accepted within 30 seconds');
-	// 			}
-	// 		})
-	// 		.catch(error => {
-	// 			console.error('Error checking login status:', error);
-	// 		});
-	// }, [counter, modalStep, visible]); // Add dependencies here
-
-
-
 	useEffect(() => {
 		console.log({ notificationTokenId, modalStep, visible })
-		if (!notificationTokenId || modalStep !== 1 || !visible) {
+		// if (!notificationTokenId || modalStep !== 1 || !visible) {
+		if (!notificationTokenId || modalStep !== 1) {
 			console.log('return');
 			return
 		}
+
 		console.log('current counter', counter);
 		middlewareApi({
 			endpoint: "checkout/checkIfSubmitEmailPushNotificationWasConfirmed",
@@ -131,6 +100,7 @@ export const SimplyID = () => {
 
 				if (data?.ok) {
 					setUserData(data?.userData)
+					setVisible(true)
 					setModalStep(2)
 					console.log('Login accepted');
 				} else if (counter < maxAttempts) {
@@ -146,19 +116,6 @@ export const SimplyID = () => {
 
 
 	}, [notificationTokenId, counter, visible])
-
-
-
-
-	// const isLoginAccepted = (notificationTokenId: string) => {
-
-	// 	// Start checking login status
-	// 	checkLoginStatus({ notificationTokenId: notificationTokenId });
-	// }
-
-
-
-
 
 
 	useEffect(() => {
