@@ -69,7 +69,6 @@ export const SimplyID = () => {
 
 	//handling simply email field change 
 	const handleSimplyInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-		console.log('simply inmput change', e.target.value);
 		setSimplyInput(e.target.value)
 		sessionStorage.removeItem("simplyinToken")
 		sessionStorage.removeItem("UserData")

@@ -372,7 +372,7 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 					<PopupSendAgain>
 
 						<Link
-							component="button"
+								component="button"
 							id="send-again-email-btn"
 							value="mail"
 							onClick={handleSendPinAgain}
@@ -384,7 +384,7 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 					</>}</>
 			}
 
-			{loginType === "pinCode" &&
+			{/* {loginType === "pinCode" &&
 				<>
 					<Divider style={{ marginTop: 24, marginBottom: 12 }} />
 			<PopupTextSecondary>
@@ -394,7 +394,7 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 				<SingleSystemLink href='#'><AndroidIcon />Android</SingleSystemLink>
 				<SingleSystemLink href='#'><IosIcon />iOS</SingleSystemLink>
 					</MobileSystemsLinksContainer>
-				</>}
+				</>} */}
 		</>
 	)
 }

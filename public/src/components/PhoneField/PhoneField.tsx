@@ -172,6 +172,7 @@ export const PhoneField = () => {
 				<FormControl sx={{}} component="fieldset" variant="standard">
 					<FormGroup>
 						<FormControlLabel
+							id="checkbox-container-flex"
 							control={
 								<Checkbox 
 									checked={simplyinToken ? !!simplyinToken : checked}
