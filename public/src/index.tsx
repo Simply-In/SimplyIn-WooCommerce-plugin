@@ -6,38 +6,7 @@ import SimplyBrandIcon from "./assets/SimplyBrandIcon";
 import { middlewareApi } from "./services/middlewareApi";
 import { saveDataSessionStorage } from "./services/sessionStorageApi";
 import './i18n.ts'
-// import { selectIPickupPointInpost } from "./functions/selectInpostPoint";
 
-
-
-type data = {
-	selector?: string;
-	getFirst?: boolean
-
-}
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//@ts-ignore
-const waitForElementToRender = (data: data) => {
-
-	return new Promise((resolve) => {
-		const observer = new MutationObserver(() => {
-
-			const element = () => {
-				if (data?.selector && !data?.getFirst) {
-					return document.querySelector(data.selector);
-				} else if (data?.selector && data?.getFirst) {
-					return document.querySelectorAll(data.selector)[0];
-				}
-
-			}
-			if (element()) {
-				observer.disconnect();
-				resolve(element());
-			}
-		});
-		observer.observe(document.body, { childList: true, subtree: true });
-	});
-}
 
 // checking if there is a custom or built taxId/nip in field
 const nipFieldHandling = () => {
@@ -45,8 +14,6 @@ const nipFieldHandling = () => {
 	const defaultNipField = document.querySelectorAll('input[placeholder*="nip" i]:not([id="billing_tax_id_simply"]), input[id*="nip" i]:not([id="billing_tax_id_simply"])')
 	//saving nipField id to session storage
 	const existingNipElement = [...defaultNipField][0];
-
-	// console.log('existingNipElement', existingNipElement);
 
 	const customNipFieldId = document.getElementById("simply_tax_label_id") as HTMLInputElement
 
@@ -112,9 +79,7 @@ const placingEmailField = () => {
 			elementToMove?.setAttribute('data-priority', `1`);
 		}
 
-	} else {
-		// console.log('Container or element not found');
-	}
+	} 
 
 }
 
@@ -124,6 +89,7 @@ const placingEmailField = () => {
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore
 document.addEventListener("DOMContentLoaded", (async (): any => {
+
 
 	const reactAppContainer = document.createElement("div");
 	reactAppContainer.setAttribute("id", "reactAppContainer");
@@ -157,8 +123,6 @@ document.addEventListener("DOMContentLoaded", (async (): any => {
 	//@ts-ignore
 	ReactDOM.render(<PhoneField />, document.getElementById("phoneAppContainer"));
 
-
-
 	//Logo simply inserting
 	const BillingSection = document.querySelector('.woocommerce-billing-fields__field-wrapper');
 	const simplyLogoContainer = document.createElement("div");
@@ -181,8 +145,6 @@ document.addEventListener("DOMContentLoaded", (async (): any => {
 	if (BillingFieldsH3) {
 		BillingFieldsH3.style.marginBottom = "0";
 	}
-
-
 
 
 	nipFieldHandling()
@@ -210,7 +172,7 @@ document.addEventListener("DOMContentLoaded", (async (): any => {
 		document.querySelector("#billing_tax_id_simply_field")?.remove()
 	}
 
-	if (testRequest?.message === "Merchant api key not found") {
+	if (testRequest?.message === "Merchant api key not found" || testRequest?.code === "UNAUTHORIZED") {
 		console.log("SIMPLYIN API KEY INVALID");
 		deleteSimplyContent()
 	} else if (testRequest === "Error: Simplyin API key is empty") {

@@ -100,6 +100,17 @@ export const PopupCodeNotDelivered = styled(PopupTextSecondary)`
 export const PopupSendAgain = styled(PopupTextSecondary)`
 	color: #000;
 	margin-top: 0;
+	#send-again-email-btn{
+		font-family: Inter, sans-serif;
+		padding: 0;
+		border-radius: 0;
+		background-color: transparent;
+		color: rgb(25, 118, 210);
+		text-transform: none;
+		font-size: 14px;
+		font-weight: 400;
+		text-transform: none;
+	}
 `;
 
 export const PinInputContainer = styled.div`

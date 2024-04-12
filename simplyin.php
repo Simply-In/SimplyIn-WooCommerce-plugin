@@ -155,7 +155,6 @@ function load_Simply_React_App()
 
 
 	$shipping_methods = $woocommerce->shipping->get_shipping_methods();
-	$apiKey = get_option('simplyin_api_key');
 	$inpostApiKey = get_option('simply_inpost_apikey');
 
 	$base_url = home_url();
@@ -172,7 +171,6 @@ function load_Simply_React_App()
 		'nonce' => wp_create_nonce('wp_rest'),
 		'language' => get_locale(),
 		'shippingMethods' => $methods,
-		'apiKey' => $apiKey,
 		'inpostApiKey' => $inpostApiKey,
 		'shipping' => $shipping_titles,
 		'base_url' => $base_url,
@@ -499,6 +497,9 @@ function sendPostRequest($bodyData, $endpoint, $token)
 	}
 	$bodyData['merchantApiKey'] = $merchantToken;
 
+	// $headers = array('Content-Type: application/json');
+	$base_url = home_url();
+	$headers = array('Content-Type: application/json', 'Origin: ' . $base_url);
 	// $headers = array('Content-Type: application/json');
 	$base_url = home_url();
 	$headers = array('Content-Type: application/json', 'Origin: ' . $base_url);

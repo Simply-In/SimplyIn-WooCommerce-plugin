@@ -241,7 +241,7 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 					<PopupSendAgain>
 
 						<Link
-							component="button"
+								component="button"
 							id="send-again-email-btn"
 							value="mail"
 							onClick={handleSendPinAgain}

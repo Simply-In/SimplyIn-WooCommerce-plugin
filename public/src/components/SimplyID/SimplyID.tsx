@@ -148,6 +148,7 @@ export const SimplyID = () => {
 
 		if (!authToken) {
 			const debouncedRequest = debounce(() => {
+
 				middlewareApi({
 					endpoint: "checkout/submitEmail",
 					method: 'POST',
@@ -167,6 +168,10 @@ export const SimplyID = () => {
 				}).catch((err) => {
 					console.log(err);
 				})
+					.catch((err) => {
+						console.log('my err', err);
+					})
+
 			}, 500);
 
 			debouncedRequest();
@@ -178,20 +183,12 @@ export const SimplyID = () => {
 	}, [simplyInput]);
 
 
-
-
-
-
-
-
-
 	useEffect(() => {
 
 		const simplyinTokenInput = document.getElementById('simplyinTokenInput');
 		const handleSimplyTokenChange = () => {
 			setAuthToken((simplyinTokenInput as HTMLInputElement)?.value)
 		}
-
 
 		simplyinTokenInput?.addEventListener('input', handleSimplyTokenChange);
 
