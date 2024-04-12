@@ -7,9 +7,7 @@ import { middlewareApi } from "./services/middlewareApi";
 import { saveDataSessionStorage } from "./services/sessionStorageApi";
 import './i18n.ts'
 // import { selectIPickupPointInpost } from "./functions/selectInpostPoint";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//@ts-ignore
-if (appLocalizer) { console.log((appLocalizer)); }
+
 
 
 type data = {

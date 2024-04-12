@@ -3,7 +3,7 @@ import axios from "axios";
 let shopBase = '..'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore
-if (appLocalizer?.base_url) { shopBase = appLocalizer?.base_url; console.log(appLocalizer?.base_url); }
+if (appLocalizer?.base_url) { shopBase = appLocalizer?.base_url }
 
 interface IRequestBoodyCoordinates {
 	lat: string, lng: string

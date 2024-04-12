@@ -41,7 +41,6 @@ function run_simplyin()
 
 run_simplyin();
 
-
 // function onOrderUpdate($order_id, $old_status, $new_status, $order)
 // {
 
@@ -63,7 +62,6 @@ run_simplyin();
 
 // 	// file_put_contents($log_file, json_encode($real_order->get_data()), FILE_APPEND);
 // 	file_put_contents($log_file, "order" . $order_id . "old status: " . $old_status . "new status: " . $new_status . PHP_EOL, FILE_APPEND);
-
 
 
 // 	// tracking
@@ -419,10 +417,9 @@ function customRestApiCallback()
 {
 	global $simplyin_config;
 
-	// $headers = array('Content-Type: application/json');
 	$base_url = home_url();
-
 	$headers = array('Content-Type: application/json', 'Origin: ' . $base_url);
+	// $headers = array('Content-Type: application/json');
 	$data = json_decode(file_get_contents("php://input"), true);
 	$endpoint = $data['endpoint'];
 	$method = strtoupper($data['method']);
@@ -504,7 +501,6 @@ function sendPostRequest($bodyData, $endpoint, $token)
 
 	// $headers = array('Content-Type: application/json');
 	$base_url = home_url();
-
 	$headers = array('Content-Type: application/json', 'Origin: ' . $base_url);
 
 	global $simplyin_config;

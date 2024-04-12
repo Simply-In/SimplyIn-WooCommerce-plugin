@@ -90,22 +90,18 @@ export const SimplyID = () => {
 	const maxAttempts = 30 * 1000 / 500; // 30 seconds divided by 500ms
 
 	useEffect(() => {
-		console.log({ notificationTokenId, modalStep, visible })
-		if (!notificationTokenId || modalStep !== 1) {
-			console.log('return');
+
+		if (!notificationTokenId || modalStep !== 1) {			
 			return
 		}
 
-		console.log('current counter', counter);
 		middlewareApi({
 			endpoint: "checkout/checkIfSubmitEmailPushNotificationWasConfirmed",
 			method: 'POST',
 			requestBody: { "email": simplyInput.trim().toLowerCase(), "notificationTokenId": notificationTokenId, language: "EN" }
 		})
 			.then(({ ok, authToken, userData }) => {
-				console.log('data request', userData);
 				if (authToken) {
-					console.log('setting auth token', authToken)
 					setAuthToken(authToken)
 					saveDataSessionStorage({ key: 'simplyinToken', data: authToken })
 					changeInputValue(simplyinTokenInputField, authToken);
@@ -125,7 +121,6 @@ export const SimplyID = () => {
 						setPickupPointDelivery,
 						setSelectedUserData
 					})
-					console.log('Login accepted');
 				} else if (counter < maxAttempts) {
 
 					setTimeout(() => setCounter((prev) => prev + 1), 1000);
@@ -159,7 +154,6 @@ export const SimplyID = () => {
 					requestBody: { "email": simplyInput.trim().toLowerCase() }
 				}).then(({ data: phoneNumber, userUsedPushNotifications, notificationTokenId }) => {
 
-					console.log(userUsedPushNotifications);
 
 					setPhoneNumber(phoneNumber)
 					setVisible(true)
