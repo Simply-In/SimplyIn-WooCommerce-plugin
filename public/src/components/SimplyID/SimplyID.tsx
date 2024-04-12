@@ -1,4 +1,4 @@
-import { useState, useEffect, ChangeEvent, createContext, useMemo, useCallback } from "react";
+import { useState, useEffect, ChangeEvent, createContext, useMemo } from "react";
 import { SimplyinSmsPopupOpenerIcon } from "../../assets/SimplyinSmsPopupOpenerIcon.tsx";
 import { SimplyinContainer, } from "./SimplyID.styled";
 import { middlewareApi } from '../../services/middlewareApi.ts'
@@ -7,11 +7,14 @@ import { changeInputValue, simplyinTokenInputField } from "./steps/Step1.tsx";
 import { useSelectedSimplyData } from "../../hooks/useSelectedSimplyData.ts";
 import PinCodeModal from "./PinCodeModal.tsx";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "../../hooks/useAuth.ts";
+import { saveDataSessionStorage } from "../../services/sessionStorageApi.ts";
+import { predefinedFill } from "./steps/functions.ts";
 
 
 
 
-export const ApiContext = createContext("");
+export const ApiContext = createContext<any>(null);
 export const SelectedDataContext = createContext<any>(null);
 
 
@@ -25,12 +28,12 @@ export const SimplyID = () => {
 	const [attributeObject, setAttributeObject] = useState({});
 	const [visible, setVisible] = useState<boolean>(true)
 	const [phoneNumber, setPhoneNumber] = useState("")
-	const [token, setToken] = useState("")
 	const [notificationTokenId, setNotificationTokenId] = useState("")
+	const [selectedUserData, setSelectedUserData] = useState({})
 
 	const [loginType, setLoginType] = useState<TypedLoginType>()
 	const [counter, setCounter] = useState(0)
-
+	const { authToken, setAuthToken } = useAuth()
 	const {
 		selectedBillingIndex,
 		setSelectedBillingIndex,
@@ -48,6 +51,7 @@ export const SimplyID = () => {
 		setPickupPointDelivery
 
 	} = useSelectedSimplyData();
+
 
 
 
@@ -79,11 +83,14 @@ export const SimplyID = () => {
 		sessionStorage.removeItem("UserData")
 	}
 
+	const handleClosePopup = () => {
+		setVisible(false)
+	}
+
 	const maxAttempts = 30 * 1000 / 500; // 30 seconds divided by 500ms
 
 	useEffect(() => {
 		console.log({ notificationTokenId, modalStep, visible })
-		// if (!notificationTokenId || modalStep !== 1 || !visible) {
 		if (!notificationTokenId || modalStep !== 1) {
 			console.log('return');
 			return
@@ -95,13 +102,29 @@ export const SimplyID = () => {
 			method: 'POST',
 			requestBody: { "email": simplyInput.trim().toLowerCase(), "notificationTokenId": notificationTokenId, language: "EN" }
 		})
-			.then((data) => {
-				console.log('data request', data);
+			.then(({ ok, authToken, userData }) => {
+				console.log('data request', userData);
+				if (authToken) {
+					console.log('setting auth token', authToken)
+					setAuthToken(authToken)
+					saveDataSessionStorage({ key: 'simplyinToken', data: authToken })
+					changeInputValue(simplyinTokenInputField, authToken);
+				}
+				if (ok) {
+					setUserData(userData)
 
-				if (data?.ok) {
-					setUserData(data?.userData)
+					saveDataSessionStorage({ key: 'UserData', data: userData })
 					setVisible(true)
 					setModalStep(2)
+
+					predefinedFill(userData, handleClosePopup, {
+						setSelectedBillingIndex,
+						setSelectedShippingIndex,
+						setSelectedDeliveryPointIndex,
+						setSameDeliveryAddress,
+						setPickupPointDelivery,
+						setSelectedUserData
+					})
 					console.log('Login accepted');
 				} else if (counter < maxAttempts) {
 
@@ -128,7 +151,7 @@ export const SimplyID = () => {
 		setSelectedDeliveryPointIndex(null)
 		setNotificationTokenId("")
 
-		if (!token) {
+		if (!authToken) {
 			const debouncedRequest = debounce(() => {
 				middlewareApi({
 					endpoint: "checkout/submitEmail",
@@ -172,7 +195,7 @@ export const SimplyID = () => {
 
 		const simplyinTokenInput = document.getElementById('simplyinTokenInput');
 		const handleSimplyTokenChange = () => {
-			setToken((simplyinTokenInput as HTMLInputElement)?.value)
+			setAuthToken((simplyinTokenInput as HTMLInputElement)?.value)
 		}
 
 
@@ -209,7 +232,7 @@ export const SimplyID = () => {
 		setPickupPointDelivery])
 
 	return (
-		<ApiContext.Provider value={token}>
+		<ApiContext.Provider value={{ authToken, setAuthToken }}>
 			<SelectedDataContext.Provider value={providerProps}>
 				<div className="REACT_APP">
 					<SimplyinContainer>
@@ -223,16 +246,18 @@ export const SimplyID = () => {
 						></input>
 
 
-						{phoneNumber && <SimplyinSmsPopupOpenerIcon onClick={handleOpenSmsPopup} token={token} />}
+						{phoneNumber && <SimplyinSmsPopupOpenerIcon onClick={handleOpenSmsPopup} token={authToken} />}
 					</SimplyinContainer>
 
 					{phoneNumber && <PinCodeModal
+						selectedUserData={selectedUserData}
+						setSelectedUserData={setSelectedUserData}
 						modalStep={modalStep}
 						setModalStep={setModalStep}
 						userData={userData}
 						setUserData={setUserData}
 						simplyInput={simplyInput}
-						setToken={setToken}
+						setToken={setAuthToken}
 						phoneNumber={phoneNumber}
 						visible={visible}
 						setVisible={setVisible}

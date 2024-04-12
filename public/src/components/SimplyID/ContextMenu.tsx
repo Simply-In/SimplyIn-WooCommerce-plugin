@@ -51,7 +51,8 @@ interface IContextMenu {
 export const ContextMenu = ({ userData, item, setEditItemIndex, property, setUserData, selectedPropertyIndex, setSelectedPropertyIndex }: IContextMenu) => {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const [openDialog, setOpenDialog] = useState(false);
-	const apiToken = useContext(ApiContext);
+	const apiToken = useContext(ApiContext)?.authToken;
+
 	const { t } = useTranslation();
 
 	const open = Boolean(anchorEl);

@@ -21,8 +21,9 @@ interface IPinCodePopup {
 	userData: any,
 	setUserData: any,
 	modalStep: any,
-	setModalStep: any
-
+	setModalStep: any,
+	selectedUserData: any,
+	setSelectedUserData: any
 }
 
 let WPformElements: { name: string, value: string }[]
@@ -36,12 +37,10 @@ let WPformElements: { name: string, value: string }[]
 
 
 //simply modal
-export const PinCodeModal = ({ userData, setUserData, phoneNumber, visible, setVisible, setToken, simplyInput, loginType, modalStep, setModalStep
+export const PinCodeModal = ({ userData, setUserData, phoneNumber, visible, setVisible, setToken, simplyInput, loginType, modalStep, setModalStep, selectedUserData, setSelectedUserData
 }: IPinCodePopup) => {
 
 
-
-	const [selectedUserData, setSelectedUserData] = useState({})
 	const [editItemIndex, setEditItemIndex] = useState<{ property: string, itemIndex: number, isNewData?: boolean } | null>(null)
 
 	useEffect(() => {

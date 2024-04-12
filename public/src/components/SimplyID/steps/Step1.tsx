@@ -1,18 +1,15 @@
 /* eslint-disable no-constant-condition */
 import { useContext, useEffect, useState } from 'react'
 import Countdown from 'react-countdown'
-import { PopupTitle, PopupTextMain, PinInputContainer, PopupTextSecondary, PopupCountDownContainer, PopupCodeNotDelivered, PopupSendAgain, MobileSystemsLinksContainer, SingleSystemLink } from '../SimplyID.styled'
+import { PopupTitle, PopupTextMain, PinInputContainer, PopupTextSecondary, PopupCountDownContainer, PopupCodeNotDelivered, PopupSendAgain } from '../SimplyID.styled'
 import { middlewareApi } from '../../../services/middlewareApi'
 import { PopupTextError } from '../../PhoneField/PhoneField.styled'
 import { removeDataSessionStorage, saveDataSessionStorage } from '../../../services/sessionStorageApi'
 import { SelectedDataContext, TypedLoginType } from '../SimplyID'
 import { OtpInput as OtpInputReactJS } from 'reactjs-otp-input'
-import { Divider, Link } from '@mui/material'
-import { selectPickupPointInpost } from '../../../functions/selectInpostPoint'
+import { Link } from '@mui/material'
 import { useTranslation } from "react-i18next";
-import { AndroidIcon } from '../../../assets/AndroidIcon'
-import { IosIcon } from '../../../assets/IosIcon'
-import { isSameShippingAndBillingAddresses } from './functions'
+import { predefinedFill } from './functions'
 
 const countdownRenderer = ({ formatted: { minutes, seconds } }: any) => {
 	return <span>{minutes}:{seconds}</span>;
@@ -75,8 +72,6 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 					i18n.changeLanguage(res.data?.language.toLowerCase())
 				}
 
-
-
 				setUserData({ ...res.data })
 				saveDataSessionStorage({ key: 'UserData', data: res.data })
 				saveDataSessionStorage({ key: 'simplyinToken', data: res.authToken })
@@ -84,140 +79,17 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 				setToken(res.authToken)
 				changeInputValue(simplyinTokenInputField, res.authToken);
 
-				const { billingAddresses, shippingAddresses, parcelLockers } = res.data
-
-				if (billingAddresses.length === 0) {
-					setModalStep(2)
-					return
-				}
-
-				if (billingAddresses.length === 1 && shippingAddresses.length === 1 && parcelLockers.length === 0) {
-
-					let shippingElement = shippingAddresses[0]
-					if (isSameShippingAndBillingAddresses({ billingAddress: billingAddresses[0], shippingAddress: shippingAddresses[0] })) {
-						shippingElement = null
-						setSelectedShippingIndex(null)
-						sessionStorage.setItem("ShippingIndex", `null`)
-						setSameDeliveryAddress(true)
-					} else {
-						setSelectedShippingIndex(0)
-						sessionStorage.setItem("ShippingIndex", `0`)
-						setSameDeliveryAddress(false)
-					}
-
-					setSelectedBillingIndex(0)
-					setSelectedDeliveryPointIndex(null)
-
-					sessionStorage.setItem("BillingIndex", `0`)
-					sessionStorage.setItem("ParcelIndex", `null`)
-
-					setSelectedUserData((prev: any) => {
-						return ({
-							...prev,
-							billingAddresses: billingAddresses[0],
-							shippingAddresses: shippingElement,
-							parcelLockers: null
-						})
-					})
-
-					handleClosePopup()
-					setModalStep(2)
-					return
-				}
-				if (billingAddresses.length === 1 && shippingAddresses.length && parcelLockers.length === 0) {
-
-
-					setSelectedBillingIndex(0)
-					setSelectedShippingIndex(0)
-					setSelectedDeliveryPointIndex(null)
-					sessionStorage.setItem("BillingIndex", `0`)
-					sessionStorage.setItem("ShippingIndex", `0`)
-					sessionStorage.setItem("ParcelIndex", `null`)
-					setSameDeliveryAddress(false)
-					setSelectedUserData((prev: any) => {
-						return ({
-							...prev,
-							billingAddresses: billingAddresses[0],
-							shippingAddresses: shippingAddresses[0],
-							parcelLockers: null
-						})
-					})
-					setModalStep(2)
-					return
-				}
-
-				if (billingAddresses.length === 1 && shippingAddresses.length === 0 && parcelLockers.length === 0) {
-
-
-					setSelectedBillingIndex(0)
-					setSelectedShippingIndex(null)
-					setSelectedDeliveryPointIndex(null)
-					sessionStorage.setItem("BillingIndex", `0`)
-					sessionStorage.setItem("ShippingIndex", `null`)
-					sessionStorage.setItem("ParcelIndex", `null`)
-					setSameDeliveryAddress(true)
-					setSelectedUserData((prev: any) => {
-						return ({
-							...prev,
-							billingAddresses: billingAddresses[0],
-							shippingAddresses: null,
-							parcelLockers: null
-						})
-					})
-
-					setModalStep(2)
-					handleClosePopup()
-					return
-				}
-				if (billingAddresses.length === 1 && shippingAddresses.length === 0 && parcelLockers.length === 1) {
-
-					setSelectedBillingIndex(0)
-					setSelectedShippingIndex(null)
-					setSelectedDeliveryPointIndex(0)
-					sessionStorage.setItem("BillingIndex", `0`)
-					sessionStorage.setItem("ShippingIndex", `null`)
-					sessionStorage.setItem("ParcelIndex", `0`)
-					setSameDeliveryAddress(true)
-
-					setSelectedUserData((prev: any) => {
-						return ({
-							...prev,
-							billingAddresses: billingAddresses[0],
-							shippingAddresses: null,
-							parcelLockers: parcelLockers[0]
-
-						})
-					})
-					selectPickupPointInpost({ deliveryPointID: parcelLockers[0].lockerId });
-					setModalStep(2)
-					handleClosePopup()
-					return
-				}
-
-				if (billingAddresses.length === 1 && shippingAddresses.length === 0 && parcelLockers.length) {
-					setSelectedBillingIndex(0)
-					setSelectedShippingIndex(null)
-					setSelectedDeliveryPointIndex(0)
-					sessionStorage.setItem("BillingIndex", `0`)
-					sessionStorage.setItem("ShippingIndex", `null`)
-					sessionStorage.setItem("ParcelIndex", `0`)
-
-					setSameDeliveryAddress(true)
-					setPickupPointDelivery(true)
-					setSelectedUserData((prev: any) => {
-						return ({
-							...prev,
-							billingAddresses: billingAddresses[0],
-							shippingAddresses: null,
-							parcelLockers: parcelLockers[0]
-
-						})
-					})
-
-					setModalStep(2)
-					return
-				}
 				setModalStep(2)
+				predefinedFill(res.data, handleClosePopup, {
+					setSelectedBillingIndex,
+					setSelectedShippingIndex,
+					setSelectedDeliveryPointIndex,
+					setSameDeliveryAddress,
+					setPickupPointDelivery,
+					setSelectedUserData
+				})
+
+
 			}
 		});
 	};
@@ -230,9 +102,6 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [pinCode])
-
-
-	// type sendPinAgainMethodType = "sms" | "email"
 
 	//send ping again execution
 	const handleSendPinAgain = () => {
@@ -384,7 +253,7 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 					</>}</>
 			}
 
-			{loginType === "pinCode" &&
+			{/* {loginType === "pinCode" &&
 				<>
 					<Divider style={{ marginTop: 24, marginBottom: 12 }} />
 			<PopupTextSecondary>
@@ -394,7 +263,7 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 				<SingleSystemLink href='#'><AndroidIcon />Android</SingleSystemLink>
 				<SingleSystemLink href='#'><IosIcon />iOS</SingleSystemLink>
 					</MobileSystemsLinksContainer>
-				</>}
+				</>} */}
 		</>
 	)
 }
