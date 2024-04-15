@@ -617,6 +617,7 @@ function onOrderCreate($order)
 				"marketingConsent" => false,
 			),
 			"newOrderData" => array(
+				"orderNumber" => $order->get_order_number(),
 				"price" => (float) $order->get_total(),
 				"currency" => $order->get_currency(),
 				"items" => $items_data,
@@ -673,6 +674,7 @@ function onOrderCreate($order)
 
 		$body_data = array(
 			"newOrderData" => array(
+				"orderNumber" => $order->get_order_number(),
 				"price" => (float) $order->get_total(),
 				"currency" => $order->get_currency(),
 				"items" => $items_data,
