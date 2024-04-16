@@ -108,12 +108,8 @@ export const SimplyID = () => {
 
 					setPhoneNumber(res?.data || "")
 					setVisible(true)
-
 					setLoginType("pinCode")
-					// setLoginType(res?.data?.loginType)
 
-
-					// console.log(res)
 				})
 					.catch((err) => {
 						console.log('my err', err);
