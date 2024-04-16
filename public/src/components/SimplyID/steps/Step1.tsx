@@ -317,30 +317,34 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 					</PopupCountDownContainer>
 
 					:
-					<>
+					<div>
 						<PopupCodeNotDelivered>
 							{t('modal-step-1.codeNotArrived')}
 						</PopupCodeNotDelivered>
-						<PopupSendAgain>
-							<Link component="button" id="send-again-btn" underline="hover" onClick={
-								() => handleSendPinAgain({ method: "sms" })
-
-							}>
+						<PopupSendAgain disabled={!!countdownError}>
+							<Link
+								disabled={!!countdownError}
+								component="button"
+								id="send-again-btn"
+								underline={countdownError ? "none" : "hover"}
+								onClick={() => handleSendPinAgain({ method: "sms" })}
+							>
 								{t('modal-step-1.sendAgain')}
 
 							</Link>
 							&nbsp; {t('modal-step-1.or')} &nbsp;
 							<Link
+								disabled={!!countdownError}
 								component="button"
 								id="send-again-email-btn"
 								value="mail"
 								onClick={() => handleSendPinAgain({ method: "email" })}
-								underline="hover"
+								underline={countdownError ? "none" : "hover"}
 							>
 								{t('modal-step-1.sendViaEmail')}
 							</Link>
 						</PopupSendAgain>
-					</>}</>
+					</div>}</>
 			}
 
 			{/* {loginType === "pinCode" &&

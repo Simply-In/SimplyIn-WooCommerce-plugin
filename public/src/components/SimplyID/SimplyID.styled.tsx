@@ -97,7 +97,7 @@ export const PopupCodeNotDelivered = styled(PopupTextSecondary) <{ color?: strin
   margin-top: ${props => props?.marginTop || "16px"};
 `;
 
-export const PopupSendAgain = styled(PopupTextSecondary)`
+export const PopupSendAgain = styled(PopupTextSecondary) <{ disabled?: boolean }>`
 	color: #000;
 	margin-top: 0;
 	#send-again-email-btn{
@@ -105,7 +105,7 @@ export const PopupSendAgain = styled(PopupTextSecondary)`
 		padding: 0;
 		border-radius: 0;
 		background-color: transparent;
-		color: rgb(25, 118, 210);
+		color: ${props => props?.disabled ? "#ADC2E3" : "rgb(25, 118, 210)"};
 		text-transform: none;
 		font-size: 14px;
 		font-weight: 400;
