@@ -100,7 +100,7 @@ export const PopupCodeNotDelivered = styled(PopupTextSecondary) <{ color?: strin
 export const PopupSendAgain = styled(PopupTextSecondary) <{ disabled?: boolean }>`
 	color: #000;
 	margin-top: 0;
-	#send-again-email-btn{
+	#send-again-btn, #send-again-email-btn{
 		font-family: Inter, sans-serif;
 		padding: 0;
 		border-radius: 0;
