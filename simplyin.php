@@ -44,16 +44,12 @@ run_simplyin();
 
 // function onOrderUpdate($order_id, $old_status, $new_status, $order)
 // {
-
 // 	$real_order = wc_get_order($order_id);
 // 	error_log('STATUS UPDATE: ' . $order_id);
-
 // 	$order_status = $order->get_status();
-
 // 	$log_message = 'Custom script executed for order ID: ' . $order_id;
 // 	$logs_directory = plugin_dir_path(__FILE__) . 'logs/';
-
-// 	$log_file = $logs_directory . 'order_log.log';
+// 	$log_file = $logs_directory . 'order_log.json';
 // 	// file_put_contents($log_file, $log_message . PHP_EOL, FILE_APPEND);
 
 // 	// file_put_contents($log_file, "order" . $order_id . "old status: " . $old_status . "new status: " . $new_status . PHP_EOL, FILE_APPEND);
@@ -61,14 +57,12 @@ run_simplyin();
 
 // 	// file_put_contents($log_file, $log_message . PHP_EOL, FILE_APPEND);
 
-// 	// file_put_contents($log_file, json_encode($real_order->get_data()), FILE_APPEND);
+// 	file_put_contents($log_file, json_encode($real_order->get_data()), FILE_APPEND);
 // 	file_put_contents($log_file, "order" . $order_id . "old status: " . $old_status . "new status: " . $new_status . PHP_EOL, FILE_APPEND);
 
-
-
 // 	// tracking
-// 	// file_put_contents($log_file, $order->get_items(), FILE_APPEND);
-// 	// file_put_contents($log_file, '-------', FILE_APPEND);
+// 	file_put_contents($log_file, $order->get_items(), FILE_APPEND);
+// 	file_put_contents($log_file, '-------', FILE_APPEND);
 
 
 // 	echo json_encode($order);
@@ -617,7 +611,7 @@ function onOrderCreate($order)
 				"marketingConsent" => false,
 			),
 			"newOrderData" => array(
-				"orderNumber" => $order->get_order_number(),
+				"shopOrderNumber" => $order->get_order_number(),
 				"price" => (float) $order->get_total(),
 				"currency" => $order->get_currency(),
 				"items" => $items_data,
@@ -674,7 +668,7 @@ function onOrderCreate($order)
 
 		$body_data = array(
 			"newOrderData" => array(
-				"orderNumber" => $order->get_order_number(),
+				"shopOrderNumber" => $order->get_order_number(),
 				"price" => (float) $order->get_total(),
 				"currency" => $order->get_currency(),
 				"items" => $items_data,
