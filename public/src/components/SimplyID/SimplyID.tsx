@@ -7,10 +7,12 @@ import { changeInputValue, simplyinTokenInputField } from "./steps/Step1.tsx";
 import { useSelectedSimplyData } from "../../hooks/useSelectedSimplyData.ts";
 import PinCodeModal from "./PinCodeModal.tsx";
 import { useTranslation } from "react-i18next";
+import { useCounterData } from "../../hooks/useCounterData.ts";
 
 
 export const ApiContext = createContext("");
 export const SelectedDataContext = createContext<any>(null);
+export const CounterContext = createContext<any>({});
 
 
 export type TypedLoginType = "pinCode" | "app" | undefined
@@ -22,26 +24,37 @@ export const SimplyID = () => {
 	const [visible, setVisible] = useState<boolean>(true)
 	const [phoneNumber, setPhoneNumber] = useState("")
 	const [token, setToken] = useState("")
-
 	const [loginType, setLoginType] = useState<TypedLoginType>()
 
 	const {
 		selectedBillingIndex,
 		setSelectedBillingIndex,
-
 		selectedShippingIndex,
 		setSelectedShippingIndex,
-
 		sameDeliveryAddress,
 		setSameDeliveryAddress,
-
 		selectedDeliveryPointIndex,
 		setSelectedDeliveryPointIndex,
-
 		pickupPointDelivery,
 		setPickupPointDelivery
 
 	} = useSelectedSimplyData();
+
+	const {
+		countdown,
+		setCountdown,
+		countdownError,
+		setCountdownError,
+		errorPinCode,
+		setErrorPinCode,
+		modalError,
+		setModalError,
+		countdownTime,
+		setCountdownTime,
+		countdownTimeError,
+		setCountdownTimeError
+	} = useCounterData();
+
 
 
 	useEffect(() => {
@@ -158,35 +171,67 @@ export const SimplyID = () => {
 		pickupPointDelivery,
 		setPickupPointDelivery])
 
+
+	const counterProps = useMemo(() => {
+		return {
+			countdown,
+			setCountdown,
+			countdownError,
+			setCountdownError,
+			errorPinCode,
+			setErrorPinCode,
+			modalError,
+			setModalError,
+			countdownTime,
+			setCountdownTime,
+			countdownTimeError,
+			setCountdownTimeError
+		}
+	}, [countdown,
+		setCountdown,
+		countdownError,
+		setCountdownError,
+		errorPinCode,
+		setErrorPinCode,
+		modalError,
+		setModalError,
+		countdownTime,
+		setCountdownTime,
+		countdownTimeError,
+		setCountdownTimeError])
+
+
 	return (
 		<ApiContext.Provider value={token}>
 			<SelectedDataContext.Provider value={providerProps}>
-				<div className="REACT_APP">
-					<SimplyinContainer>
-						<input autoComplete="off"
-							{...attributeObject}
-							value={simplyInput}
-							onChange={handleSimplyInputChange}
-							type="email"
-							placeholder={t('emailPlaceholder')}
+				<CounterContext.Provider value={counterProps}>
 
-						></input>
+					<div className="REACT_APP">
+						<SimplyinContainer>
+							<input autoComplete="off"
+								{...attributeObject}
+								value={simplyInput}
+								onChange={handleSimplyInputChange}
+								type="email"
+								placeholder={t('emailPlaceholder')}
 
-
-						{phoneNumber && <SimplyinSmsPopupOpenerIcon onClick={handleOpenSmsPopup} token={token} />}
-					</SimplyinContainer>
-
-					{phoneNumber && <PinCodeModal
-						simplyInput={simplyInput}
-						setToken={setToken}
-						phoneNumber={phoneNumber}
-						visible={visible}
-						setVisible={setVisible}
-						loginType={loginType}
+							></input>
 
 
-					/>}
-				</div >
+							{phoneNumber && <SimplyinSmsPopupOpenerIcon onClick={handleOpenSmsPopup} token={token} />}
+						</SimplyinContainer>
+
+						{phoneNumber && <PinCodeModal
+
+							simplyInput={simplyInput}
+							setToken={setToken}
+							phoneNumber={phoneNumber}
+							visible={visible}
+							setVisible={setVisible}
+							loginType={loginType}
+						/>}
+					</div >
+				</CounterContext.Provider>
 			</SelectedDataContext.Provider>
 		</ApiContext.Provider>
 	);

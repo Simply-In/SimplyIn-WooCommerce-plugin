@@ -17,7 +17,8 @@ interface IPinCodePopup {
 	setVisible: (arg: boolean) => void
 	setToken: any,
 	simplyInput: string,
-	loginType: TypedLoginType
+	loginType: TypedLoginType,
+
 
 }
 
@@ -33,6 +34,7 @@ let WPformElements: { name: string, value: string }[]
 
 //simply modal
 export const PinCodeModal = ({ phoneNumber, visible, setVisible, setToken, simplyInput, loginType
+
 }: IPinCodePopup) => {
 
 	const [userData, setUserData] = useState({})
@@ -96,7 +98,8 @@ export const PinCodeModal = ({ phoneNumber, visible, setVisible, setToken, simpl
 								setUserData={setUserData}
 								setSelectedUserData={setSelectedUserData}
 								simplyInput={simplyInput}
-								loginType={loginType} />}
+								loginType={loginType}
+							/>}
 						{modalStep === 2 &&
 							<Step2
 								handleClosePopup={handleClosePopup}

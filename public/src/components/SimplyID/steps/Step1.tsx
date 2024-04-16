@@ -1,24 +1,24 @@
 /* eslint-disable no-constant-condition */
 import { useContext, useEffect, useState } from 'react'
 import Countdown from 'react-countdown'
-import { PopupTitle, PopupTextMain, PinInputContainer, PopupTextSecondary, PopupCountDownContainer, PopupCodeNotDelivered, PopupSendAgain, MobileSystemsLinksContainer, SingleSystemLink, CounterSpan } from '../SimplyID.styled'
+import { PopupTitle, PopupTextMain, PinInputContainer, PopupTextSecondary, PopupCountDownContainer, PopupCodeNotDelivered, PopupSendAgain, CounterSpan } from '../SimplyID.styled'
 import { middlewareApi } from '../../../services/middlewareApi'
 import { PopupTextError } from '../../PhoneField/PhoneField.styled'
 import { removeDataSessionStorage, saveDataSessionStorage } from '../../../services/sessionStorageApi'
-import { SelectedDataContext, TypedLoginType } from '../SimplyID'
+import { CounterContext, SelectedDataContext, TypedLoginType } from '../SimplyID'
 import { OtpInput as OtpInputReactJS } from 'reactjs-otp-input'
-import { Divider, Link } from '@mui/material'
+import { Link } from '@mui/material'
 import { selectPickupPointInpost } from '../../../functions/selectInpostPoint'
 import { useTranslation } from "react-i18next";
-import { AndroidIcon } from '../../../assets/AndroidIcon'
-import { IosIcon } from '../../../assets/IosIcon'
+// import { AndroidIcon } from '../../../assets/AndroidIcon'
+// import { IosIcon } from '../../../assets/IosIcon'
 import { isSameShippingAndBillingAddresses } from './functions'
 
 const countdownRenderer = ({ formatted: { minutes, seconds } }: any) => {
 	return <CounterSpan>{minutes}:{seconds}</CounterSpan>;
 };
 
-const countdownTimeSeconds = 10
+const countdownTimeSeconds = 30
 
 const shortLang = (lang: string) => lang.substring(0, 2).toUpperCase();
 
@@ -32,6 +32,7 @@ interface IStep1 {
 	simplyInput: string
 	loginType: TypedLoginType
 
+
 }
 // eslint-disable-next-line react-refresh/only-export-components
 export const changeInputValue = (inputElement: any, newValue: any) => {
@@ -42,15 +43,10 @@ export const changeInputValue = (inputElement: any, newValue: any) => {
 // eslint-disable-next-line react-refresh/only-export-components
 export const simplyinTokenInputField = document.getElementById('simplyinTokenInput')
 
-export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData, setToken, setSelectedUserData, simplyInput, loginType }: IStep1) => {
+export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData, setToken, setSelectedUserData, simplyInput, loginType,
+}: IStep1) => {
 	const { t, i18n } = useTranslation();
 
-	const [countdown, setCountdown] = useState<boolean>(false)
-	const [countdownError, setCountdownError] = useState<boolean>(false)
-	const [errorPinCode, setErrorPinCode] = useState<string>("")
-	const [countdownTime, setCountdownTime] = useState<number>(0)
-	const [countdownTimeError, setCountdownTimeError] = useState<number>(0)
-	const [modalError, setModalError] = useState("")
 	const [pinCode, setPinCode] = useState('');
 	const {
 		setSelectedBillingIndex,
@@ -60,6 +56,20 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 		setPickupPointDelivery
 	} = useContext(SelectedDataContext)
 
+	const {
+		countdown,
+		setCountdown,
+		countdownError,
+		setCountdownError,
+		errorPinCode,
+		setErrorPinCode,
+		modalError,
+		setModalError,
+		countdownTime,
+		setCountdownTime,
+		countdownTimeError,
+		setCountdownTimeError
+	} = useContext(CounterContext)
 
 	//validating pin code function
 	// auto fill without opening for modal for specific cases 
@@ -72,6 +82,7 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 				email: simplyInput,
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				//@ts-ignore
+				// lng: "DE",
 				lng: shortLang(appLocalizer?.language) || "EN",
 			}
 		}).then(async (res) => {
@@ -86,12 +97,11 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 				if (match) {
 					const number = match[0] || undefined;
 
-
 					if (number && typeof (+number) === "number") {
 						console.log(+number);
 						setCountdownTimeError(Date.now() + +number * 1000)
 						setCountdownError(true)
-						setErrorPinCode(res?.message)
+						setErrorPinCode(res?.message.replace(match[0], "").trim(""))
 					}
 					return
 				}
@@ -264,20 +274,38 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 	}, [pinCode])
 
 
-	// type sendPinAgainMethodType = "sms" | "email"
+	type sendPinAgainMethodType = "sms" | "email"
 
 	//send ping again execution
-	const handleSendPinAgain = () => {
+	const handleSendPinAgain = ({ method }: { method: sendPinAgainMethodType }) => {
+
+
 		setCountdown(true)
 		setCountdownTime(Date.now() + countdownTimeSeconds * 1000)
 
-		middlewareApi({
-			endpoint: "checkout/resend-checkout-code-via-email",
-			method: 'POST',
-			requestBody: { "email": simplyInput }
-		}).catch((err) => {
-			console.log(err);
-		})
+		if (method === "email") {
+			middlewareApi({
+				endpoint: "checkout/resend-checkout-code-via-email",
+				method: 'POST',
+				requestBody: { "email": simplyInput }
+			}).then(() => {
+				setPinCode("")
+			}).catch((err) => {
+				console.log(err);
+			})
+		}
+		if (method === "sms") {
+			middlewareApi({
+				endpoint: "checkout/submitEmail",
+				method: 'POST',
+				requestBody: { "email": simplyInput.trim().toLowerCase() }
+
+			}).then(() => {
+				setPinCode("")
+			}).catch((err) => {
+				console.log(err);
+			})
+		}
 
 	}
 
@@ -407,8 +435,8 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 
 				(countdown) ?
 
-					<PopupCountDownContainer >
-						<PopupCodeNotDelivered >
+					<PopupCountDownContainer color={"#E52424"}>
+						<PopupCodeNotDelivered color={"#E52424"} marginTop='0px'>
 							{t('modal-step-1.codeHasBeenSent')}
 						</PopupCodeNotDelivered>
 
@@ -422,12 +450,18 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 							{t('modal-step-1.codeNotArrived')}
 						</PopupCodeNotDelivered>
 						<PopupSendAgain>
+							<Link component="button" id="send-again-btn" underline="hover" onClick={
+								() => handleSendPinAgain({ method: "sms" })
 
+							}>
+								Wyślij ponownie
+							</Link>
+							&nbsp; lub &nbsp;
 							<Link
 								component="button"
 								id="send-again-email-btn"
 								value="mail"
-								onClick={handleSendPinAgain}
+								onClick={() => handleSendPinAgain({ method: "email" })}
 								underline="hover"
 							>
 								{t('modal-step-1.sendViaEmail')}
@@ -436,7 +470,7 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 					</>}</>
 			}
 
-			{loginType === "pinCode" &&
+			{/* {loginType === "pinCode" &&
 				<>
 					<Divider style={{ marginTop: 24, marginBottom: 12 }} />
 				<PopupTextSecondary>
@@ -446,7 +480,7 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 					<SingleSystemLink href='#'><AndroidIcon />Android</SingleSystemLink>
 					<SingleSystemLink href='#'><IosIcon />iOS</SingleSystemLink>
 					</MobileSystemsLinksContainer>
-				</>}
+				</>} */}
 		</>
 	)
 }
