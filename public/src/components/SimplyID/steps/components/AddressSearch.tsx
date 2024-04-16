@@ -28,7 +28,7 @@ export const AddressSearch = ({
 	addressNameRef }:
 	IAddressSearch) => {
 
-	const apiToken = useContext(ApiContext);
+	const apiToken = useContext(ApiContext)?.authToken;
 
 	const { t } = useTranslation();
 

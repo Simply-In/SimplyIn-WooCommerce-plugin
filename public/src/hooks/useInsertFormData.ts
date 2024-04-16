@@ -58,29 +58,30 @@ const fillBillingData = (userData: any, shopDefaultNipField: Element | null) => 
 	updateField("city", 'billing_city', address);
 	updateField("companyName", 'billing_company', address);
 
+	try {
+		if ("country" in address) {
+			const savedCountryCode = address.country;
+			const countrySelect = document.getElementById('billing_country') as HTMLSelectElement;
+			const countrySpan = document.getElementById('select2-billing_country-container') as HTMLSpanElement
 
-	if ("country" in address) {
-		const savedCountryCode = address.country;
-		const countrySelect = document.getElementById('billing_country') as HTMLSelectElement;
-		const countrySpan = document.getElementById('select2-billing_country-container') as HTMLSpanElement
+			if (countrySelect?.options) {
+				for (let i = 0; i < countrySelect?.options.length; i++) {
+					if (countrySelect?.options[i].value === savedCountryCode) {
+						countrySelect.selectedIndex = i;
 
-		if (countrySelect?.options) {
-			for (let i = 0; i < countrySelect?.options.length; i++) {
-				if (countrySelect?.options[i].value === savedCountryCode) {
-					countrySelect.selectedIndex = i;
+						if (countrySpan?.innerText) {
+							countrySpan.innerText = countrySelect?.options[i].innerText || ""
+						}
 
-					if (countrySpan?.innerText) {
-						countrySpan.innerText = countrySelect?.options[i].innerText || ""
+						//causing shipping method update
+						const changeEvent = new Event('change', { bubbles: true });
+						countrySelect.dispatchEvent(changeEvent);
+						break;
 					}
-
-					//causing shipping method update
-					const changeEvent = new Event('change', { bubbles: true });
-					countrySelect.dispatchEvent(changeEvent);
-					break;
 				}
 			}
 		}
-	}
+	} catch (err) { console.log(err) }
 
 	updateField("appartmentNumber", 'billing_address_2', address);
 
@@ -148,42 +149,44 @@ const fillShippingData = (userData: any, fillWithBilling = false) => {
 	}
 	if (fillWithBilling) {
 
-	try {
-		if (checkbox) {
-			(checkbox as HTMLInputElement).checked = false;
+		try {
+			if (checkbox) {
+				(checkbox as HTMLInputElement).checked = false;
 
-			const changeEvent = new Event('change', { bubbles: true });
-			checkbox.dispatchEvent(changeEvent);
+				const changeEvent = new Event('change', { bubbles: true });
+				checkbox.dispatchEvent(changeEvent);
 
 
+			}
+		} catch (err) {
+			console.log(err);
 		}
-	} catch (err) {
-		console.log(err);
-	}
 	}
 	updateShippingFields(shippingAddress)
-	if ("country" in shippingAddress) {
-		const savedCountryCode = shippingAddress.country || "";
+	try {
+		if ("country" in shippingAddress) {
+			const savedCountryCode = shippingAddress.country || "";
 
-		const countrySelect = document.getElementById('shipping_country') as HTMLSelectElement;
-		const countrySpan = document.getElementById('select2-shipping_country-container') as HTMLSpanElement
+			const countrySelect = document.getElementById('shipping_country') as HTMLSelectElement;
+			const countrySpan = document.getElementById('select2-shipping_country-container') as HTMLSpanElement
 
-		if (countrySelect) {
-			for (let i = 0; i < countrySelect.options.length; i++) {
-				if (countrySelect.options[i].value === savedCountryCode) {
-					countrySelect.selectedIndex = i;
+			if (countrySelect?.options) {
+				for (let i = 0; i < countrySelect.options.length; i++) {
+					if (countrySelect.options[i].value === savedCountryCode) {
+						countrySelect.selectedIndex = i;
 
-					if (countrySpan?.innerText) {
-						countrySpan.innerText = countrySelect.options[i].innerText || ""
+						if (countrySpan?.innerText) {
+							countrySpan.innerText = countrySelect.options[i].innerText || ""
+						}
+						const changeEvent = new Event('change', { bubbles: true });
+						countrySelect.dispatchEvent(changeEvent);
+						break;
 					}
-					const changeEvent = new Event('change', { bubbles: true });
-					countrySelect.dispatchEvent(changeEvent);
-					break;
 				}
 			}
-		}
 
-	}
+		}
+	} catch (err) { console.log(err) }
 
 	if (fillWithBilling) {
 		return
@@ -191,7 +194,7 @@ const fillShippingData = (userData: any, fillWithBilling = false) => {
 
 	try {
 		if (checkbox) {
-			(checkbox as HTMLInputElement).checked = true;
+			(checkbox as HTMLInputElement).checked = false;
 
 			const changeEvent = new Event('change', { bubbles: true });
 			checkbox.dispatchEvent(changeEvent);
@@ -235,11 +238,13 @@ export const useInsertFormData = (userData: any, formElements: any) => {
 		if (!Object.keys(userData).length) {
 			return
 		}
-		if (userData.phoneNumber) {
+		if (userData?.phoneNumber) {
 			const billingPhone = document.getElementById('billing_phone') as HTMLInputElement;
+			try {
 			if (billingPhone) {
 				billingPhone.value = userData.phoneNumber;
 			}
+			} catch (err) { console.log(err) }
 		}
 
 		if (userData?.billingAddresses) {

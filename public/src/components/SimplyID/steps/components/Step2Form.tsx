@@ -76,7 +76,8 @@ export const Step2Form = ({
 	});
 
 
-	const apiToken = useContext(ApiContext);
+	const apiToken = useContext(ApiContext)?.authToken;
+
 
 	const { editData }: any = editItem
 

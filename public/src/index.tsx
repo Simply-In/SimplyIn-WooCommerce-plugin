@@ -6,37 +6,6 @@ import SimplyBrandIcon from "./assets/SimplyBrandIcon";
 import { middlewareApi } from "./services/middlewareApi";
 import { saveDataSessionStorage } from "./services/sessionStorageApi";
 import './i18n.ts'
-// import { selectIPickupPointInpost } from "./functions/selectInpostPoint";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-
-type data = {
-	selector?: string;
-	getFirst?: boolean
-
-}
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//@ts-ignore
-const waitForElementToRender = (data: data) => {
-
-	return new Promise((resolve) => {
-		const observer = new MutationObserver(() => {
-
-			const element = () => {
-				if (data?.selector && !data?.getFirst) {
-					return document.querySelector(data.selector);
-				} else if (data?.selector && data?.getFirst) {
-					return document.querySelectorAll(data.selector)[0];
-				}
-
-			}
-			if (element()) {
-				observer.disconnect();
-				resolve(element());
-			}
-		});
-		observer.observe(document.body, { childList: true, subtree: true });
-	});
-}
 
 // checking if there is a custom or built taxId/nip in field
 const nipFieldHandling = () => {

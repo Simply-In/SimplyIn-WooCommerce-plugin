@@ -8,11 +8,12 @@ import { removeDataSessionStorage, saveDataSessionStorage } from '../../../servi
 import { CounterContext, SelectedDataContext, TypedLoginType } from '../SimplyID'
 import { OtpInput as OtpInputReactJS } from 'reactjs-otp-input'
 import { Link } from '@mui/material'
-import { selectPickupPointInpost } from '../../../functions/selectInpostPoint'
-import { useTranslation } from "react-i18next";
+
 // import { AndroidIcon } from '../../../assets/AndroidIcon'
 // import { IosIcon } from '../../../assets/IosIcon'
-import { isSameShippingAndBillingAddresses } from './functions'
+
+import { useTranslation } from "react-i18next";
+import { predefinedFill } from './functions'
 
 const countdownRenderer = ({ formatted: { minutes, seconds } }: any) => {
 	return <CounterSpan>{minutes}:{seconds}</CounterSpan>;
@@ -116,8 +117,6 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 					i18n.changeLanguage(res.data?.language.toLowerCase())
 				}
 
-
-
 				setUserData({ ...res.data })
 				saveDataSessionStorage({ key: 'UserData', data: res.data })
 				saveDataSessionStorage({ key: 'simplyinToken', data: res.authToken })
@@ -125,140 +124,17 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 				setToken(res.authToken)
 				changeInputValue(simplyinTokenInputField, res.authToken);
 
-				const { billingAddresses, shippingAddresses, parcelLockers } = res.data
-
-				if (billingAddresses.length === 0) {
-					setModalStep(2)
-					return
-				}
-
-				if (billingAddresses.length === 1 && shippingAddresses.length === 1 && parcelLockers.length === 0) {
-
-					let shippingElement = shippingAddresses[0]
-					if (isSameShippingAndBillingAddresses({ billingAddress: billingAddresses[0], shippingAddress: shippingAddresses[0] })) {
-						shippingElement = null
-						setSelectedShippingIndex(null)
-						sessionStorage.setItem("ShippingIndex", `null`)
-						setSameDeliveryAddress(true)
-					} else {
-						setSelectedShippingIndex(0)
-						sessionStorage.setItem("ShippingIndex", `0`)
-						setSameDeliveryAddress(false)
-					}
-
-					setSelectedBillingIndex(0)
-					setSelectedDeliveryPointIndex(null)
-
-					sessionStorage.setItem("BillingIndex", `0`)
-					sessionStorage.setItem("ParcelIndex", `null`)
-
-					setSelectedUserData((prev: any) => {
-						return ({
-							...prev,
-							billingAddresses: billingAddresses[0],
-							shippingAddresses: shippingElement,
-							parcelLockers: null
-						})
-					})
-
-					handleClosePopup()
-					setModalStep(2)
-					return
-				}
-				if (billingAddresses.length === 1 && shippingAddresses.length && parcelLockers.length === 0) {
-
-
-					setSelectedBillingIndex(0)
-					setSelectedShippingIndex(0)
-					setSelectedDeliveryPointIndex(null)
-					sessionStorage.setItem("BillingIndex", `0`)
-					sessionStorage.setItem("ShippingIndex", `0`)
-					sessionStorage.setItem("ParcelIndex", `null`)
-					setSameDeliveryAddress(false)
-					setSelectedUserData((prev: any) => {
-						return ({
-							...prev,
-							billingAddresses: billingAddresses[0],
-							shippingAddresses: shippingAddresses[0],
-							parcelLockers: null
-						})
-					})
-					setModalStep(2)
-					return
-				}
-
-				if (billingAddresses.length === 1 && shippingAddresses.length === 0 && parcelLockers.length === 0) {
-
-
-					setSelectedBillingIndex(0)
-					setSelectedShippingIndex(null)
-					setSelectedDeliveryPointIndex(null)
-					sessionStorage.setItem("BillingIndex", `0`)
-					sessionStorage.setItem("ShippingIndex", `null`)
-					sessionStorage.setItem("ParcelIndex", `null`)
-					setSameDeliveryAddress(true)
-					setSelectedUserData((prev: any) => {
-						return ({
-							...prev,
-							billingAddresses: billingAddresses[0],
-							shippingAddresses: null,
-							parcelLockers: null
-						})
-					})
-
-					setModalStep(2)
-					handleClosePopup()
-					return
-				}
-				if (billingAddresses.length === 1 && shippingAddresses.length === 0 && parcelLockers.length === 1) {
-
-					setSelectedBillingIndex(0)
-					setSelectedShippingIndex(null)
-					setSelectedDeliveryPointIndex(0)
-					sessionStorage.setItem("BillingIndex", `0`)
-					sessionStorage.setItem("ShippingIndex", `null`)
-					sessionStorage.setItem("ParcelIndex", `0`)
-					setSameDeliveryAddress(true)
-
-					setSelectedUserData((prev: any) => {
-						return ({
-							...prev,
-							billingAddresses: billingAddresses[0],
-							shippingAddresses: null,
-							parcelLockers: parcelLockers[0]
-
-						})
-					})
-					selectPickupPointInpost({ deliveryPointID: parcelLockers[0].lockerId });
-					setModalStep(2)
-					handleClosePopup()
-					return
-				}
-
-				if (billingAddresses.length === 1 && shippingAddresses.length === 0 && parcelLockers.length) {
-					setSelectedBillingIndex(0)
-					setSelectedShippingIndex(null)
-					setSelectedDeliveryPointIndex(0)
-					sessionStorage.setItem("BillingIndex", `0`)
-					sessionStorage.setItem("ShippingIndex", `null`)
-					sessionStorage.setItem("ParcelIndex", `0`)
-
-					setSameDeliveryAddress(true)
-					setPickupPointDelivery(true)
-					setSelectedUserData((prev: any) => {
-						return ({
-							...prev,
-							billingAddresses: billingAddresses[0],
-							shippingAddresses: null,
-							parcelLockers: parcelLockers[0]
-
-						})
-					})
-
-					setModalStep(2)
-					return
-				}
 				setModalStep(2)
+				predefinedFill(res.data, handleClosePopup, {
+					setSelectedBillingIndex,
+					setSelectedShippingIndex,
+					setSelectedDeliveryPointIndex,
+					setSameDeliveryAddress,
+					setPickupPointDelivery,
+					setSelectedUserData
+				})
+
+
 			}
 		});
 	};
@@ -281,14 +157,13 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 
 		setCountdown(true)
 		setCountdownTime(Date.now() + countdownTimeSeconds * 1000)
+		setPinCode("")
 
 		if (method === "email") {
 			middlewareApi({
 				endpoint: "checkout/resend-checkout-code-via-email",
 				method: 'POST',
 				requestBody: { "email": simplyInput }
-			}).then(() => {
-				setPinCode("")
 			}).catch((err) => {
 				console.log(err);
 			})
@@ -299,8 +174,6 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 				method: 'POST',
 				requestBody: { "email": simplyInput.trim().toLowerCase() }
 
-			}).then(() => {
-				setPinCode("")
 			}).catch((err) => {
 				console.log(err);
 			})
@@ -344,7 +217,7 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 
 	return (
 		<>
-			<PopupTitle>	{t('modal-step-1.confirm')}</PopupTitle>
+			<PopupTitle style={{ margin: loginType === "pinCode" ? "inherit" : "4px auto 12px" }}>	{t('modal-step-1.confirm')}</PopupTitle>
 
 			{loginType === "pinCode" &&
 				<>
@@ -426,7 +299,7 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 
 
 
-			<PopupTextSecondary style={{ paddingBottom: loginType === "app" ? '32px' : "inherit" }}>
+			<PopupTextSecondary style={{ paddingBottom: loginType === "app" ? '24px' : "inherit" }}>
 				{t('modal-step-1.editAfterLogin')}
 			</PopupTextSecondary>
 

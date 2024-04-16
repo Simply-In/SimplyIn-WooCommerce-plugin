@@ -41,7 +41,6 @@ function run_simplyin()
 
 run_simplyin();
 
-
 // function onOrderUpdate($order_id, $old_status, $new_status, $order)
 // {
 // 	$real_order = wc_get_order($order_id);
@@ -151,7 +150,6 @@ function load_Simply_React_App()
 
 
 	$shipping_methods = $woocommerce->shipping->get_shipping_methods();
-	$apiKey = get_option('simplyin_api_key');
 	$inpostApiKey = get_option('simply_inpost_apikey');
 
 	$base_url = home_url();
@@ -168,7 +166,6 @@ function load_Simply_React_App()
 		'nonce' => wp_create_nonce('wp_rest'),
 		'language' => get_locale(),
 		'shippingMethods' => $methods,
-		'apiKey' => $apiKey,
 		'inpostApiKey' => $inpostApiKey,
 		'shipping' => $shipping_titles,
 		'base_url' => $base_url,
@@ -415,7 +412,7 @@ function customRestApiCallback()
 
 	$base_url = home_url();
 	$headers = array('Content-Type: application/json', 'Origin: ' . $base_url);
-
+	// $headers = array('Content-Type: application/json');
 	$data = json_decode(file_get_contents("php://input"), true);
 	$endpoint = $data['endpoint'];
 	$method = strtoupper($data['method']);
@@ -495,6 +492,9 @@ function sendPostRequest($bodyData, $endpoint, $token)
 	}
 	$bodyData['merchantApiKey'] = $merchantToken;
 
+	// $headers = array('Content-Type: application/json');
+	$base_url = home_url();
+	$headers = array('Content-Type: application/json', 'Origin: ' . $base_url);
 	// $headers = array('Content-Type: application/json');
 	$base_url = home_url();
 	$headers = array('Content-Type: application/json', 'Origin: ' . $base_url);

@@ -7,10 +7,15 @@ import { changeInputValue, simplyinTokenInputField } from "./steps/Step1.tsx";
 import { useSelectedSimplyData } from "../../hooks/useSelectedSimplyData.ts";
 import PinCodeModal from "./PinCodeModal.tsx";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "../../hooks/useAuth.ts";
+import { saveDataSessionStorage } from "../../services/sessionStorageApi.ts";
+import { predefinedFill } from "./steps/functions.ts";
+
+
 import { useCounterData } from "../../hooks/useCounterData.ts";
 
 
-export const ApiContext = createContext("");
+export const ApiContext = createContext<any>(null);
 export const SelectedDataContext = createContext<any>(null);
 export const CounterContext = createContext<any>({});
 
@@ -18,14 +23,19 @@ export const CounterContext = createContext<any>({});
 export type TypedLoginType = "pinCode" | "app" | undefined
 //main simply app - email field
 export const SimplyID = () => {
+	const [modalStep, setModalStep] = useState(1)
+	const [userData, setUserData] = useState({})
 	const { t } = useTranslation();
 	const [simplyInput, setSimplyInput] = useState("");
 	const [attributeObject, setAttributeObject] = useState({});
 	const [visible, setVisible] = useState<boolean>(true)
 	const [phoneNumber, setPhoneNumber] = useState("")
-	const [token, setToken] = useState("")
-	const [loginType, setLoginType] = useState<TypedLoginType>()
+	const [notificationTokenId, setNotificationTokenId] = useState("")
+	const [selectedUserData, setSelectedUserData] = useState({})
 
+	const [loginType, setLoginType] = useState<TypedLoginType>()
+	const [counter, setCounter] = useState(0)
+	const { authToken, setAuthToken } = useAuth()
 	const {
 		selectedBillingIndex,
 		setSelectedBillingIndex,
@@ -59,9 +69,7 @@ export const SimplyID = () => {
 
 	useEffect(() => {
 		const YodaInput = document.getElementById("billing_email") || document.getElementById("email");
-
 		YodaInput?.remove();
-
 		const attributes: any = YodaInput?.attributes;
 		const attributeKeeper: any = {};
 		for (const attribute of attributes) {
@@ -87,6 +95,59 @@ export const SimplyID = () => {
 		sessionStorage.removeItem("UserData")
 	}
 
+	const handleClosePopup = () => {
+		setVisible(false)
+	}
+
+	const maxAttempts = 30 * 1000 / 500; // 30 seconds divided by 500ms
+
+	useEffect(() => {
+
+		if (!notificationTokenId || modalStep !== 1) {			
+			return
+		}
+
+		middlewareApi({
+			endpoint: "checkout/checkIfSubmitEmailPushNotificationWasConfirmed",
+			method: 'POST',
+			requestBody: { "email": simplyInput.trim().toLowerCase(), "notificationTokenId": notificationTokenId, language: "EN" }
+		})
+			.then(({ ok, authToken, userData }) => {
+				if (authToken) {
+					setAuthToken(authToken)
+					saveDataSessionStorage({ key: 'simplyinToken', data: authToken })
+					changeInputValue(simplyinTokenInputField, authToken);
+				}
+				if (ok) {
+					setUserData(userData)
+
+					saveDataSessionStorage({ key: 'UserData', data: userData })
+					setVisible(true)
+					setModalStep(2)
+
+					predefinedFill(userData, handleClosePopup, {
+						setSelectedBillingIndex,
+						setSelectedShippingIndex,
+						setSelectedDeliveryPointIndex,
+						setSameDeliveryAddress,
+						setPickupPointDelivery,
+						setSelectedUserData
+					})
+				} else if (counter < maxAttempts) {
+
+					setTimeout(() => setCounter((prev) => prev + 1), 1000);
+				} else {
+					console.log('Login not accepted within 30 seconds');
+				}
+			})
+			.catch(error => {
+				console.error('Error checking login status:', error);
+			});
+
+
+	}, [notificationTokenId, counter, visible])
+
+
 	useEffect(() => {
 		setVisible(false)
 		setPhoneNumber("")
@@ -95,21 +156,29 @@ export const SimplyID = () => {
 		setSelectedBillingIndex(0)
 		setSelectedShippingIndex(null)
 		setSelectedDeliveryPointIndex(null)
+		setNotificationTokenId("")
 
-		if (!token) {
+		if (!authToken) {
 			const debouncedRequest = debounce(() => {
 
 				middlewareApi({
 					endpoint: "checkout/submitEmail",
 					method: 'POST',
 					requestBody: { "email": simplyInput.trim().toLowerCase() }
+				}).then(({ data: phoneNumber, userUsedPushNotifications, notificationTokenId }) => {
 
-				}).then(res => {
 
-					setPhoneNumber(res?.data || "")
+					setPhoneNumber(phoneNumber)
 					setVisible(true)
-					setLoginType("pinCode")
 
+					setLoginType(userUsedPushNotifications ? "app" : "pinCode")
+
+					if (userUsedPushNotifications) {
+						setNotificationTokenId(notificationTokenId)
+						// isLoginAccepted(notificationTokenId)
+					}
+				}).catch((err) => {
+					console.log(err);
 				})
 					.catch((err) => {
 						console.log('my err', err);
@@ -126,12 +195,11 @@ export const SimplyID = () => {
 	}, [simplyInput]);
 
 
-
 	useEffect(() => {
 
 		const simplyinTokenInput = document.getElementById('simplyinTokenInput');
 		const handleSimplyTokenChange = () => {
-			setToken((simplyinTokenInput as HTMLInputElement)?.value)
+			setAuthToken((simplyinTokenInput as HTMLInputElement)?.value)
 		}
 
 		simplyinTokenInput?.addEventListener('input', handleSimplyTokenChange);
@@ -197,7 +265,7 @@ export const SimplyID = () => {
 
 
 	return (
-		<ApiContext.Provider value={token}>
+		<ApiContext.Provider value={{ authToken, setAuthToken }}>
 			<SelectedDataContext.Provider value={providerProps}>
 				<CounterContext.Provider value={counterProps}>
 
@@ -213,13 +281,19 @@ export const SimplyID = () => {
 							></input>
 
 
-							{phoneNumber && <SimplyinSmsPopupOpenerIcon onClick={handleOpenSmsPopup} token={token} />}
-						</SimplyinContainer>
+						{phoneNumber && <SimplyinSmsPopupOpenerIcon onClick={handleOpenSmsPopup} token={authToken} />}
+					</SimplyinContainer>
 
 						{phoneNumber && <PinCodeModal
 
-							simplyInput={simplyInput}
-							setToken={setToken}
+							selectedUserData={selectedUserData}
+						setSelectedUserData={setSelectedUserData}
+						modalStep={modalStep}
+						setModalStep={setModalStep}
+						userData={userData}
+						setUserData={setUserData}
+						simplyInput={simplyInput}
+							setToken={setAuthToken}
 							phoneNumber={phoneNumber}
 							visible={visible}
 							setVisible={setVisible}

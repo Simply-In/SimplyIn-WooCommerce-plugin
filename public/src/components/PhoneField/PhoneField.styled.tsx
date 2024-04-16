@@ -2,12 +2,19 @@ import styled from "styled-components";
 
 export const CheckboxContainer = styled.div`
 	display:flex;
-	margin-bottom:12px;`
+	margin-bottom:12px;
+	#checkbox-container-flex{
+		display: flex;
+		
+	}
+	
+	`
 
 export const CheckboxLabel = styled.div`
 	cursor: pointer;
 	font-size: 20px;
 	font-family: Inter, sans-serif;
+	color: rgb(17,17,17);
 	& span{
 		font-weight:700;
 		font-family: Inter, sans-serif;
