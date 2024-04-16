@@ -1,7 +1,7 @@
 /* eslint-disable no-constant-condition */
 import { useContext, useEffect, useState } from 'react'
 import Countdown from 'react-countdown'
-import { PopupTitle, PopupTextMain, PinInputContainer, PopupTextSecondary, PopupCountDownContainer, PopupCodeNotDelivered, PopupSendAgain, MobileSystemsLinksContainer, SingleSystemLink } from '../SimplyID.styled'
+import { PopupTitle, PopupTextMain, PinInputContainer, PopupTextSecondary, PopupCountDownContainer, PopupCodeNotDelivered, PopupSendAgain, MobileSystemsLinksContainer, SingleSystemLink, CounterSpan } from '../SimplyID.styled'
 import { middlewareApi } from '../../../services/middlewareApi'
 import { PopupTextError } from '../../PhoneField/PhoneField.styled'
 import { removeDataSessionStorage, saveDataSessionStorage } from '../../../services/sessionStorageApi'
@@ -15,9 +15,12 @@ import { IosIcon } from '../../../assets/IosIcon'
 import { isSameShippingAndBillingAddresses } from './functions'
 
 const countdownRenderer = ({ formatted: { minutes, seconds } }: any) => {
-	return <span>{minutes}:{seconds}</span>;
+	return <CounterSpan>{minutes}:{seconds}</CounterSpan>;
 };
+
 const countdownTimeSeconds = 10
+
+const shortLang = (lang: string) => lang.substring(0, 2).toUpperCase();
 
 interface IStep1 {
 	handleClosePopup: () => void;
@@ -43,7 +46,10 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 	const { t, i18n } = useTranslation();
 
 	const [countdown, setCountdown] = useState<boolean>(false)
+	const [countdownError, setCountdownError] = useState<boolean>(false)
+	const [errorPinCode, setErrorPinCode] = useState<string>("")
 	const [countdownTime, setCountdownTime] = useState<number>(0)
+	const [countdownTimeError, setCountdownTimeError] = useState<number>(0)
 	const [modalError, setModalError] = useState("")
 	const [pinCode, setPinCode] = useState('');
 	const {
@@ -61,13 +67,39 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 		middlewareApi({
 			endpoint: "checkout/submitCheckoutCode",
 			method: 'POST',
-			requestBody: { "code": value }
+			requestBody: {
+				"code": value,
+				email: simplyInput,
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				//@ts-ignore
+				lng: shortLang(appLocalizer?.language) || "EN",
+			}
 		}).then(async (res) => {
 
 			setModalError("")
+			setErrorPinCode("")
+
+			if (res?.code === "TOO_MANY_REQUESTS") {
+				const match = res?.message.match(/\d+/);
+
+				// Check if a number is found
+				if (match) {
+					const number = match[0] || undefined;
+
+
+					if (number && typeof (+number) === "number") {
+						console.log(+number);
+						setCountdownTimeError(Date.now() + +number * 1000)
+						setCountdownError(true)
+						setErrorPinCode(res?.message)
+					}
+					return
+				}
+			}
+
 			if (res?.isCodeValid === false) {
 				setModalError(t('modal-step-1.codeInvalid'))
-				throw new Error(res.message)
+				throw new Error(res?.message)
 
 			} else if (res?.data) {
 
@@ -253,6 +285,11 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 		setCountdown(false)
 	}
 
+	const handleCountdownErrorCompleted = () => {
+		setCountdownError(false)
+		setErrorPinCode("")
+	}
+
 
 	useEffect(() => {
 
@@ -278,60 +315,75 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 
 
 
-
 	return (
 		<>
 			<PopupTitle>	{t('modal-step-1.confirm')}</PopupTitle>
 
 			{loginType === "pinCode" &&
 				<>
-			<PopupTextMain> {t('modal-step-1.insertCode')} </PopupTextMain>
+				<PopupTextMain> {t('modal-step-1.insertCode')} </PopupTextMain>
 				<PopupTextMain> {phoneNumber} </PopupTextMain>
-			<PinInputContainer  >
-				<div>
-					<form id="OTPForm">
-						<OtpInputReactJS
-							value={pinCode}
-							onChange={setPinCode}
-							numInputs={4}
-							inputStyle={{
-								width: "40px",
-								height: "56px",
-								border: modalError ? "1px solid red" : "1px solid #D9D9D9",
-								borderRadius: "8px",
-								fontSize: "30px",
-								textAlign: "center",
-								padding: 0,
-								outlineWidth: "0px",
+				<PinInputContainer  >
+					<div>
+						<form id="OTPForm">
+							<OtpInputReactJS
+								value={pinCode}
+								onChange={setPinCode}
+								numInputs={4}
+								isDisabled={countdownError ? true : false}
+								inputStyle={{
+									width: "40px",
+									height: "56px",
+										border: modalError ? "1px solid red" : countdownError ? "1px solid #FFD3D3" : "1px solid #D9D9D9",
+										borderRadius: "8px",
+										fontSize: "30px",
+										textAlign: "center",
+										padding: 0,
+										outlineWidth: "0px",
 
-							}}
-							isInputNum={true}
-							shouldAutoFocus={true}
-							renderInput={
-								(props: any, id: any) =>
-									<input
-										{...props}
-										type="number"
-										pattern="\d*"
-										autoComplete='one-time-code'
-										id={`otp-input-${id + 1}`}
-										inputMode='numeric' />
-							}
-							inputType='numeric'
-							inputMode='numeric'
-							pattern="\d*"
+								}}
+								isInputNum={true}
+								shouldAutoFocus={true}
+								renderInput={
+									(props: any, id: any) =>
+										<input
+											{...props}
+											type="number"
+											pattern="\d*"
+											autoComplete='one-time-code'
+											id={`otp-input-${id + 1}`}
+											inputMode='numeric' />
+								}
+								inputType='numeric'
+								inputMode='numeric'
+								pattern="\d*"
 
 
+							/>
+
+						</form>
+					</div>
+
+				</PinInputContainer>
+				{countdownError ?
+					<PopupCountDownContainer color={"#E52424"}>
+						<PopupCodeNotDelivered color={"#E52424"} marginTop='0px'>
+							{errorPinCode}
+						</PopupCodeNotDelivered>
+						<Countdown
+							daysInHours={false}
+							renderer={countdownRenderer}
+							zeroPadTime={2}
+							zeroPadDays={2}
+							date={countdownTimeError}
+							onComplete={handleCountdownErrorCompleted}
 						/>
+					</PopupCountDownContainer>
+					:
+					null}
 
-					</form>
-				</div>
-
-			</PinInputContainer>
 				</>
 			}
-
-
 			{loginType === "app" &&
 
 				<PopupTextMain>
@@ -355,44 +407,44 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 
 				(countdown) ?
 
-				<PopupCountDownContainer>
-					<PopupCodeNotDelivered>
-						{t('modal-step-1.codeHasBeenSent')}
-					</PopupCodeNotDelivered>
+					<PopupCountDownContainer >
+						<PopupCodeNotDelivered >
+							{t('modal-step-1.codeHasBeenSent')}
+						</PopupCodeNotDelivered>
 
-					<Countdown daysInHours={false} renderer={countdownRenderer} zeroPadTime={2} zeroPadDays={2}
-						date={countdownTime} onComplete={handleCountdownCompleted} />
-				</PopupCountDownContainer>
+						<Countdown daysInHours={false} renderer={countdownRenderer} zeroPadTime={2} zeroPadDays={2}
+							date={countdownTime} onComplete={handleCountdownCompleted} />
+					</PopupCountDownContainer>
 
-				:
-				<>
-					<PopupCodeNotDelivered>
-						{t('modal-step-1.codeNotArrived')}
-					</PopupCodeNotDelivered>
-					<PopupSendAgain>
+					:
+					<>
+						<PopupCodeNotDelivered>
+							{t('modal-step-1.codeNotArrived')}
+						</PopupCodeNotDelivered>
+						<PopupSendAgain>
 
-						<Link
-							component="button"
-							id="send-again-email-btn"
-							value="mail"
-							onClick={handleSendPinAgain}
-							underline="hover"
-						>
-							{t('modal-step-1.sendViaEmail')}
-						</Link>
-					</PopupSendAgain>
+							<Link
+								component="button"
+								id="send-again-email-btn"
+								value="mail"
+								onClick={handleSendPinAgain}
+								underline="hover"
+							>
+								{t('modal-step-1.sendViaEmail')}
+							</Link>
+						</PopupSendAgain>
 					</>}</>
 			}
 
 			{loginType === "pinCode" &&
 				<>
 					<Divider style={{ marginTop: 24, marginBottom: 12 }} />
-			<PopupTextSecondary>
-				Loguj się za pomocą aplikacji. Pobierz teraz.
-			</PopupTextSecondary>
-			<MobileSystemsLinksContainer>
-				<SingleSystemLink href='#'><AndroidIcon />Android</SingleSystemLink>
-				<SingleSystemLink href='#'><IosIcon />iOS</SingleSystemLink>
+				<PopupTextSecondary>
+					Loguj się za pomocą aplikacji. Pobierz teraz.
+				</PopupTextSecondary>
+				<MobileSystemsLinksContainer>
+					<SingleSystemLink href='#'><AndroidIcon />Android</SingleSystemLink>
+					<SingleSystemLink href='#'><IosIcon />iOS</SingleSystemLink>
 					</MobileSystemsLinksContainer>
 				</>}
 		</>

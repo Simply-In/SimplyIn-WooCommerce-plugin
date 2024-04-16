@@ -91,10 +91,10 @@ export const PopupTextSecondary = styled.div`
   color: #757575;
   margin-top: 24px;
 `;
-export const PopupCodeNotDelivered = styled(PopupTextSecondary)`
-  color: #000;
-  margin-top: 16px;
+export const PopupCodeNotDelivered = styled(PopupTextSecondary) <{ color?: string, marginTop?: string }>`
   margin-bottom: 4px;
+  color: ${props => props?.color || "#000"};
+  margin-top: ${props => props?.marginTop || "16px"};
 `;
 
 export const PopupSendAgain = styled(PopupTextSecondary)`
@@ -127,11 +127,12 @@ export const PinInputContainer = styled.div`
 	}
 `;
 
-export const PopupCountDownContainer = styled.div`
+export const PopupCountDownContainer = styled.div<{ color?: string }>`
 	display: flex;
 	flex-direction:column;
 	justify-content: center;
 	align-items: center;
+	color: ${props => props?.color || "inherit"};
 `
 
 
@@ -263,4 +264,10 @@ export const HorizontalLine = styled.hr`
 	color: #D9D9D9;
 `
 
+export const CounterSpan = styled.span`
+	 font-family: Inter, sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+`
 
