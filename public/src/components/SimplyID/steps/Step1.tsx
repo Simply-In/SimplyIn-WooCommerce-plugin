@@ -98,7 +98,6 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 					const number = match[0] || undefined;
 
 					if (number && typeof (+number) === "number") {
-						console.log(+number);
 						setCountdownTimeError(Date.now() + +number * 1000)
 						setCountdownError(true)
 						setErrorPinCode(res?.message.replace(match[0], "").trim(""))

@@ -123,7 +123,6 @@ export const PhoneField = () => {
 		if (isValidPhoneNumber(number || "") || !number) {
 			setError('');
 		} else {
-			console.log('ERROR', number);
 			setError(t('payment.phoneNumberIncorrect'));
 		}
 	}

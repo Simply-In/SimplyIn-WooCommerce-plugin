@@ -8,9 +8,6 @@ import { saveDataSessionStorage } from "./services/sessionStorageApi";
 import './i18n.ts'
 // import { selectIPickupPointInpost } from "./functions/selectInpostPoint";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//@ts-ignore
-if (appLocalizer) { console.log((appLocalizer)); }
-
 
 type data = {
 	selector?: string;
@@ -47,8 +44,6 @@ const nipFieldHandling = () => {
 	const defaultNipField = document.querySelectorAll('input[placeholder*="nip" i]:not([id="billing_tax_id_simply"]), input[id*="nip" i]:not([id="billing_tax_id_simply"])')
 	//saving nipField id to session storage
 	const existingNipElement = [...defaultNipField][0];
-
-	// console.log('existingNipElement', existingNipElement);
 
 	const customNipFieldId = document.getElementById("simply_tax_label_id") as HTMLInputElement
 
@@ -114,9 +109,7 @@ const placingEmailField = () => {
 			elementToMove?.setAttribute('data-priority', `1`);
 		}
 
-	} else {
-		// console.log('Container or element not found');
-	}
+	} 
 
 }
 
@@ -127,9 +120,8 @@ const placingEmailField = () => {
 //@ts-ignore
 document.addEventListener("DOMContentLoaded", (async (): any => {
 
-	console.log("start creating reactAppContainer");
+
 	const reactAppContainer = document.createElement("div");
-	console.log(reactAppContainer);
 	reactAppContainer.setAttribute("id", "reactAppContainer");
 	reactAppContainer.setAttribute("class", "woocommerce-input-wrapper");
 
