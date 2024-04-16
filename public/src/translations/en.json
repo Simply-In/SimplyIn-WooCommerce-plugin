@@ -27,6 +27,8 @@
 			"editAfterLogin": "You will be able to edit your data after login",
 			"codeNotArrived": "Code not received?",
 			"sendViaEmail": "Send via email",
+			"sendAgain": "Resend",
+			"or": "or",
 			"codeHasBeenSent": "The code was resent",
 			"codeInvalid": "Verification code invalid",
 			"checkInApp": "Check notifications in the mobile app and confirm login"

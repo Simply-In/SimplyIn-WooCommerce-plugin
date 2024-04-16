@@ -326,9 +326,10 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 								() => handleSendPinAgain({ method: "sms" })
 
 							}>
-								Wyślij ponownie
+								{t('modal-step-1.sendAgain')}
+
 							</Link>
-							&nbsp; lub &nbsp;
+							&nbsp; {t('modal-step-1.or')} &nbsp;
 							<Link
 								component="button"
 								id="send-again-email-btn"
