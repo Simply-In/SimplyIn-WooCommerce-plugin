@@ -140,9 +140,12 @@ const updateShippingFields = (shippingAddress: any) => {
 
 //function to fill in all shipping data
 const fillShippingData = (userData: any, fillWithBilling = false) => {
+
+
 	const checkbox = document.getElementById('ship-to-different-address-checkbox');
 
 	const shippingAddress = fillWithBilling ? userData?.billingAddresses : userData?.shippingAddresses
+
 
 	if (!shippingAddress && !Object.keys(shippingAddress || []).length) {
 		return
@@ -161,7 +164,7 @@ const fillShippingData = (userData: any, fillWithBilling = false) => {
 		} catch (err) {
 			console.log(err);
 		}
-	}
+	} 
 	updateShippingFields(shippingAddress)
 	try {
 		if ("country" in shippingAddress) {
@@ -194,7 +197,7 @@ const fillShippingData = (userData: any, fillWithBilling = false) => {
 
 	try {
 		if (checkbox) {
-			(checkbox as HTMLInputElement).checked = false;
+			(checkbox as HTMLInputElement).checked = true;
 
 			const changeEvent = new Event('change', { bubbles: true });
 			checkbox.dispatchEvent(changeEvent);

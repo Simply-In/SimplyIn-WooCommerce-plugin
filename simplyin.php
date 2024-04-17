@@ -664,7 +664,7 @@ function onOrderCreate($order)
 	}
 
 	if (isset($simplyin_Token_Input_Value) && $simplyin_Token_Input_Value !== "") {
-		echo 'simplyin_Token_Input_Value HAS VALUE: ' . $simplyin_Token_Input_Value;
+		// echo 'simplyin_Token_Input_Value HAS VALUE: ' . $simplyin_Token_Input_Value;
 
 		$body_data = array(
 			"newOrderData" => array(
