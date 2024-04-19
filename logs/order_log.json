@@ -1,0 +1,64 @@
+{
+	"id": 499,
+	"order_id": 262,
+	"name": "materialny produkt",
+	"product_id": 37,
+	"variation_id": 0,
+	"quantity": 2,
+	"tax_class": "",
+	"subtotal": "88",
+	"subtotal_tax": "0",
+	"total": "88",
+	"total_tax": "0",
+	"taxes": {
+		"total": [],
+		"subtotal": []
+	},
+	"meta_data": [{
+		"id": 4102,
+		"key": "_vi_wot_order_item_tracking_data",
+		"value": "[{\"tracking_number\":\"11111\",\"carrier_slug\":\"aliexpress-standard-shipping\",\"carrier_url\":\"https:\\\/\\\/global.cainiao.com\\\/detail.htm?mailNoList={tracking_number}&spm=a3708.7860688.0.d01\",\"carrier_name\":\"Aliexpress Standard Shipping\",\"carrier_type\":\"define-carrier\",\"time\":1713357976},{\"tracking_number\":\"track12345\",\"carrier_slug\":\"an-post\",\"carrier_url\":\"https:\\\/\\\/www.anpost.com\\\/Post-Parcels\\\/Track\\\/History?item={tracking_number}\",\"carrier_name\":\"An Post\",\"carrier_type\":\"define-carrier\",\"time\":1713357988},{\"tracking_number\":\"global tracking number\",\"carrier_slug\":\"dhl\",\"carrier_url\":\"https:\\\/\\\/www.dhl.com\\\/en\\\/express\\\/tracking.html?AWB={tracking_number}&brand=DHL\",\"carrier_name\":\"DHL Express\",\"carrier_type\":\"define-carrier\",\"time\":1713358012,\"status\":\"\",\"last_update\":1713358012},{\"tracking_number\":\"new tracking number\",\"carrier_slug\":\"dhlglobalmail\",\"carrier_url\":\"http:\\\/\\\/webtrack.dhlglobalmail.com\\\/?trackingnumber={tracking_number}\",\"carrier_name\":\"DHL ECommerce\",\"carrier_type\":\"define-carrier\",\"time\":1713517598}]"
+	}]
+} {
+	"id": 500,
+	"order_id": 262,
+	"name": "produkt wirtualny",
+	"product_id": 20,
+	"variation_id": 0,
+	"quantity": 1,
+	"tax_class": "",
+	"subtotal": "19",
+	"subtotal_tax": "0",
+	"total": "19",
+	"total_tax": "0",
+	"taxes": {
+		"total": [],
+		"subtotal": []
+	},
+	"meta_data": [{
+		"id": 4103,
+		"key": "_vi_wot_order_item_tracking_data",
+		"value": "[{\"tracking_number\":\"67890\",\"carrier_slug\":\"belgium-post\",\"carrier_url\":\"https:\\\/\\\/track.bpost.be\\\/btr\\\/web\\\/#\\\/search?itemCode={tracking_number}\",\"carrier_name\":\"Belgium Post\",\"carrier_type\":\"define-carrier\",\"time\":1713357996},{\"tracking_number\":\"global tracking number\",\"carrier_slug\":\"dhl\",\"carrier_url\":\"https:\\\/\\\/www.dhl.com\\\/en\\\/express\\\/tracking.html?AWB={tracking_number}&brand=DHL\",\"carrier_name\":\"DHL Express\",\"carrier_type\":\"define-carrier\",\"time\":1713358012,\"status\":\"\",\"last_update\":1713358012},{\"tracking_number\":\"custom tracking number\",\"carrier_slug\":\"dhl\",\"carrier_url\":\"https:\\\/\\\/www.dhl.com\\\/en\\\/express\\\/tracking.html?AWB={tracking_number}&brand=DHL\",\"carrier_name\":\"DHL Express\",\"carrier_type\":\"define-carrier\",\"time\":1713358021}]"
+	}]
+} {
+	"id": 501,
+	"order_id": 262,
+	"name": "virtual test",
+	"product_id": 15,
+	"variation_id": 0,
+	"quantity": 1,
+	"tax_class": "",
+	"subtotal": "21",
+	"subtotal_tax": "0",
+	"total": "21",
+	"total_tax": "0",
+	"taxes": {
+		"total": [],
+		"subtotal": []
+	},
+	"meta_data": [{
+		"id": 4104,
+		"key": "_vi_wot_order_item_tracking_data",
+		"value": "[{\"tracking_number\":\"global tracking number\",\"carrier_slug\":\"dhl\",\"carrier_url\":\"https:\\\/\\\/www.dhl.com\\\/en\\\/express\\\/tracking.html?AWB={tracking_number}&brand=DHL\",\"carrier_name\":\"DHL Express\",\"carrier_type\":\"define-carrier\",\"time\":1713358012,\"status\":\"\",\"last_update\":1713358012}]"
+	}]
+}

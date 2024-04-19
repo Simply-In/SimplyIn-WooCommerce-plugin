@@ -7,6 +7,8 @@ import { middlewareApi } from "./services/middlewareApi";
 import { saveDataSessionStorage } from "./services/sessionStorageApi";
 import './i18n.ts'
 
+
+console.log('SimplyIn Hello');
 // checking if there is a custom or built taxId/nip in field
 const nipFieldHandling = () => {
 
@@ -89,7 +91,7 @@ const placingEmailField = () => {
 //@ts-ignore
 document.addEventListener("DOMContentLoaded", (async (): any => {
 
-
+	console.log('DOM Loaded - SimplyIn');
 	const reactAppContainer = document.createElement("div");
 	reactAppContainer.setAttribute("id", "reactAppContainer");
 	reactAppContainer.setAttribute("class", "woocommerce-input-wrapper");

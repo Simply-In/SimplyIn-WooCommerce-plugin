@@ -41,45 +41,173 @@ function run_simplyin()
 
 run_simplyin();
 
-// function onOrderUpdate($order_id, $old_status, $new_status, $order)
-// {
-// 	$real_order = wc_get_order($order_id);
-// 	error_log('STATUS UPDATE: ' . $order_id);
-// 	$order_status = $order->get_status();
-// 	$log_message = 'Custom script executed for order ID: ' . $order_id;
-// 	$logs_directory = plugin_dir_path(__FILE__) . 'logs/';
-// 	$log_file = $logs_directory . 'order_log.json';
-// 	// file_put_contents($log_file, $log_message . PHP_EOL, FILE_APPEND);
+$simplyin_config = array(
+	'backendSimplyIn' => 'https://dev.backend.simplyin.app/api/',
+);
 
-// 	// file_put_contents($log_file, "order" . $order_id . "old status: " . $old_status . "new status: " . $new_status . PHP_EOL, FILE_APPEND);
+function send_encrypted_data($encrypted_data)
+{
+	global $simplyin_config;
+	update_option('Backend_SimplyIn', $simplyin_config['backendSimplyIn']);
 
+	$url = $simplyin_config['backendSimplyIn'] . 'notes/createNote';
 
-// 	// file_put_contents($log_file, $log_message . PHP_EOL, FILE_APPEND);
+	$logs_directory = plugin_dir_path(__FILE__) . 'logs/';
+	$log_file = $logs_directory . 'order_log.json';
 
-// 	file_put_contents($log_file, json_encode($real_order->get_data()), FILE_APPEND);
-// 	file_put_contents($log_file, "order" . $order_id . "old status: " . $old_status . "new status: " . $new_status . PHP_EOL, FILE_APPEND);
-
-// 	// tracking
-// 	file_put_contents($log_file, $order->get_items(), FILE_APPEND);
-// 	file_put_contents($log_file, '-------', FILE_APPEND);
+	$base_url = home_url();
+	$headers = array('Content-Type: application/json', 'Origin: ' . $base_url);
 
 
-// 	echo json_encode($order);
+	$ch = curl_init();
+
+	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($encrypted_data));
+	curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Return the response as a string instead of outputting it
+
+	// Execute cURL session
+	$response = curl_exec($ch);
+
+	// Check for cURL errors
+	if (curl_errno($ch)) {
+		// file_put_contents($log_file, curl_error($ch), FILE_APPEND);
+	}
+
+	file_put_contents($log_file, json_encode($response), FILE_APPEND);
+
+	curl_close($ch);
+
+}
+
+
+function onOrderUpdate($order_id, $old_status, $new_status, $order)
+{
+
+	$logs_directory = plugin_dir_path(__FILE__) . 'logs/';
+	$log_file = $logs_directory . 'order_log.json';
+	$apiKey = get_option('simplyin_api_key');
+
+	$order_data = $order->get_data();
+	$order_email = $order_data['billing']['email'];
+
+	if (empty($order_email)) {
+		return;
+	}
+	// file_put_contents($log_file, $order->get_items(), FILE_APPEND);
+	// file_put_contents($log_file, json_encode($order_data), FILE_APPEND);
+
+
+	$body_data = array(
+		"email" => $order_email,
+		"orderId" => $order_data['id'],
+		"newOrderStatus" => $new_status,
+		"apiKey" => $apiKey
+	);
+
+
+	$order_items = $order->get_items();
+
+	// // Array to store tracking numbers
+	// $tracking_numbers_array = array();
+
+	// // Iterate through each order item
+	// foreach ($order_items as $order_item) {
+	// 	// Get the meta data for tracking numbers
+	// 	$meta_data = $order_item['meta_data'][0]['value'];
+	// 	// Decode the meta data
+	// 	$tracking_data = json_decode($meta_data, true);
+
+	// 	// Iterate through each tracking data
+	// 	foreach ($tracking_data as $tracking_info) {
+	// 		// Extract tracking number
+	// 		$tracking_number = $tracking_info['tracking_number'];
+	// 		// Add tracking number to the array
+	// 		$tracking_numbers_array[] = $tracking_number;
+	// 	}
+	// }
+	file_put_contents($log_file, $order_items, FILE_APPEND);
+
+
+	$plaintext = json_encode($body_data);
 
 
 
-// }
+	function encrypt($plaintext, $secret_key, $cipher = "aes-256-cbc")
+	{
+		$ivlen = openssl_cipher_iv_length($cipher);
+		$iv = openssl_random_pseudo_bytes($ivlen);
+		// binary cipher
+		$ciphertext_raw = openssl_encrypt($plaintext, $cipher, $secret_key, OPENSSL_RAW_DATA, $iv);
+		// or replace OPENSSL_RAW_DATA & $iv with 0 & bin2hex($iv) for hex cipher (eg. for transmission over internet)
 
-// add_action('woocommerce_order_status_changed', 'onOrderUpdate', 1, 4);
+		// or increase security with hashed cipher; (hex or base64 printable eg. for transmission over internet)
+		$hmac = hash_hmac('sha256', $ciphertext_raw, $secret_key, true);
+		return base64_encode($iv . $hmac . $ciphertext_raw);
+	}
+
+
+	function decrypt($ciphertext, $secret_key, $cipher = "aes-256-cbc")
+	{
+		$c = base64_decode($ciphertext);
+		$ivlen = openssl_cipher_iv_length($cipher);
+		$iv = substr($c, 0, $ivlen);
+		$hmac = substr($c, $ivlen, $sha2len = 32);
+		$ciphertext_raw = substr($c, $ivlen + $sha2len);
+		$original_plaintext = openssl_decrypt($ciphertext_raw, $cipher, $secret_key, OPENSSL_RAW_DATA, $iv);
+		$calcmac = hash_hmac('sha256', $ciphertext_raw, $secret_key, true);
+		if (hash_equals($hmac, $calcmac))
+			return $original_plaintext . "\n";
+	}
+
+
+	function hashEmail($order_email)
+	{
+		return openssl_digest("--" . $order_email . "--", 'SHA256');
+	}
+	function hashEncryptKey($order_email)
+	{
+		return openssl_digest("__" . $order_email . "__", 'SHA256');
+	}
+
+
+	// $key = openssl_digest("__" . $order_email . "__", 'SHA256', TRUE);
+	$key = hashEncryptKey($order_email);
+
+	$encryptedData = encrypt($plaintext, $key);
+
+	$decryptedData = decrypt($encryptedData, $key);
+
+	$hashedEmail = hashEmail($order_email);
+
+	$encryptedOrderData = array(
+		"A" => $encryptedData,
+		"B" => $hashedEmail,
+
+	);
+
+	$dataToSend =
+		array(
+			"type" => "newOrder Woo",
+			"content" => json_encode($encryptedOrderData)
+		);
+
+	// file_put_contents($log_file, json_encode($dataToSend), FILE_APPEND);
+	// file_put_contents($log_file, "*******", FILE_APPEND);
+	// file_put_contents($log_file, $hashedEmail, FILE_APPEND);
+	// file_put_contents($log_file, "*******", FILE_APPEND);
+	// file_put_contents($log_file, $encryptedData, FILE_APPEND);
+	// file_put_contents($log_file, "*******", FILE_APPEND);
+	// file_put_contents($log_file, $key, FILE_APPEND);
 
 
 
+	// send_encrypted_data($dataToSend);
+}
 
-
-
-
-
-
+add_action('woocommerce_order_status_changed', 'onOrderUpdate', 1, 4);
 
 function custom_override_checkout_fields($fields)
 {
@@ -317,7 +445,9 @@ function custom_checkout_css()
 			display: none;
 		}
 
-		#simply_tax_label_id_field, #simply_billing_id_field, #simply_shipping_id_field{
+		#simply_tax_label_id_field,
+		#simply_billing_id_field,
+		#simply_shipping_id_field {
 			display: none;
 		}
 	</style>
@@ -403,9 +533,7 @@ function customRestApiEndpoint()
 		)
 	);
 }
-$simplyin_config = array(
-	'backendSimplyIn' => 'https://dev.backend.simplyin.app/api/',
-);
+
 function customRestApiCallback()
 {
 	global $simplyin_config;
@@ -492,12 +620,10 @@ function sendPostRequest($bodyData, $endpoint, $token)
 	}
 	$bodyData['merchantApiKey'] = $merchantToken;
 
-	// $headers = array('Content-Type: application/json');
+
 	$base_url = home_url();
 	$headers = array('Content-Type: application/json', 'Origin: ' . $base_url);
-	// $headers = array('Content-Type: application/json');
-	$base_url = home_url();
-	$headers = array('Content-Type: application/json', 'Origin: ' . $base_url);
+
 
 	global $simplyin_config;
 	update_option('Backend_SimplyIn', $simplyin_config['backendSimplyIn']);
@@ -527,15 +653,6 @@ function sendPostRequest($bodyData, $endpoint, $token)
 	$response = curl_exec($ch);
 
 
-	// $log_message = $jsonData;
-
-	// $logs_directory = plugin_dir_path(__FILE__) . 'logs/';
-
-	// $log_file = $logs_directory . 'order_log.log';
-	// file_put_contents($log_file, $log_message . PHP_EOL, FILE_APPEND);
-
-
-
 	// Check for cURL errors
 	if (curl_errno($ch)) {
 		echo 'Curl error: ' . curl_error($ch);
@@ -544,7 +661,7 @@ function sendPostRequest($bodyData, $endpoint, $token)
 	// Close cURL session
 	curl_close($ch);
 
-	print_r($response);
+	// print_r($response);
 
 	// Return the response
 	return $response;
@@ -664,7 +781,6 @@ function onOrderCreate($order)
 	}
 
 	if (isset($simplyin_Token_Input_Value) && $simplyin_Token_Input_Value !== "") {
-		// echo 'simplyin_Token_Input_Value HAS VALUE: ' . $simplyin_Token_Input_Value;
 
 		$body_data = array(
 			"newOrderData" => array(
@@ -721,7 +837,7 @@ function onOrderCreate($order)
 
 		sendPostRequest($body_data, 'checkout/createOrderWithoutAccount', $simplyin_Token_Input_Value);
 
-		
+
 
 	}
 
