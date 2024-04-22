@@ -26,10 +26,13 @@
 			"insertCode": "Insert code sent to number",
 			"editAfterLogin": "You will be able to edit your data after login",
 			"codeNotArrived": "Code not received?",
+			"noAccessToMobile": "Don't have access to the app at the moment?",
 			"sendViaEmail": "Send via email",
 			"sendAgain": "Resend",
+			"sendViaSMS": "Send via SMS",
 			"or": "or",
 			"codeHasBeenSent": "The code was resent",
+			"codeHasBeenSentAgain": "The code has been sent",
 			"codeInvalid": "Verification code invalid",
 			"checkInApp": "Check notifications in the mobile app and confirm login"
 		},

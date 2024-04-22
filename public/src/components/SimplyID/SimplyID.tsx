@@ -99,7 +99,7 @@ export const SimplyID = () => {
 		setVisible(false)
 	}
 
-	const maxAttempts = 30 * 1000 / 500; // 30 seconds divided by 500ms
+	const maxAttempts = 180 * 1000 / 500; // 60 seconds divided by 500ms
 
 	useEffect(() => {
 
@@ -298,6 +298,8 @@ export const SimplyID = () => {
 							visible={visible}
 							setVisible={setVisible}
 							loginType={loginType}
+							setLoginType={setLoginType}
+							setNotificationTokenId={setNotificationTokenId}
 						/>}
 					</div >
 				</CounterContext.Provider>

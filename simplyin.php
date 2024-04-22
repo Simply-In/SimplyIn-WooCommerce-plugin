@@ -404,7 +404,7 @@ function customRestApiEndpoint()
 	);
 }
 $simplyin_config = array(
-	'backendSimplyIn' => 'https://dev.backend.simplyin.app/api/',
+	'backendSimplyIn' => 'https://preprod.backend.simplyin.app/api/',
 );
 function customRestApiCallback()
 {

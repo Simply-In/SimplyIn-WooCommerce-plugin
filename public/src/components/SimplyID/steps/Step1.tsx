@@ -32,6 +32,8 @@ interface IStep1 {
 	setSelectedUserData: any
 	simplyInput: string
 	loginType: TypedLoginType
+	setLoginType: any
+	setNotificationTokenId: any
 
 
 }
@@ -44,7 +46,7 @@ export const changeInputValue = (inputElement: any, newValue: any) => {
 // eslint-disable-next-line react-refresh/only-export-components
 export const simplyinTokenInputField = document.getElementById('simplyinTokenInput')
 
-export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData, setToken, setSelectedUserData, simplyInput, loginType,
+export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData, setToken, setSelectedUserData, simplyInput, loginType, setLoginType, setNotificationTokenId
 }: IStep1) => {
 	const { t, i18n } = useTranslation();
 
@@ -153,8 +155,8 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 
 	//send ping again execution
 	const handleSendPinAgain = ({ method }: { method: sendPinAgainMethodType }) => {
-
-
+		setLoginType("pinCode")
+		setNotificationTokenId("")
 		setCountdown(true)
 		setCountdownTime(Date.now() + countdownTimeSeconds * 1000)
 		setPinCode("")
@@ -303,13 +305,13 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 				{t('modal-step-1.editAfterLogin')}
 			</PopupTextSecondary>
 
-			{loginType === "pinCode" && <> {
+			<> {
 
 				(countdown) ?
 
 					<PopupCountDownContainer color={"#E52424"}>
 						<PopupCodeNotDelivered color={"#E52424"} marginTop='0px'>
-							{t('modal-step-1.codeHasBeenSent')}
+							{loginType === "app" ? t('modal-step-1.codeHasBeenSent') : t('modal-step-1.codeHasBeenSentAgain')}
 						</PopupCodeNotDelivered>
 
 						<Countdown daysInHours={false} renderer={countdownRenderer} zeroPadTime={2} zeroPadDays={2}
@@ -319,7 +321,7 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 					:
 					<div>
 						<PopupCodeNotDelivered>
-							{t('modal-step-1.codeNotArrived')}
+							{loginType === "app" ? t('modal-step-1.noAccessToMobile') : t('modal-step-1.codeNotArrived')}
 						</PopupCodeNotDelivered>
 						<PopupSendAgain disabled={!!countdownError}>
 							<Link
@@ -329,7 +331,7 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 								underline={countdownError ? "none" : "hover"}
 								onClick={() => handleSendPinAgain({ method: "sms" })}
 							>
-								{t('modal-step-1.sendAgain')}
+								{loginType === "app" ? t('modal-step-1.sendViaSMS') : t('modal-step-1.sendAgain')}
 
 							</Link>
 							&nbsp; {t('modal-step-1.or')} &nbsp;
@@ -344,8 +346,8 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 								{t('modal-step-1.sendViaEmail')}
 							</Link>
 						</PopupSendAgain>
-					</div>}</>
-			}
+					</div>}
+			</>
 
 			{/* {loginType === "pinCode" &&
 				<>
