@@ -96,71 +96,107 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 	if (empty($order_email)) {
 		return;
 	}
-	// file_put_contents($log_file, $order->get_items(), FILE_APPEND);
-	// file_put_contents($log_file, json_encode($order_data), FILE_APPEND);
+
+
+	// 	______________________________________________________
+
+	// Assuming $order is your order object
+	$order_items = $order->get_items();
+	// file_put_contents($log_file, $order_items, FILE_APPEND);
+
+	$tracking_numbers = [];
+	if ($order_items) {
+		foreach ($order_items as $item_id => $item) {
+			$data = json_decode($item->get_meta('_vi_wot_order_item_tracking_data'), true);
+			foreach ($data as $item) {
+				if (isset($item['tracking_number'])) {
+					$tracking_numbers[] = $item['tracking_number'];
+				}
+			}
+			;
+		}
+		;
+
+		// file_put_contents($log_file, json_encode($tracking_numbers), FILE_APPEND);
+	}
+
+
+	// ________________________________________________
 
 
 	$body_data = array(
 		"email" => $order_email,
 		"orderId" => $order_data['id'],
 		"newOrderStatus" => $new_status,
-		"apiKey" => $apiKey
+		"apiKey" => $apiKey,
+		"tracking_numbers" => $tracking_numbers
 	);
-
-
-	$order_items = $order->get_items();
-
-	// // Array to store tracking numbers
-	// $tracking_numbers_array = array();
-
-	// // Iterate through each order item
-	// foreach ($order_items as $order_item) {
-	// 	// Get the meta data for tracking numbers
-	// 	$meta_data = $order_item['meta_data'][0]['value'];
-	// 	// Decode the meta data
-	// 	$tracking_data = json_decode($meta_data, true);
-
-	// 	// Iterate through each tracking data
-	// 	foreach ($tracking_data as $tracking_info) {
-	// 		// Extract tracking number
-	// 		$tracking_number = $tracking_info['tracking_number'];
-	// 		// Add tracking number to the array
-	// 		$tracking_numbers_array[] = $tracking_number;
-	// 	}
-	// }
-	file_put_contents($log_file, $order_items, FILE_APPEND);
-
-
 	$plaintext = json_encode($body_data);
-
-
 
 	function encrypt($plaintext, $secret_key, $cipher = "aes-256-cbc")
 	{
-		$ivlen = openssl_cipher_iv_length($cipher);
-		$iv = openssl_random_pseudo_bytes($ivlen);
-		// binary cipher
-		$ciphertext_raw = openssl_encrypt($plaintext, $cipher, $secret_key, OPENSSL_RAW_DATA, $iv);
-		// or replace OPENSSL_RAW_DATA & $iv with 0 & bin2hex($iv) for hex cipher (eg. for transmission over internet)
 
-		// or increase security with hashed cipher; (hex or base64 printable eg. for transmission over internet)
-		$hmac = hash_hmac('sha256', $ciphertext_raw, $secret_key, true);
-		return base64_encode($iv . $hmac . $ciphertext_raw);
+		$ciphertext_raw = openssl_encrypt($plaintext, $cipher, $secret_key, OPENSSL_RAW_DATA);
+		if ($ciphertext_raw === false) {
+			return false;
+		}
+		return base64_encode($ciphertext_raw);
 	}
-
-
 	function decrypt($ciphertext, $secret_key, $cipher = "aes-256-cbc")
-	{
-		$c = base64_decode($ciphertext);
-		$ivlen = openssl_cipher_iv_length($cipher);
-		$iv = substr($c, 0, $ivlen);
-		$hmac = substr($c, $ivlen, $sha2len = 32);
-		$ciphertext_raw = substr($c, $ivlen + $sha2len);
-		$original_plaintext = openssl_decrypt($ciphertext_raw, $cipher, $secret_key, OPENSSL_RAW_DATA, $iv);
-		$calcmac = hash_hmac('sha256', $ciphertext_raw, $secret_key, true);
-		if (hash_equals($hmac, $calcmac))
-			return $original_plaintext . "\n";
+	{ {
+			$ciphertext_raw = base64_decode($ciphertext);
+			if ($ciphertext_raw === false) {
+				return false; // Failed to base64 decode ciphertext
+			}
+
+			$plaintext = openssl_decrypt($ciphertext_raw, $cipher, $secret_key, OPENSSL_RAW_DATA);
+			if ($plaintext === false) {
+				return false; // Failed to decrypt
+			}
+
+			return $plaintext;
+		}
 	}
+
+
+
+	// function decrypt($ciphertext, $secret_key, $cipher = "aes-256-cbc")
+	// {
+	// 	$c = base64_decode($ciphertext);
+	// 	$ivlen = openssl_cipher_iv_length($cipher);
+	// 	$iv = substr($c, 0, $ivlen);
+	// 	$hmac = substr($c, $ivlen, $sha2len = 32);
+	// 	$ciphertext_raw = substr($c, $ivlen + $sha2len);
+	// 	$original_plaintext = openssl_decrypt($ciphertext_raw, $cipher, $secret_key, OPENSSL_RAW_DATA, $iv);
+	// 	$calcmac = hash_hmac('sha256', $ciphertext_raw, $secret_key, true);
+	// 	if (hash_equals($hmac, $calcmac))
+	// 		return $original_plaintext . "\n";
+	// }
+
+	// function decrypt($ciphertext_base64, $secret_key, $cipher = "aes-256-cbc")
+	// {
+	// 	// Decode the Base64-encoded ciphertext
+	// 	$ciphertext_raw = base64_decode($ciphertext_base64);
+
+	// 	if ($ciphertext_raw === false) {
+	// 		// Handle decoding failure
+	// 		return false;
+	// 	}
+
+	// 	$ivlen = openssl_cipher_iv_length($cipher);
+	// 	$iv = substr($ciphertext_raw, 0, $ivlen);
+	// 	$ciphertext = substr($ciphertext_raw, $ivlen);
+
+	// 	// Decrypt the ciphertext
+	// 	$plaintext = openssl_decrypt($ciphertext, $cipher, $secret_key, OPENSSL_RAW_DATA, $iv);
+
+	// 	if ($plaintext === false) {
+	// 		// Handle decryption failure
+	// 		return false;
+	// 	}
+
+	// 	return $plaintext;
+	// }
 
 
 	function hashEmail($order_email)
@@ -175,6 +211,8 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 
 	// $key = openssl_digest("__" . $order_email . "__", 'SHA256', TRUE);
 	$key = hashEncryptKey($order_email);
+
+	file_put_contents($log_file, $plaintext, FILE_APPEND);
 
 	$encryptedData = encrypt($plaintext, $key);
 
@@ -194,13 +232,15 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 			"content" => json_encode($encryptedOrderData)
 		);
 
-	// file_put_contents($log_file, json_encode($dataToSend), FILE_APPEND);
-	// file_put_contents($log_file, "*******", FILE_APPEND);
-	// file_put_contents($log_file, $hashedEmail, FILE_APPEND);
-	// file_put_contents($log_file, "*******", FILE_APPEND);
-	// file_put_contents($log_file, $encryptedData, FILE_APPEND);
-	// file_put_contents($log_file, "*******", FILE_APPEND);
-	// file_put_contents($log_file, $key, FILE_APPEND);
+	file_put_contents($log_file, json_encode($dataToSend), FILE_APPEND);
+	file_put_contents($log_file, "*******", FILE_APPEND);
+	file_put_contents($log_file, $hashedEmail, FILE_APPEND);
+	file_put_contents($log_file, "*******", FILE_APPEND);
+	file_put_contents($log_file, $encryptedData, FILE_APPEND);
+	file_put_contents($log_file, "*******", FILE_APPEND);
+	file_put_contents($log_file, $key, FILE_APPEND);
+	file_put_contents($log_file, "*******decrypt*******", FILE_APPEND);
+	file_put_contents($log_file, $decryptedData, FILE_APPEND);
 
 
 
