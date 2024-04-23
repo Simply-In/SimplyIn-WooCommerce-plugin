@@ -9,7 +9,7 @@
  * @wordpress-plugin
  * Plugin Name: SimplyIn
  * Plugin URI:       
- * Description: SimplyIn application. New order handling. 20.03.2024 08.00
+ * Description: SimplyIn application. 23.04.2024 14.00
  * Version:           1.0.0
  * Author:            Simply.in
  * Author URI:        https://simply.in
@@ -404,7 +404,7 @@ function customRestApiEndpoint()
 	);
 }
 $simplyin_config = array(
-	'backendSimplyIn' => 'https://preprod.backend.simplyin.app/api/',
+	'backendSimplyIn' => 'https://dev.backend.simplyin.app/api/',
 );
 function customRestApiCallback()
 {

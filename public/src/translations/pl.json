@@ -24,6 +24,7 @@
 		"modal-step-1": {
 			"confirm": "Potwierdź, że to Ty",
 			"insertCode": "Wpisz kod przesłany na numer",
+			"insertCodeEmail": "Wpisz kod przesłany na email",
 			"editAfterLogin": "Będziesz mógł edytować swoje dane po zalogowaniu",
 			"codeNotArrived": "Kod nie dotarł?",
 			"noAccessToMobile": "Nie masz w tej chwili dostępu do aplikacji?",

@@ -24,6 +24,7 @@
 		"modal-step-1": {
 			"confirm": "Confirm that it is you",
 			"insertCode": "Insert code sent to number",
+			"insertCodeEmail": "Insert code sent to email",
 			"editAfterLogin": "You will be able to edit your data after login",
 			"codeNotArrived": "Code not received?",
 			"noAccessToMobile": "Don't have access to the app at the moment?",
