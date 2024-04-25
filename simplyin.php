@@ -126,22 +126,12 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 
 	$body_data = array(
 		"email" => $order_email,
-		"orderId" => $order_data['id'],
+		"shopOrderNumber" => $order_data['id'],
 		"newOrderStatus" => $new_status,
 		"apiKey" => $apiKey,
-		"tracking_numbers" => $tracking_numbers
+		"trackingNumbers" => $tracking_numbers
 	);
 	$plaintext = json_encode($body_data);
-
-	// function encrypt($plaintext, $secret_key, $cipher = "aes-256-cbc")
-	// {
-
-	// 	$ciphertext_raw = openssl_encrypt($plaintext, $cipher, $secret_key, OPENSSL_RAW_DATA);
-	// 	if ($ciphertext_raw === false) {
-	// 		return false;
-	// 	}
-	// 	return base64_encode($ciphertext_raw);
-	// }
 
 	function encrypt($plaintext, $secret_key, $cipher = "aes-256-cbc")
 	{
@@ -155,7 +145,6 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 
 		return base64_encode($iv . $ciphertext_raw);
 	}
-
 
 
 
@@ -185,14 +174,10 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 	{
 		return hash('sha256', "__" . $order_email . "__", true); // Get raw binary output
 	}
-	// function getSecretKey2($order_email)
-	// {
-	// 	return hash('sha256', "__" . $order_email . "__");
-	// }
 
 
 	$key = getSecretKey($order_email);
-	// $key2 = getSecretKey2($order_email);
+	
 
 	file_put_contents($log_file, $plaintext, FILE_APPEND);
 
@@ -215,12 +200,12 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 
 	// file_put_contents($log_file, json_encode($dataToSend), FILE_APPEND);
 	// file_put_contents($log_file, "*******", FILE_APPEND);
-	file_put_contents($log_file, $hashedEmail, FILE_APPEND);
+	// file_put_contents($log_file, $hashedEmail, FILE_APPEND);
 	file_put_contents($log_file, "*******", FILE_APPEND);
 	file_put_contents($log_file, $encryptedData, FILE_APPEND);
-	file_put_contents($log_file, "*******", FILE_APPEND);
-	file_put_contents($log_file, $key, FILE_APPEND);
-	file_put_contents($log_file, "*******", FILE_APPEND);
+	// file_put_contents($log_file, "*******", FILE_APPEND);
+	// file_put_contents($log_file, $key, FILE_APPEND);
+	// file_put_contents($log_file, "*******", FILE_APPEND);
 	// file_put_contents($log_file, $key2, FILE_APPEND);
 	// file_put_contents($log_file, "*******decrypt*******", FILE_APPEND);
 	// file_put_contents($log_file, $decryptedData, FILE_APPEND);
