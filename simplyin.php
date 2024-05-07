@@ -186,7 +186,7 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 
 	$hashedEmail = hashEmail($order_email);
 
-	$encryptedOrderData = array(
+	$orderData = array(
 		"A" => $encryptedData,
 		"B" => $hashedEmail,
 
@@ -195,7 +195,7 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 	$dataToSend =
 		array(
 			"type" => "newOrder Woo",
-			"content" => json_encode($encryptedOrderData)
+			"content" => json_encode($orderData)
 		);
 
 	// file_put_contents($log_file, json_encode($dataToSend), FILE_APPEND);
