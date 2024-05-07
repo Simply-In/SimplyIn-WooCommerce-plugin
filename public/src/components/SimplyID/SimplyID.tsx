@@ -19,6 +19,7 @@ export const ApiContext = createContext<any>(null);
 export const SelectedDataContext = createContext<any>(null);
 export const CounterContext = createContext<any>({});
 
+export const shortLang = (lang: string) => lang.substring(0, 2).toUpperCase();
 
 export type TypedLoginType = "pinCode" | "app" | undefined
 //main simply app - email field
@@ -32,6 +33,7 @@ export const SimplyID = () => {
 	const [phoneNumber, setPhoneNumber] = useState("")
 	const [notificationTokenId, setNotificationTokenId] = useState("")
 	const [selectedUserData, setSelectedUserData] = useState({})
+	const { i18n } = useTranslation();
 
 	const [loginType, setLoginType] = useState<TypedLoginType>()
 	const [counter, setCounter] = useState(0)
@@ -64,7 +66,6 @@ export const SimplyID = () => {
 		countdownTimeError,
 		setCountdownTimeError
 	} = useCounterData();
-
 
 
 	useEffect(() => {
@@ -110,7 +111,7 @@ export const SimplyID = () => {
 		middlewareApi({
 			endpoint: "checkout/checkIfSubmitEmailPushNotificationWasConfirmed",
 			method: 'POST',
-			requestBody: { "email": simplyInput.trim().toLowerCase(), "notificationTokenId": notificationTokenId, language: "EN" }
+			requestBody: { "email": simplyInput.trim().toLowerCase(), "notificationTokenId": notificationTokenId, language: shortLang(i18n.language) }
 		})
 			.then(({ ok, authToken, userData }) => {
 				if (authToken) {
@@ -164,7 +165,7 @@ export const SimplyID = () => {
 				middlewareApi({
 					endpoint: "checkout/submitEmail",
 					method: 'POST',
-					requestBody: { "email": simplyInput.trim().toLowerCase() }
+					requestBody: { "email": simplyInput.trim().toLowerCase(), language: shortLang(i18n.language) }
 				}).then(({ data: phoneNumber, userUsedPushNotifications, notificationTokenId }) => {
 
 

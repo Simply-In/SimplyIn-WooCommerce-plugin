@@ -180,7 +180,7 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 			middlewareApi({
 				endpoint: "checkout/submitEmail",
 				method: 'POST',
-				requestBody: { "email": simplyInput.trim().toLowerCase(), forceSms: true }
+				requestBody: { "email": simplyInput.trim().toLowerCase(), forceSms: true, language: shortLang(i18n.language) }
 
 			}).catch((err) => {
 				console.log(err);
