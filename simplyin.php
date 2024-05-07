@@ -50,7 +50,7 @@ function send_encrypted_data($encrypted_data)
 	global $simplyin_config;
 	update_option('Backend_SimplyIn', $simplyin_config['backendSimplyIn']);
 
-	$url = $simplyin_config['backendSimplyIn'] . 'notes/createNote';
+	$url = $simplyin_config['backendSimplyIn'] . 'encryption/saveEncryptedOrderStatusChange';
 
 	$logs_directory = plugin_dir_path(__FILE__) . 'logs/';
 	$log_file = $logs_directory . 'order_log.json';
@@ -63,7 +63,7 @@ function send_encrypted_data($encrypted_data)
 
 	curl_setopt($ch, CURLOPT_URL, $url);
 	curl_setopt($ch, CURLOPT_POST, 1);
-	curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($encrypted_data));
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $encrypted_data);
 	curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Return the response as a string instead of outputting it
@@ -76,7 +76,7 @@ function send_encrypted_data($encrypted_data)
 		// file_put_contents($log_file, curl_error($ch), FILE_APPEND);
 	}
 
-	file_put_contents($log_file, json_encode($response), FILE_APPEND);
+	// file_put_contents($log_file, json_encode($response), FILE_APPEND);
 
 	curl_close($ch);
 
@@ -97,12 +97,7 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 		return;
 	}
 
-
-	// 	______________________________________________________
-
-	// Assuming $order is your order object
 	$order_items = $order->get_items();
-	// file_put_contents($log_file, $order_items, FILE_APPEND);
 
 	$tracking_numbers = [];
 	if ($order_items) {
@@ -117,11 +112,10 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 		}
 		;
 
-		// file_put_contents($log_file, json_encode($tracking_numbers), FILE_APPEND);
+
 	}
 
 
-	// ________________________________________________
 
 
 	$body_data = array(
@@ -168,7 +162,7 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 
 	function hashEmail($order_email)
 	{
-		return hash('sha256', "--" . $order_email . "--", true); // Get raw binary output
+		return hash('sha256', "--" . $order_email . "--"); // Get raw binary output
 	}
 	function getSecretKey($order_email)
 	{
@@ -177,42 +171,26 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 
 
 	$key = getSecretKey($order_email);
-	
-
-	file_put_contents($log_file, $plaintext, FILE_APPEND);
 
 	$encryptedData = encrypt($plaintext, $key);
 
 
 	$hashedEmail = hashEmail($order_email);
 
-	$orderData = array(
-		"A" => $encryptedData,
-		"B" => $hashedEmail,
-
-	);
-
-	$dataToSend =
+	$orderData =
 		array(
-			"type" => "newOrder Woo",
-			"content" => json_encode($orderData)
+			"encryptedOrderStatusChangeContent" => $encryptedData,
+			"hashedEmail" => $hashedEmail
 		);
 
-	// file_put_contents($log_file, json_encode($dataToSend), FILE_APPEND);
-	// file_put_contents($log_file, "*******", FILE_APPEND);
-	// file_put_contents($log_file, $hashedEmail, FILE_APPEND);
-	file_put_contents($log_file, "*******", FILE_APPEND);
-	file_put_contents($log_file, $encryptedData, FILE_APPEND);
-	// file_put_contents($log_file, "*******", FILE_APPEND);
-	// file_put_contents($log_file, $key, FILE_APPEND);
-	// file_put_contents($log_file, "*******", FILE_APPEND);
-	// file_put_contents($log_file, $key2, FILE_APPEND);
-	// file_put_contents($log_file, "*******decrypt*******", FILE_APPEND);
-	// file_put_contents($log_file, $decryptedData, FILE_APPEND);
+
+
+	// file_put_contents($log_file, json_encode($orderData), FILE_APPEND);
 
 
 
-	// send_encrypted_data($dataToSend);
+
+	send_encrypted_data(json_encode($orderData));
 }
 
 add_action('woocommerce_order_status_changed', 'onOrderUpdate', 1, 4);
