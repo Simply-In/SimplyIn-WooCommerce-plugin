@@ -108,6 +108,12 @@ export const Step2Form = ({
 	});
 
 	const onSubmit = (data: any) => {
+
+		Object.keys(data).forEach(key => {
+			if (typeof data[key] === 'string') {
+				data[key] = data[key].trim();
+			}
+		})
 		handleSave(data)
 	}
 
@@ -134,7 +140,7 @@ export const Step2Form = ({
 			const debouncedRequest = debounce(async () => {
 				try {
 
-					const inpostPointData = await getInpostPointData({ deliveryPointID: manuallyChangeLockerId as string })	
+					const inpostPointData = await getInpostPointData({ deliveryPointID: manuallyChangeLockerId as string })
 
 					if (inpostPointData?.status === 404) {
 						setValue('address', "")
@@ -246,7 +252,7 @@ export const Step2Form = ({
 							if (containerElement) {
 								setTimeout(() => containerElement.scrollTo({
 									top: document.body.scrollHeight,
-									behavior: 'smooth',    
+									behavior: 'smooth',
 								}), 50)
 							}
 						}
@@ -261,7 +267,7 @@ export const Step2Form = ({
 		if (containerElement) {
 			containerElement?.scrollTo({
 				top: 0,
-				behavior: 'instant',   
+				behavior: 'instant',
 			});
 		}
 		return () => {
