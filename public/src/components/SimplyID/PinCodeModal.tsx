@@ -18,12 +18,14 @@ interface IPinCodePopup {
 	setToken: any,
 	simplyInput: string,
 	loginType: TypedLoginType,
+	setLoginType: any,
 	userData: any,
 	setUserData: any,
 	modalStep: any,
 	setModalStep: any,
 	selectedUserData: any,
-	setSelectedUserData: any
+	setSelectedUserData: any,
+	setNotificationTokenId: any
 }
 
 let WPformElements: { name: string, value: string }[]
@@ -37,7 +39,7 @@ let WPformElements: { name: string, value: string }[]
 
 
 //simply modal
-export const PinCodeModal = ({ userData, setUserData, phoneNumber, visible, setVisible, setToken, simplyInput, loginType, modalStep, setModalStep, selectedUserData, setSelectedUserData
+export const PinCodeModal = ({ userData, setUserData, phoneNumber, visible, setVisible, setToken, simplyInput, loginType, modalStep, setModalStep, selectedUserData, setSelectedUserData, setLoginType, setNotificationTokenId
 }: IPinCodePopup) => {
 
 
@@ -89,7 +91,7 @@ export const PinCodeModal = ({ userData, setUserData, phoneNumber, visible, setV
 							<CloseIcon />
 						</CloseContainer>
 					</PopupHeader>
-					<PopupContainer style={{ margin: loginType === "pinCode" ? "8px 16px 16px" : "inherit" }}>
+					<PopupContainer style={{ margin: "8px 16px 16px" }}>
 						{modalStep === 1 &&
 							<Step1
 								setToken={setToken}
@@ -100,6 +102,8 @@ export const PinCodeModal = ({ userData, setUserData, phoneNumber, visible, setV
 								setSelectedUserData={setSelectedUserData}
 								simplyInput={simplyInput}
 								loginType={loginType}
+							setLoginType={setLoginType}
+							setNotificationTokenId={setNotificationTokenId}
 							/>}
 						{modalStep === 2 &&
 							<Step2

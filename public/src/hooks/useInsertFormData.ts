@@ -228,7 +228,7 @@ export const useInsertFormData = (userData: any, formElements: any) => {
 		}
 		const shippingIdField = document.getElementById('simply_shipping_id') as HTMLInputElement;
 		if (shippingIdField) {
-			shippingIdField.value = userData?.shippingAddresses?._id || userData?.billingAddresses?._id || ""
+			shippingIdField.value = userData?.shippingAddresses?._id || ""
 		}
 	}
 

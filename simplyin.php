@@ -9,7 +9,7 @@
  * @wordpress-plugin
  * Plugin Name: SimplyIn
  * Plugin URI:       
- * Description: SimplyIn application. New order handling. 20.03.2024 08.00
+ * Description: SimplyIn application. 25.04.2024 14.00
  * Version:           1.0.0
  * Author:            Simply.in
  * Author URI:        https://simply.in
@@ -699,16 +699,16 @@ function onOrderCreate($order)
 	$woocommerce_version = get_option('woocommerce_version');
 
 	if ($create_new_accountVal === "on" && empty($simplyin_Token_Input_Value)) {
-		echo 'new account';
+		// echo 'new account';
 		$locale = get_locale();
 		$languageCode = strtoupper(substr($locale, 0, 2));
 
 		$body_data = array(
 			"newAccountData" => array(
-				"name" => $order->get_billing_first_name(),
-				"surname" => $order->get_billing_last_name(),
-				"phoneNumber" => $phoneAppInputField,
-				"email" => $order->get_billing_email(),
+				"name" => trim($order->get_billing_first_name()),
+				"surname" => trim($order->get_billing_last_name()),
+				"phoneNumber" => trim($phoneAppInputField),
+				"email" => trim($order->get_billing_email()),
 				"uniqueId" => "string",
 				"language" => $languageCode,
 				"marketingConsent" => false,
@@ -722,16 +722,16 @@ function onOrderCreate($order)
 				"billingData" => array(
 					"icon" => "🏡",
 					"addressName" => "",
-					"name" => $order->get_billing_first_name(),
-					"surname" => $order->get_billing_last_name(),
-					"street" => $order->get_billing_address_1(),
-					"appartmentNumber" => $order->get_billing_address_2(),
-					"city" => $order->get_billing_city(),
-					"postalCode" => $order->get_billing_postcode(),
-					"country" => $order->get_billing_country(),
-					"state" => $order->get_billing_state(),
-					"companyName" => $order->get_billing_company(),
-					"taxId" => $taxId
+					"name" => trim($order->get_billing_first_name()),
+					"surname" => trim($order->get_billing_last_name()),
+					"street" => trim($order->get_billing_address_1()),
+					"appartmentNumber" => trim($order->get_billing_address_2()),
+					"city" => trim($order->get_billing_city()),
+					"postalCode" => trim($order->get_billing_postcode()),
+					"country" => trim($order->get_billing_country()),
+					"state" => trim($order->get_billing_state()),
+					"companyName" => trim($order->get_billing_company()),
+					"taxId" => trim($taxId)
 				),
 
 				"shopName" => get_bloginfo('name'),
@@ -751,15 +751,15 @@ function onOrderCreate($order)
 			$body_data["newOrderData"]["shippingData"] = array(
 				"icon" => "🏡",
 				"addressName" => "",
-				"name" => $order->get_shipping_first_name(),
-				"surname" => $order->get_shipping_last_name(),
-				"street" => $order->get_shipping_address_1(),
-				"appartmentNumber" => $order->get_shipping_address_2(),
-				"city" => $order->get_shipping_city(),
-				"postalCode" => $order->get_shipping_postcode(),
-				"country" => $order->get_shipping_country(),
-				"state" => $order->get_shipping_state(),
-				"companyName" => $order->get_shipping_company(),
+				"name" => trim($order->get_shipping_first_name()),
+				"surname" => trim($order->get_shipping_last_name()),
+				"street" => trim($order->get_shipping_address_1()),
+				"appartmentNumber" => trim($order->get_shipping_address_2()),
+				"city" => trim($order->get_shipping_city()),
+				"postalCode" => trim($order->get_shipping_postcode()),
+				"country" => trim($order->get_shipping_country()),
+				"state" => trim($order->get_shipping_state()),
+				"companyName" => trim($order->get_shipping_company()),
 			);
 		}
 
@@ -768,6 +768,20 @@ function onOrderCreate($order)
 
 	if (isset($simplyin_Token_Input_Value) && $simplyin_Token_Input_Value !== "") {
 
+		$billingData = array(
+			"_id" => $simply_billing_id,
+			"name" => trim($order->get_billing_first_name()),
+			"surname" => trim($order->get_billing_last_name()),
+			"street" => trim($order->get_billing_address_1()),
+			"appartmentNumber" => trim($order->get_billing_address_2()),
+			"city" => trim($order->get_billing_city()),
+			"postalCode" => trim($order->get_billing_postcode()),
+			"country" => trim($order->get_billing_country()),
+			"state" => trim($order->get_billing_state()),
+			"companyName" => trim($order->get_billing_company()),
+			"taxId" => trim($taxId)
+		);
+
 		$body_data = array(
 			"newOrderData" => array(
 				"shopOrderNumber" => $order->get_order_number(),
@@ -775,26 +789,11 @@ function onOrderCreate($order)
 				"currency" => $order->get_currency(),
 				"items" => $items_data,
 				"placedDuringAccountCreation" => false,
-				"billingData" =>
-					array(
-						"_id" => $simply_billing_id,
-						"name" => $order->get_billing_first_name(),
-						"surname" => $order->get_billing_last_name(),
-						"street" => $order->get_billing_address_1(),
-						"appartmentNumber" => $order->get_billing_address_2(),
-						"city" => $order->get_billing_city(),
-						"postalCode" => $order->get_billing_postcode(),
-						"country" => $order->get_billing_country(),
-						"state" => $order->get_billing_state(),
-						"companyName" => $order->get_billing_company(),
-						"taxId" => $taxId
-					),
-
+				"billingData" => $billingData,
 				"shopName" => get_bloginfo('name'),
 				"pluginVersion" => $plugin_version,
 				"shopVersion" => $woocommerce_version,
 				"shopUserEmail" => wp_get_current_user()->data->user_email ?? "",
-
 			),
 		);
 
@@ -805,20 +804,26 @@ function onOrderCreate($order)
 			);
 		}
 		if (empty($parcel_machine_id)) {
-			$body_data["newOrderData"]["shippingData"] = array(
-				"_id" => $simply_shipping_id,
+
+
+			$shippingData = array(
 				"icon" => "🏡",
 				"addressName" => "",
-				"name" => $order->get_shipping_first_name(),
-				"surname" => $order->get_shipping_last_name(),
-				"street" => $order->get_shipping_address_1(),
-				"appartmentNumber" => $order->get_shipping_address_2(),
-				"city" => $order->get_shipping_city(),
-				"postalCode" => $order->get_shipping_postcode(),
-				"country" => $order->get_shipping_country(),
-				"state" => $order->get_shipping_state(),
-				"companyName" => $order->get_shipping_company(),
+				"name" => trim($order->get_shipping_first_name()),
+				"surname" => trim($order->get_shipping_last_name()),
+				"street" => trim($order->get_shipping_address_1()),
+				"appartmentNumber" => trim($order->get_shipping_address_2()),
+				"city" => trim($order->get_shipping_city()),
+				"postalCode" => trim($order->get_shipping_postcode()),
+				"country" => trim($order->get_shipping_country()),
+				"state" => trim($order->get_shipping_state()),
+				"companyName" => trim($order->get_shipping_company()),
 			);
+
+			if ($simply_shipping_id !== "") {
+				$shippingData["_id"] = $simply_shipping_id;
+			}
+			$body_data["newOrderData"]["shippingData"] = $shippingData;
 		}
 
 		sendPostRequest($body_data, 'checkout/createOrderWithoutAccount', $simplyin_Token_Input_Value);
