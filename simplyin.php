@@ -4,14 +4,14 @@
  *
  * @link              https://simply.in
  * @since             1.0.0
- * @package           Simplyin
+ * @package           SimplyIN
  *
  * @wordpress-plugin
- * Plugin Name: SimplyIn
+ * Plugin Name: SimplyIN
  * Plugin URI:       
- * Description: SimplyIn application. 25.04.2024 14.00
+ * Description: SimplyIN application. 09.05.2024 14.00
  * Version:           1.0.0
- * Author:            Simply.in
+ * Author:            SimplyIN
  * Author URI:        https://simply.in
  * License:           GPL-2.0+
  * Domain Path:       /languages
@@ -42,7 +42,7 @@ function run_simplyin()
 run_simplyin();
 
 $simplyin_config = array(
-	'backendSimplyIn' => 'https://dev.backend.simplyin.app/api/',
+	'backendSimplyIn' => 'https://stage.backend.simplyin.app/api/',
 );
 
 function send_encrypted_data($encrypted_data)
@@ -52,8 +52,8 @@ function send_encrypted_data($encrypted_data)
 
 	$url = $simplyin_config['backendSimplyIn'] . 'encryption/saveEncryptedOrderStatusChange';
 
-	$logs_directory = plugin_dir_path(__FILE__) . 'logs/';
-	$log_file = $logs_directory . 'order_log.json';
+	// $logs_directory = plugin_dir_path(__FILE__) . 'logs/';
+	// $log_file = $logs_directory . 'order_log.json';
 
 	$base_url = home_url();
 	$headers = array('Content-Type: application/json', 'Origin: ' . $base_url);
@@ -76,6 +76,8 @@ function send_encrypted_data($encrypted_data)
 		// file_put_contents($log_file, curl_error($ch), FILE_APPEND);
 	}
 
+	// file_put_contents($log_file, $encrypted_data, FILE_APPEND);
+	// file_put_contents($log_file, json_encode($encrypted_data), FILE_APPEND);
 	// file_put_contents($log_file, json_encode($response), FILE_APPEND);
 
 	curl_close($ch);
@@ -185,12 +187,12 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 
 
 
-	// file_put_contents($log_file, json_encode($orderData), FILE_APPEND);
-
-
-
 
 	send_encrypted_data(json_encode($orderData));
+
+
+
+
 }
 
 add_action('woocommerce_order_status_changed', 'onOrderUpdate', 1, 4);

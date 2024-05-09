@@ -37,6 +37,11 @@ interface IStep1 {
 
 
 }
+export const getLangBrowser = () => {
+	if (navigator.languages !== undefined) return navigator.languages[0];
+	else return navigator.language;
+};
+
 // eslint-disable-next-line react-refresh/only-export-components
 export const changeInputValue = (inputElement: any, newValue: any) => {
 	const event = new Event("input", { bubbles: true });
@@ -89,7 +94,8 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				//@ts-ignore
 				// lng: "DE",
-				lng: shortLang(appLocalizer?.language) || "EN",
+
+				lng: shortLang(i18n.language) || shortLang(appLocalizer?.language) || shortLang(getLangBrowser()),
 			}
 		}).then(async (res) => {
 
@@ -170,7 +176,7 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 			middlewareApi({
 				endpoint: "checkout/resend-checkout-code-via-email",
 				method: 'POST',
-				requestBody: { "email": simplyInput }
+				requestBody: { "email": simplyInput, language: shortLang(i18n.language) }
 			}).catch((err) => {
 				console.log(err);
 			})

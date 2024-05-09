@@ -122,6 +122,10 @@ export const SimplyID = () => {
 				if (ok) {
 					setUserData(userData)
 
+					if (userData?.language) {
+						i18n.changeLanguage(userData?.language.toLowerCase())
+					}
+
 					saveDataSessionStorage({ key: 'UserData', data: userData })
 					setVisible(true)
 					setModalStep(2)
