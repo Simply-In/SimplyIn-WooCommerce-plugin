@@ -9,7 +9,7 @@
  * @wordpress-plugin
  * Plugin Name: SimplyIN
  * Plugin URI:       
- * Description: SimplyIN application. 09.05.2024 14.00
+ * Description: SimplyIN application. 10.05.2024 13.00
  * Version:           1.0.0
  * Author:            SimplyIN
  * Author URI:        https://simply.in
@@ -76,9 +76,6 @@ function send_encrypted_data($encrypted_data)
 		// file_put_contents($log_file, curl_error($ch), FILE_APPEND);
 	}
 
-	// file_put_contents($log_file, $encrypted_data, FILE_APPEND);
-	// file_put_contents($log_file, json_encode($encrypted_data), FILE_APPEND);
-	// file_put_contents($log_file, json_encode($response), FILE_APPEND);
 
 	curl_close($ch);
 
@@ -88,8 +85,21 @@ function send_encrypted_data($encrypted_data)
 function onOrderUpdate($order_id, $old_status, $new_status, $order)
 {
 
-	$logs_directory = plugin_dir_path(__FILE__) . 'logs/';
-	$log_file = $logs_directory . 'order_log.json';
+	$stopStatuses = [
+		"processing",
+		"pending",
+		"on-hold",
+		"",
+		"cancelled",
+		"refunded",
+		"failed",
+		"checkout-draft",
+	];
+	if (in_array($new_status, $stopStatuses, true)) {
+		return;
+	}
+
+
 	$apiKey = get_option('simplyin_api_key');
 
 	$order_data = $order->get_data();
