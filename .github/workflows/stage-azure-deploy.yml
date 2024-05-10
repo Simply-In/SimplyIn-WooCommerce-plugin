@@ -1,0 +1,75 @@
+name: Stage Azure deploy
+
+on:
+  push:
+    branches:
+      - SIN-197-CI-CD-woo 
+
+env: 
+  BACKEND_ENVIRONMENT_STAGE: ${{vars.BACKEND_ENVIRONMENT_STAGE}}
+  APP_VERSION_PREFIX_STAGE: ${{vars.APP_VERSION_PREFIX_STAGE}}
+  AZURE_STORAGE_ACCOUNT_STAGE: ${{vars.AZURE_STORAGE_ACCOUNT_STAGE}}
+  AZURE_STORAGE_CONTAINER_NAME_WOO_STAGE: ${{vars.AZURE_STORAGE_CONTAINER_NAME_WOO_STAGE}}
+  AZURE_CREDENTIALS: ${{vars.AZURE_CREDENTIALS}}
+jobs:
+  build-app:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Dependencies install 
+      run: |
+        cd public
+        yarn install
+
+    - name: Create react app bundle 
+      run: |
+        cd public
+        yarn deploy-build
+    
+    - name: Remove node_modules
+      run: |
+        rm -rf logs
+        cd public
+        rm -rf node_modules
+        rm -rf src
+
+    - name: Upload files
+      uses: actions/upload-artifact@v2
+      with:
+        name: simplyin-woo-stage
+        path: public
+
+  create-zip-file:
+    runs-on: ubuntu-latest
+    needs: [build-app]
+
+    steps:
+    - name: Download files
+      uses: actions/download-artifact@v2
+      with:
+        name: simplyin-woo-stage
+        path: public
+
+    - name: Zip files
+      run: |
+        zip -r simplyin-woo-stage.zip .
+
+  deploy-zip-file-in-azure:
+    runs-on: ubuntu-latest
+    needs: [create-zip-file]
+
+    steps:
+    - name: Install Azure CLI
+      run: |
+        curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+    - name: Azure authentication
+      uses: azure/login@v1
+      with:
+        creds: ${{ env.AZURE_CREDENTIALS }}
+    
+    - name: Upload files to Azure Storage
+      run: |
+        az storage blob upload-batch --account-name ${{ env.AZURE_STORAGE_ACCOUNT_STAGE }} --destination ${{ env.AZURE_STORAGE_CONTAINER_NAME_WOO_STAGE }} --source . --pattern "*.zip"

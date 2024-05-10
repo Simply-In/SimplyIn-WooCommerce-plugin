@@ -21,9 +21,17 @@
 if (!defined('WPINC')) {
 	die;
 }
-define('SIMPLYIN_VERSION', '1.0.0');
+
 
 require_once plugin_dir_path(__FILE__) . 'includes/class-simplyin.php';
+
+$env = parse_ini_file('.env');
+$backendEnvironment = $env['BACKEND_ENVIRONMENT_STAGE'];
+$appVersionPrefix = $env['APP_VERSION_PREFIX_STAGE'];
+
+
+define('SIMPLYIN_VERSION', $appVersionPrefix . '1.0.0');
+echo $backendEnvironment;
 
 function run_simplyin()
 {
@@ -295,7 +303,8 @@ function load_Simply_React_App()
 		'inpostApiKey' => $inpostApiKey,
 		'shipping' => $shipping_titles,
 		'base_url' => $base_url,
-		'plugin_url' => plugin_dir_url(__FILE__)
+		'plugin_url' => plugin_dir_url(__FILE__),
+		'test' => getenv('BACKEND_ENVIRONMENT')
 	]);
 }
 
