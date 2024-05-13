@@ -22,7 +22,7 @@ jobs:
     
     - name: Replace string in simplyin.php
       run: |
-        sed -i 's/ * Description: SimplyIN application./ Description: SimplyIN application. test123/g' simplyin.php
+        sed -i 's/ * Description: SimplyIN application./ Description: SimplyIN stage application. /g' simplyin.php
 
     - name: Dependencies install 
       run: |
@@ -42,6 +42,9 @@ jobs:
         rm -rf .git
         rm -rf .github
         rm -rf src
+        rm -rf composer.phar
+        rm -rf composer.lock
+        rm -rf composer.json
 
     - name: Upload files
       uses: actions/upload-artifact@v2

@@ -48,7 +48,7 @@ function run_simplyin()
 run_simplyin();
 
 $simplyin_config = array(
-	'backendSimplyIn' => 'https://stage.backend.simplyin.app/api/',
+	'backendSimplyIn' => $backendEnvironment,
 );
 
 function send_encrypted_data($encrypted_data)
