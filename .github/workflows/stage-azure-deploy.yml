@@ -8,6 +8,7 @@ on:
 
 env: 
   BACKEND_ENVIRONMENT_STAGE: ${{vars.BACKEND_ENVIRONMENT_STAGE}}
+  BACKEND_ENVIRONMENT_STAGE: ${{vars.BACKEND_ENVIRONMENT_STAGE}}
   APP_VERSION_PREFIX_STAGE: ${{vars.APP_VERSION_PREFIX_STAGE}}
   AZURE_STORAGE_ACCOUNT_STAGE: ${{vars.AZURE_STORAGE_ACCOUNT_STAGE}}
   AZURE_STORAGE_CONTAINER_NAME_WOO_STAGE: ${{vars.AZURE_STORAGE_CONTAINER_NAME_WOO_STAGE}}
@@ -22,7 +23,8 @@ jobs:
     
     - name: Replace string in simplyin.php
       run: |
-        sed -i 's/ * Description: SimplyIN application./ Description: SimplyIN stage application. /g' simplyin.php
+        sed -i 's/ * Description: SimplyIN application./ Description: SimplyIN application. ${{ APP_VERSION_PREFIX_STAGE }} /g' simplyin.php
+        
 
     - name: Dependencies install 
       run: |
