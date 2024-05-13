@@ -22,7 +22,7 @@ jobs:
     
     - name: Replace string in simplyin.php
       run: |
-        sed -i 's/ * Description: SimplyIN application./ * Description: SimplyIN application. test123/g' simplyin.php
+        sed -i 's/ * Description: SimplyIN application./ Description: SimplyIN application. test123/g' simplyin.php
 
     - name: Dependencies install 
       run: |
@@ -39,6 +39,8 @@ jobs:
         rm -rf logs
         cd public
         rm -rf node_modules
+        rm -rf .git
+        rm -rf .github
         rm -rf src
 
     - name: Upload files
