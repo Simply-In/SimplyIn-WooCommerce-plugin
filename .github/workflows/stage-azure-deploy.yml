@@ -43,8 +43,6 @@ jobs:
         rm -rf .github
         rm -rf src
         rm -f composer.phar
-        rm -f composer.lock
-        rm -f composer.json
 
     - name: Upload files
       uses: actions/upload-artifact@v2
