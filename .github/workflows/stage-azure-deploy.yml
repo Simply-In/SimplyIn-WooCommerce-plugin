@@ -22,7 +22,7 @@ jobs:
     
     - name: Replace string in simplyin.php
       run: |
-        sed -i '12s/.*/ Description: SimplyIN application description. ${{ env.APP_VERSION_PREFIX_STAGE }} /' simplyin.php
+        sed -i '12s/.*/ * Description: SimplyIN application description. ${{ env.APP_VERSION_PREFIX_STAGE }} /' simplyin.php
         
 
     - name: Dependencies install 
