@@ -45,7 +45,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: simplyin-woo-stage
-        path: /
+        path: .
 
   create-zip-file:
     runs-on: ubuntu-latest
