@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - SIN-197-CI-CD-woo 
+      - CI-CD-workflow
 
 env: 
   BACKEND_ENVIRONMENT_STAGE: ${{vars.BACKEND_ENVIRONMENT_STAGE}}
@@ -18,6 +19,10 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
+    
+    - name: Replace string in simplyin.php
+      run: |
+        sed -i 's/ * Description: SimplyIN application./ * Description: SimplyIN application. test123/g' simplyin.php
 
     - name: Dependencies install 
       run: |

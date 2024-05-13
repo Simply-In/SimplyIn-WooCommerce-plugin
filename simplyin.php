@@ -9,7 +9,7 @@
  * @wordpress-plugin
  * Plugin Name: SimplyIN
  * Plugin URI:       
- * Description: SimplyIN application. 10.05.2024 13.00
+ * Description: SimplyIN application.
  * Version:           1.0.0
  * Author:            SimplyIN
  * Author URI:        https://simply.in
@@ -30,15 +30,13 @@ $backendEnvironment = $env['BACKEND_ENVIRONMENT_STAGE'];
 $appVersionPrefix = $env['APP_VERSION_PREFIX_STAGE'];
 
 
-define('SIMPLYIN_VERSION', $appVersionPrefix . '1.0.0');
+define('SIMPLYIN_VERSION', $appVersionPrefix . '1.0.2');
 echo $backendEnvironment;
 
 function run_simplyin()
 {
 	$plugin = new SimplyIn();
 	$plugin->run();
-
-
 }
 
 // global $plugin_data, $plugin_version, $woocommerce_version;
