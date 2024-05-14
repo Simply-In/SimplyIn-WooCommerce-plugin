@@ -60,7 +60,7 @@ jobs:
     - name: Upload files
       uses: actions/upload-artifact@v2
       with:
-        name: simplyin-woo-stage
+        name: simplyin-woo-stage-test
         path: .
 
   create-zip-file:
@@ -71,7 +71,7 @@ jobs:
     - name: Download files
       uses: actions/download-artifact@v2
       with:
-        name: simplyin-woo-stage
+        name: simplyin-woo-stage-test
         path: .
 
     - name: Zip files
