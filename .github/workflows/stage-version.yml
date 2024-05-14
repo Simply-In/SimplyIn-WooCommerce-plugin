@@ -4,11 +4,11 @@ on:
   workflow_call:
 env:
   #Frontends CI/CD variables env dependent:
-  AZURE_ACCOUNT_NAME_USER_PANEL: ${{vars.AZURE_ACCOUNT_NAME_USER_PANEL_STAGE}}
 
 jobs:
   bump-version:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
         with:
