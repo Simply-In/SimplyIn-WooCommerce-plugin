@@ -28,6 +28,7 @@ jobs:
         if: github.event_name != 'workflow_dispatch'
         run: node scripts/bump-version.js --parent-branch=origin/dev
 
+<<<<<<< HEAD
       - name: Trigger deploy on success
         run: |
           curl -X POST \
@@ -36,3 +37,14 @@ jobs:
           "https://api.github.com/repos/${{ github.repository }}/dispatches" \
           -d '{"event_type": "bump-version-succeeded"}'
         if: ${{ success() }}
+=======
+
+      # - name: Trigger deploy on success
+      #   run: |
+      #     curl -X POST \
+      #     -H "Authorization: token ${{ secrets.PAT }}" \
+      #     -H "Accept: application/vnd.github.everest-preview+json" \
+      #     "https://api.github.com/repos/${{ github.repository }}/dispatches" \
+      #     -d '{"event_type": "bump-version-succeeded"}'
+      #   if: ${{ success() }}
+>>>>>>> b0f33481ad2601b6dee747f69918b1382be3c7b8
