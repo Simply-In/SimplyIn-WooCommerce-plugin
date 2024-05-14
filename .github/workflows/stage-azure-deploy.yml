@@ -71,17 +71,17 @@ jobs:
     - name: Download files
       uses: actions/download-artifact@v2
       with:
-        name: simplyin-woo-stage-test
+        name: simplyin-woo-stage
         path: .
 
     - name: Zip files
       run: |
-        zip -r simplyin-woo-stage-test.zip .
+        zip -r simplyin-woo-stage.zip .
     - name: Upload zip file
       uses: actions/upload-artifact@v2
       with:
-        name: simplyin-woo-stage-test-zip
-        path: simplyin-woo-stage-test.zip
+        name: simplyin-woo-stage
+        path: simplyin-woo-stage.zip
 
   deploy-zip-file-in-azure:
     runs-on: ubuntu-latest
@@ -91,7 +91,7 @@ jobs:
     - name: Download zip file
       uses: actions/download-artifact@v2
       with:
-        name: simplyin-woo-stage-test-zip
+        name: simplyin-woo-stage
         path: .
 
     - name: Install Azure CLI
@@ -104,5 +104,6 @@ jobs:
     
     - name: Upload files to Azure Storage
       run: |
-        az storage blob upload-batch --account-name ${{ env.AZURE_STORAGE_ACCOUNT_STAGE }} --destination ${{ env.AZURE_STORAGE_CONTAINER_NAME_WOO_STAGE }} --source ./simplyin-woo-stage-test.zip --pattern "*.zip" --auth-mode login ${{env.SUBSCRIPTION}}
+        az storage blob upload-batch --account-name ${{ env.AZURE_STORAGE_ACCOUNT_STAGE }} --destination ${{ env.AZURE_STORAGE_CONTAINER_NAME_WOO_STAGE }} --source ./simplyin-woo-stage.zip --pattern "*.zip" --auth-mode login ${{env.SUBSCRIPTION}}
+
 
