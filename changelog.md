@@ -1,3 +1,6 @@
+2024-05-14 (version: 1.1.0):
+- test version
+
 2024-05-14 (version: 1.0.5):
 - b99b66fdfcbd03fac78bbf3ea380271a8731d7a2
 - b5419e5484d069c9849854e8555dabfadab83bc7
