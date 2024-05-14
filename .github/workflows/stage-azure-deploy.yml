@@ -21,15 +21,12 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
     
-
-
-    - name: Replace string in simplyin.php
+    - name: Replace version in simplyin.php
       run: |
         VERSION=$(jq -r '.version' public/package.json)
-        sed -i "13s/.*/  * Version:           $VERSION /" simplyin.php
+        sed -i "13s/.*/ * Version:           $VERSION /" simplyin.php
 
-
-    - name: Replace string in simplyin.php
+    - name: Replace environment type in simplyin.php
       run: |
         sed -i '12s/.*/ * Description: SimplyIN application description. ${{ env.APP_VERSION_PREFIX_STAGE }} /' simplyin.php
         
@@ -44,7 +41,7 @@ jobs:
         cd public
         yarn deploy-build
     
-    - name: Remove node_modules
+    - name: Remove unnecessary files
       run: |
         rm -rf logs
         rm -rf .git
