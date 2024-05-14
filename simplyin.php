@@ -48,8 +48,6 @@ function send_encrypted_data($encrypted_data)
 
 	$url = $simplyin_config['backendSimplyIn'] . 'encryption/saveEncryptedOrderStatusChange';
 
-	// $logs_directory = plugin_dir_path(__FILE__) . 'logs/';
-	// $log_file = $logs_directory . 'order_log.json';
 
 	$base_url = home_url();
 	$headers = array('Content-Type: application/json', 'Origin: ' . $base_url);
