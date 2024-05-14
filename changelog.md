@@ -1,3 +1,11 @@
+2024-05-14 (version: 1.1.8):
+- 98cc9de5f71a58c05613dbfe548faed13e15be40
+- 8fb115bb9d4ca76d0adfc47d044dbe3736d4836a
+
+2024-05-14 (version: 1.1.7):
+- 98cc9de5f71a58c05613dbfe548faed13e15be40
+- 8fb115bb9d4ca76d0adfc47d044dbe3736d4836a
+
 2024-05-14 (version: 1.1.6):
 - 8fb115bb9d4ca76d0adfc47d044dbe3736d4836a
 
