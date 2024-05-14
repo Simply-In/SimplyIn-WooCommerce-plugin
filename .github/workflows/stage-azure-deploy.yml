@@ -21,13 +21,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
     
-    - name: Append version to file
-      run: echo $(jq -r '.version' package.json) >> something.txt
+
 
     - name: Replace string in simplyin.php
       run: |
-        VERSION=$(jq -r '.version' package.json)
-        sed -i "13s/.*/  * Version:           $VERSION /" simplyin.php
+        sed -i '13s/.*/  * Version:           ${{ (jq -r '.version' package.json) }} /' simplyin.php
 
 
     - name: Replace string in simplyin.php
