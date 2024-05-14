@@ -10,7 +10,7 @@
  * Plugin Name: SimplyIN
  * Plugin URI:       
  * Description: SimplyIN application.
- * Version:           0.0.99
+ * Version:           1.0.0
  * Author:            SimplyIN
  * Author URI:        https://simply.in
  * License:           GPL-2.0+
