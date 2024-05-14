@@ -2,8 +2,6 @@ name: Stage versioning
 
 on:
   workflow_call:
-env:
-  #Frontends CI/CD variables env dependent:
 
 jobs:
   bump-version:
