@@ -76,7 +76,7 @@ jobs:
 
     - name: Zip files
       run: |
-        zip -r simplyin-woo-stage.zip .
+        zip -r simplyin-woo-stage-test.zip .
 
   deploy-zip-file-in-azure:
     runs-on: ubuntu-latest
