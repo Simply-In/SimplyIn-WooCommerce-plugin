@@ -10,7 +10,7 @@
  * Plugin Name: SimplyIN
  * Plugin URI:       
  * Description: SimplyIN application.
- * Version:           1.0.0
+ * Version:           0.0.99
  * Author:            SimplyIN
  * Author URI:        https://simply.in
  * License:           GPL-2.0+
@@ -26,24 +26,14 @@ if (!defined('WPINC')) {
 require_once plugin_dir_path(__FILE__) . 'includes/class-simplyin.php';
 
 $env = parse_ini_file('.env');
-$backendEnvironment = $env['BACKEND_ENVIRONMENT_STAGE'];
-$appVersionPrefix = $env['APP_VERSION_PREFIX_STAGE'];
-
-
-define('SIMPLYIN_VERSION', $appVersionPrefix . '1.0.2');
-echo $backendEnvironment;
+$backendEnvironment = $env['BACKEND_ENVIRONMENT_DEV'];
+$appVersionPrefix = $env['APP_VERSION_PREFIX_DEV'];
 
 function run_simplyin()
 {
 	$plugin = new SimplyIn();
 	$plugin->run();
 }
-
-// global $plugin_data, $plugin_version, $woocommerce_version;
-
-// $plugin_data = get_plugin_data(__FILE__);
-// $plugin_version = $plugin_data['Version'];
-// $woocommerce_version = get_option('woocommerce_version');
 
 run_simplyin();
 
