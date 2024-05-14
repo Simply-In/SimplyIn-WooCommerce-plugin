@@ -1,26 +1,21 @@
-name: Stage Azure deploy
+name: Preprod Azure deploy
 
 on:
   push:
     branches:
-      - stage
+      - preprod
 
 env: 
-  BACKEND_ENVIRONMENT_STAGE: ${{vars.BACKEND_ENVIRONMENT_STAGE}}
-  APP_VERSION_PREFIX_STAGE: ${{vars.APP_VERSION_PREFIX_STAGE}}
-  AZURE_STORAGE_ACCOUNT_STAGE: ${{vars.AZURE_STORAGE_ACCOUNT_STAGE}}
-  AZURE_STORAGE_CONTAINER_NAME_WOO_STAGE: ${{vars.AZURE_STORAGE_CONTAINER_NAME_WOO_STAGE}}
+  BACKEND_ENVIRONMENT_PREPROD: ${{vars.BACKEND_ENVIRONMENT_PREPROD}}
+  APP_VERSION_PREFIX_PREPROD: ${{vars.APP_VERSION_PREFIX_PREPROD}}
+  AZURE_STORAGE_ACCOUNT_PREPROD: ${{vars.AZURE_STORAGE_ACCOUNT_PREPROD}}
+  AZURE_STORAGE_CONTAINER_NAME_WOO_PREPROD: ${{vars.AZURE_STORAGE_CONTAINER_NAME_WOO_PREPROD}}
   AZURE_CREDENTIALS: ${{vars.AZURE_CREDENTIALS}}
 jobs:
-
-  version:
-    name: Version bump
-    uses: ./.github/workflows/stage-version.yml
-    secrets: inherit
-
+ 
   build-app:
     runs-on: ubuntu-latest
-    needs: [version]
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -32,7 +27,7 @@ jobs:
 
     - name: Replace environment type in simplyin.php
       run: |
-        sed -i '12s/.*/ * Description: SimplyIN application description. ${{ env.APP_VERSION_PREFIX_STAGE }} /' simplyin.php
+        sed -i '12s/.*/ * Description: SimplyIN application description. ${{ env.APP_VERSION_PREFIX_PREPROD }} /' simplyin.php
         
 
     - name: Dependencies install 
@@ -57,7 +52,7 @@ jobs:
     - name: Upload files
       uses: actions/upload-artifact@v2
       with:
-        name: simplyin-woo-stage
+        name: simplyin-woo-preprod
         path: .
 
   create-zip-file:
@@ -68,12 +63,12 @@ jobs:
     - name: Download files
       uses: actions/download-artifact@v2
       with:
-        name: simplyin-woo-stage
+        name: simplyin-woo-preprod
         path: .
 
     - name: Zip files
       run: |
-        zip -r simplyin-woo-stage.zip .
+        zip -r simplyin-woo-preprod.zip .
 
   deploy-zip-file-in-azure:
     runs-on: ubuntu-latest
@@ -90,4 +85,4 @@ jobs:
     
     - name: Upload files to Azure Storage
       run: |
-        az storage blob upload-batch --account-name ${{ env.AZURE_STORAGE_ACCOUNT_STAGE }} --destination ${{ env.AZURE_STORAGE_CONTAINER_NAME_WOO_STAGE }} --source . --pattern "*.zip"
+        az storage blob upload-batch --account-name ${{ env.AZURE_STORAGE_ACCOUNT_PREPROD }} --destination ${{ env.AZURE_STORAGE_CONTAINER_NAME_WOO_PREPROD }} --source . --pattern "*.zip"
