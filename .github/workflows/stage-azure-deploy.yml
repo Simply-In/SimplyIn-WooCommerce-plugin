@@ -105,3 +105,4 @@ jobs:
     - name: Upload files to Azure Storage
       run: |
         az storage blob upload-batch --account-name ${{ env.AZURE_STORAGE_ACCOUNT_STAGE }} --destination ${{ env.AZURE_STORAGE_CONTAINER_NAME_WOO_STAGE }} --source ./simplyin-woo-stage-test.zip --pattern "*.zip" --auth-mode login ${{env.SUBSCRIPTION}}
+
