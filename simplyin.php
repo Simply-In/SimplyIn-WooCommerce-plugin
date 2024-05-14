@@ -9,8 +9,8 @@
  * @wordpress-plugin
  * Plugin Name: SimplyIN
  * Plugin URI:       
- * Description: SimplyIN application.
- * Version:           1.0.0
+ * Description: SimplyIN application st 
+ * Version:           1.1.10 
  * Author:            SimplyIN
  * Author URI:        https://simply.in
  * License:           GPL-2.0+
@@ -26,8 +26,8 @@ if (!defined('WPINC')) {
 require_once plugin_dir_path(__FILE__) . 'includes/class-simplyin.php';
 
 $env = parse_ini_file('.env');
-$backendEnvironment = $env['BACKEND_ENVIRONMENT_DEV'];
-$appVersionPrefix = $env['APP_VERSION_PREFIX_DEV'];
+$backendEnvironment = $env['BACKEND_ENVIRONMENT_STAGE'];
+$appVersionPrefix = $env['APP_VERSION_PREFIX_STAGE'];
 
 function run_simplyin()
 {
