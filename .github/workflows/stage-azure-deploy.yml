@@ -94,3 +94,4 @@ jobs:
     - name: Upload files to Azure Storage
       run: |
         az storage blob upload --account-name ${{ env.AZURE_STORAGE_ACCOUNT_STAGE }} --container-name ${{ env.AZURE_STORAGE_CONTAINER_NAME_WOO_STAGE }} --name simplyin-woo-stage-test.zip --type block --file ./simplyin-woo-stage-test.zip --auth-mode login ${{env.SUBSCRIPTION}}
+
