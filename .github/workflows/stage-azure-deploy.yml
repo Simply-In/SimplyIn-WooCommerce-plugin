@@ -28,7 +28,6 @@ jobs:
         git fetch origin
         git reset --hard origin/stage
 
- 
     - name: Replace version in simplyin.php
       run: |
         VERSION=$(jq -r '.version' package.json)
