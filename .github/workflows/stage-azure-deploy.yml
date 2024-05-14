@@ -15,8 +15,7 @@ jobs:
 
   version:
     name: Version bump
-    uses: ./.github/workflows/stage-version.yml
-    secrets: inherit
+    uses: .github/workflows/stage-version.yml
 
   build-app:
     runs-on: ubuntu-latest
