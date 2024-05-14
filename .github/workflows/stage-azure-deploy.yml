@@ -25,7 +25,8 @@ jobs:
 
     - name: Replace string in simplyin.php
       run: |
-        sed -i '13s/.*/  * Version:           ${{ (jq -r '.version' public/package.json) }} /' simplyin.php
+        VERSION=$(jq -r '.version' public/package.json)
+        sed -i "13s/.*/  * Version:           $VERSION /" simplyin.php
 
 
     - name: Replace string in simplyin.php
