@@ -90,8 +90,28 @@ const placingEmailField = () => {
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore
 document.addEventListener("DOMContentLoaded", (async (): any => {
+	setTimeout(() => {
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		//@ts-ignore
+		const selectButton = document.getElementById("billing_country_field").querySelector("span.woocommerce-input-wrapper").querySelector("span")
+		// Add an inline onClick event to the button
+		if (selectButton) {
+			selectButton.onclick = function () {
+				setTimeout(() => {
+					const dropdownElement = document.querySelector('.select2-dropdown.select2-dropdown--below');
+					if (dropdownElement) {
 
-	console.log('DOM Loaded - SimplyIn');
+						if (!(dropdownElement as any)?.style?.width) {
+							(dropdownElement as any).style.width = (selectButton)?.clientWidth
+						}
+					} else {
+						console.log('Element not found');
+					}
+				}, 100)
+			};
+		}
+	}, 1000)
+
 	const reactAppContainer = document.createElement("div");
 	reactAppContainer.setAttribute("id", "reactAppContainer");
 	reactAppContainer.setAttribute("class", "woocommerce-input-wrapper");
