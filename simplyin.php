@@ -811,8 +811,6 @@ function onOrderCreate($order)
 			);
 		}
 		if (empty($parcel_machine_id)) {
-
-
 			$shippingData = array(
 				"icon" => "🏡",
 				"addressName" => "",
