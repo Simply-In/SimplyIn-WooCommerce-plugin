@@ -183,6 +183,7 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 		}
 		if (method === "sms") {
 			setCodeByEmail(false)
+
 			middlewareApi({
 				endpoint: "checkout/submitEmail",
 				method: 'POST',

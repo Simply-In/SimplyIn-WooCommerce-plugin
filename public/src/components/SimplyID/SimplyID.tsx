@@ -1,4 +1,6 @@
 import { useState, useEffect, ChangeEvent, createContext, useMemo } from "react";
+import { z } from 'zod'
+import { useTranslation } from "react-i18next";
 import { SimplyinSmsPopupOpenerIcon } from "../../assets/SimplyinSmsPopupOpenerIcon.tsx";
 import { SimplyinContainer, } from "./SimplyID.styled";
 import { middlewareApi } from '../../services/middlewareApi.ts'
@@ -6,7 +8,6 @@ import { debounce } from 'lodash';
 import { changeInputValue, simplyinTokenInputField } from "./steps/Step1.tsx";
 import { useSelectedSimplyData } from "../../hooks/useSelectedSimplyData.ts";
 import PinCodeModal from "./PinCodeModal.tsx";
-import { useTranslation } from "react-i18next";
 import { useAuth } from "../../hooks/useAuth.ts";
 import { saveDataSessionStorage } from "../../services/sessionStorageApi.ts";
 import { predefinedFill } from "./steps/functions.ts";
@@ -14,12 +15,12 @@ import { predefinedFill } from "./steps/functions.ts";
 
 import { useCounterData } from "../../hooks/useCounterData.ts";
 
-
 export const ApiContext = createContext<any>(null);
 export const SelectedDataContext = createContext<any>(null);
 export const CounterContext = createContext<any>({});
 
 export const shortLang = (lang: string) => lang.substring(0, 2).toUpperCase();
+export const isValidEmail = (email: string) => z.string().email().safeParse(email).success
 
 export type TypedLoginType = "pinCode" | "app" | undefined
 //main simply app - email field
@@ -165,8 +166,8 @@ export const SimplyID = () => {
 
 		if (!authToken) {
 			const debouncedRequest = debounce(() => {
-
-				middlewareApi({
+				if (isValidEmail(simplyInput.trim().toLowerCase())) {
+					middlewareApi({
 					endpoint: "checkout/submitEmail",
 					method: 'POST',
 					requestBody: { "email": simplyInput.trim().toLowerCase(), language: shortLang(i18n.language) }
@@ -188,7 +189,7 @@ export const SimplyID = () => {
 					.catch((err) => {
 						console.log('my err', err);
 					})
-
+				}
 			}, 500);
 
 			debouncedRequest();

@@ -9,7 +9,7 @@
  * @wordpress-plugin
  * Plugin Name: SimplyIN
  * Plugin URI:       
- * Description: SimplyIN application. 10.05.2024 13.00
+ * Description: SimplyIN application. 23.05.2024 15.20
  * Version:           1.0.0
  * Author:            SimplyIN
  * Author URI:        https://simply.in
@@ -33,16 +33,12 @@ function run_simplyin()
 
 }
 
-// global $plugin_data, $plugin_version, $woocommerce_version;
 
-// $plugin_data = get_plugin_data(__FILE__);
-// $plugin_version = $plugin_data['Version'];
-// $woocommerce_version = get_option('woocommerce_version');
 
 run_simplyin();
 
 $simplyin_config = array(
-	'backendSimplyIn' => 'https://stage.backend.simplyin.app/api/',
+	'backendSimplyIn' => 'https://preprod.backend.simplyin.app/api/',
 );
 
 function send_encrypted_data($encrypted_data)
@@ -52,8 +48,6 @@ function send_encrypted_data($encrypted_data)
 
 	$url = $simplyin_config['backendSimplyIn'] . 'encryption/saveEncryptedOrderStatusChange';
 
-	// $logs_directory = plugin_dir_path(__FILE__) . 'logs/';
-	// $log_file = $logs_directory . 'order_log.json';
 
 	$base_url = home_url();
 	$headers = array('Content-Type: application/json', 'Origin: ' . $base_url);
