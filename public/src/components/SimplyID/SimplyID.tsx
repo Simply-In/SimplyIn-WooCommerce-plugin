@@ -25,7 +25,7 @@ export const isValidEmail = (email: string) => z.string().email().safeParse(emai
 export type TypedLoginType = "pinCode" | "app" | undefined
 //main simply app - email field
 export const SimplyID = () => {
-	const [modalStep, setModalStep] = useState(1)
+	const [modalStep, setModalStep] = useState<1 | 2 | "rejected">(1)
 	const [userData, setUserData] = useState({})
 	const { t } = useTranslation();
 	const [simplyInput, setSimplyInput] = useState("");
@@ -105,7 +105,7 @@ export const SimplyID = () => {
 
 	useEffect(() => {
 
-		if (!notificationTokenId || modalStep !== 1) {			
+		if (!notificationTokenId || modalStep !== 1) {
 			return
 		}
 
@@ -114,7 +114,7 @@ export const SimplyID = () => {
 			method: 'POST',
 			requestBody: { "email": simplyInput.trim().toLowerCase(), "notificationTokenId": notificationTokenId, language: shortLang(i18n.language) }
 		})
-			.then(({ ok, authToken, userData }) => {
+			.then(({ ok, rejected, authToken, userData }) => {
 				if (authToken) {
 					setAuthToken(authToken)
 					saveDataSessionStorage({ key: 'simplyinToken', data: authToken })
@@ -139,8 +139,11 @@ export const SimplyID = () => {
 						setPickupPointDelivery,
 						setSelectedUserData
 					})
-				} else if (counter < maxAttempts) {
-
+				} else if (ok === false && rejected === true) {
+					setVisible(true)
+					setModalStep("rejected")
+				}
+				else if (counter < maxAttempts) {
 					setTimeout(() => setCounter((prev) => prev + 1), 1000);
 				} else {
 					console.log('Login not accepted within 30 seconds');
@@ -168,27 +171,27 @@ export const SimplyID = () => {
 			const debouncedRequest = debounce(() => {
 				if (isValidEmail(simplyInput.trim().toLowerCase())) {
 					middlewareApi({
-					endpoint: "checkout/submitEmail",
-					method: 'POST',
-					requestBody: { "email": simplyInput.trim().toLowerCase(), language: shortLang(i18n.language) }
-				}).then(({ data: phoneNumber, userUsedPushNotifications, notificationTokenId }) => {
+						endpoint: "checkout/submitEmail",
+						method: 'POST',
+						requestBody: { "email": simplyInput.trim().toLowerCase(), language: shortLang(i18n.language) }
+					}).then(({ data: phoneNumber, userUsedPushNotifications, notificationTokenId }) => {
 
 
-					setPhoneNumber(phoneNumber)
-					setVisible(true)
+						setPhoneNumber(phoneNumber)
+						setVisible(true)
 
-					setLoginType(userUsedPushNotifications ? "app" : "pinCode")
+						setLoginType(userUsedPushNotifications ? "app" : "pinCode")
 
-					if (userUsedPushNotifications) {
-						setNotificationTokenId(notificationTokenId)
-						// isLoginAccepted(notificationTokenId)
-					}
-				}).catch((err) => {
-					console.log(err);
-				})
-					.catch((err) => {
-						console.log('my err', err);
+						if (userUsedPushNotifications) {
+							setNotificationTokenId(notificationTokenId)
+							// isLoginAccepted(notificationTokenId)
+						}
+					}).catch((err) => {
+						console.log(err);
 					})
+						.catch((err) => {
+							console.log('my err', err);
+						})
 				}
 			}, 500);
 
@@ -287,18 +290,18 @@ export const SimplyID = () => {
 							></input>
 
 
-						{phoneNumber && <SimplyinSmsPopupOpenerIcon onClick={handleOpenSmsPopup} token={authToken} />}
-					</SimplyinContainer>
+							{phoneNumber && <SimplyinSmsPopupOpenerIcon onClick={handleOpenSmsPopup} token={authToken} />}
+						</SimplyinContainer>
 
 						{phoneNumber && <PinCodeModal
 
 							selectedUserData={selectedUserData}
-						setSelectedUserData={setSelectedUserData}
-						modalStep={modalStep}
-						setModalStep={setModalStep}
-						userData={userData}
-						setUserData={setUserData}
-						simplyInput={simplyInput}
+							setSelectedUserData={setSelectedUserData}
+							modalStep={modalStep}
+							setModalStep={setModalStep}
+							userData={userData}
+							setUserData={setUserData}
+							simplyInput={simplyInput}
 							setToken={setAuthToken}
 							phoneNumber={phoneNumber}
 							visible={visible}

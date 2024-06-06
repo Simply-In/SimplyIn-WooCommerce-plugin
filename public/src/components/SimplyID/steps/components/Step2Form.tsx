@@ -192,15 +192,15 @@ export const Step2Form = ({
 					//Select just created item
 					if (isNewData) {
 						if (editItem.property === "billingAddresses") {
-							setSelectedBillingIndex(res.data.billingAddresses.length - 1 || 0)
+							setSelectedBillingIndex(res.data.billingAddresses?.length - 1 || 0)
 						}
 						if (editItem.property === "shippingAddresses") {
-							setSelectedShippingIndex(res.data.shippingAddresses.length - 1 || 0)
+							setSelectedShippingIndex(res.data.shippingAddresses?.length - 1 || 0)
 							//unselect same address
 							setSameDeliveryAddress(false)
 						}
 						if (editItem.property === "parcelLockers") {
-							setSelectedDeliveryPointIndex(res.data.parcelLockers.length - 1 || 0)
+							setSelectedDeliveryPointIndex(res.data.parcelLockers?.length - 1 || 0)
 
 						}
 					}

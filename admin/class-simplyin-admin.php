@@ -105,7 +105,7 @@ class SimplyIn_Admin {
 	}
 
 	public function settings_page_display_general_account() {
-		echo '<p>To activate <a href="simply.in">Simply.IN</a> in your store, paste below the API key generated in the <a href="https://merchant.simplyin.app/">merchant panel</a>. Detailed instructions are available in the panel.</p>';
+		echo '<p>To activate <a href="https://www.simply.in" target="_blank">Simply.IN</a> in your store, paste below the API key generated in the <a href="https://merchant.simplyin.app/" target="_blank">merchant panel</a>. Detailed instructions are available in the panel.</p>';
 	}
 
 

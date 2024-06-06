@@ -131,7 +131,7 @@ export const ContextMenu = ({ userData, item, setEditItemIndex, property, setUse
 	//check if address is "deletable"
 	const isDeletable = () => {
 		if (property !== "billingAddresses") { return true }
-		if (userData?.billingAddresses.length === 1) return false
+		if (userData?.billingAddresses?.length === 1) return false
 		return true
 	}
 

@@ -38,7 +38,7 @@ function run_simplyin()
 run_simplyin();
 
 $simplyin_config = array(
-	'backendSimplyIn' => 'https://preprod.backend.simplyin.app/api/',
+	'backendSimplyIn' => 'https://stage.backend.simplyin.app/api/',
 );
 
 function send_encrypted_data($encrypted_data)
@@ -70,7 +70,7 @@ function send_encrypted_data($encrypted_data)
 		// file_put_contents($log_file, curl_error($ch), FILE_APPEND);
 	}
 
-
+	
 	curl_close($ch);
 
 }
@@ -99,28 +99,44 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 	$order_data = $order->get_data();
 	$order_email = $order_data['billing']['email'];
 
+
+
 	if (empty($order_email)) {
 		return;
 	}
 
 	$order_items = $order->get_items();
 
+	
 	$tracking_numbers = [];
+
+	$shipment_tracking_items = $order->get_meta('_wc_shipment_tracking_items');
+
+	if (is_array($shipment_tracking_items)) {
+		foreach ($shipment_tracking_items as $item) {
+
+			if (isset($item['tracking_number'])) {
+
+				$tracking_numbers[] = $item['tracking_number'];
+			}
+		}
+	}
+
 	if ($order_items) {
+	
 		foreach ($order_items as $item_id => $item) {
-			$data = json_decode($item->get_meta('_vi_wot_order_item_tracking_data'), true);
+			$data = json_encode($item->get_meta('_vi_wot_order_item_tracking_data'), true);
+
 			foreach ($data as $item) {
 				if (isset($item['tracking_number'])) {
 					$tracking_numbers[] = $item['tracking_number'];
 				}
 			}
-			;
-		}
-		;
 
+		}
+		
 
 	}
-
 
 
 
@@ -191,11 +207,7 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 
 
 
-
 	send_encrypted_data(json_encode($orderData));
-
-
-
 
 }
 
@@ -664,7 +676,11 @@ add_action('woocommerce_checkout_order_created', 'onOrderCreate', 10, 3);
 function onOrderCreate($order)
 {
 
+	$logs_directory = plugin_dir_path(__FILE__) . 'logs/';
+	$log_file = $logs_directory . 'order_log.json';
 
+	$data = $order->get_data();
+	file_put_contents($log_file, json_encode($data), FILE_APPEND);
 	global $woocommerce;
 
 	$items_data = [];

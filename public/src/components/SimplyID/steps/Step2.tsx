@@ -233,7 +233,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 							name="radio-buttons-group"
 							onChange={(e) => handleChange(e, "billing")}
 						>
-							{userData?.billingAddresses.length
+							{userData?.billingAddresses?.length
 								?
 								userData?.billingAddresses.map((el: any, index: number) => {
 									return (
@@ -310,7 +310,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 
 					</FormGroup>
 					<Collapse in={!expanded.shipping} timeout="auto" unmountOnExit >
-						{userData?.shippingAddresses.length
+						{userData?.shippingAddresses?.length
 							?
 							<DataValueContainer style={{ padding: 8 }}>
 
@@ -345,7 +345,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 								onChange={(e) => handleChange(e, "shipping")}
 
 							>
-								{userData?.shippingAddresses.length
+								{userData?.shippingAddresses?.length
 									?
 									userData?.shippingAddresses.map((el: any, index: number) => {
 										return (
