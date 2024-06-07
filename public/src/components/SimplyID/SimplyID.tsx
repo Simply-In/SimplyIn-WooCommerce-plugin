@@ -121,17 +121,28 @@ export const SimplyID = () => {
 					changeInputValue(simplyinTokenInputField, authToken);
 				}
 				if (ok) {
-					setUserData(userData)
+
+
+					const newData = { ...userData }
+					if (newData?.createdAt) {
+						delete newData.createdAt
+					}
+					if (newData?.updatedAt) {
+						delete newData.updatedAt
+					}
+
+					setUserData(newData)
 
 					if (userData?.language) {
 						i18n.changeLanguage(userData?.language.toLowerCase())
 					}
 
-					saveDataSessionStorage({ key: 'UserData', data: userData })
+					saveDataSessionStorage({ key: 'UserData', data: newData })
+
 					setVisible(true)
 					setModalStep(2)
 
-					predefinedFill(userData, handleClosePopup, {
+					predefinedFill(newData, handleClosePopup, {
 						setSelectedBillingIndex,
 						setSelectedShippingIndex,
 						setSelectedDeliveryPointIndex,
@@ -218,6 +229,7 @@ export const SimplyID = () => {
 
 		};
 	}, [])
+
 
 	const providerProps = useMemo(() => {
 		return {
