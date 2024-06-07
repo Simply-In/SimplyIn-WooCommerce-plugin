@@ -38,8 +38,6 @@ function run_simplyin()
 }
 
 
-}
-
 run_simplyin();
 
 $simplyin_config = array(
