@@ -42,11 +42,11 @@ export const predefinedFill = (userData: any, handleClosePopup: any, indexContex
 
 	const { billingAddresses, shippingAddresses, parcelLockers } = userData
 
-	if (billingAddresses.length === 0) {
+	if (billingAddresses?.length === 0) {
 		return
 	}
 
-	if (billingAddresses.length === 1 && shippingAddresses.length === 1 && parcelLockers.length === 0) {
+	if (billingAddresses?.length === 1 && shippingAddresses?.length === 1 && parcelLockers?.length === 0) {
 
 		let shippingElement = shippingAddresses[0]
 		if (isSameShippingAndBillingAddresses({ billingAddress: billingAddresses[0], shippingAddress: shippingAddresses[0] })) {
@@ -82,7 +82,7 @@ export const predefinedFill = (userData: any, handleClosePopup: any, indexContex
 
 
 
-	if (billingAddresses.length === 1 && shippingAddresses.length && parcelLockers.length === 0) {
+	if (billingAddresses?.length === 1 && shippingAddresses?.length && parcelLockers?.length === 0) {
 
 		setSelectedBillingIndex(0)
 		setSelectedShippingIndex(0)
@@ -103,7 +103,7 @@ export const predefinedFill = (userData: any, handleClosePopup: any, indexContex
 		return
 	}
 
-	if (billingAddresses.length === 1 && shippingAddresses.length === 0 && parcelLockers.length === 0) {
+	if (billingAddresses?.length === 1 && shippingAddresses?.length === 0 && parcelLockers?.length === 0) {
 
 
 		setSelectedBillingIndex(0)
@@ -125,7 +125,7 @@ export const predefinedFill = (userData: any, handleClosePopup: any, indexContex
 		handleClosePopup()
 		return
 	}
-	if (billingAddresses.length === 1 && shippingAddresses.length === 0 && parcelLockers.length === 1) {
+	if (billingAddresses?.length === 1 && shippingAddresses?.length === 0 && parcelLockers?.length === 1) {
 
 		setSelectedBillingIndex(0)
 		setSelectedShippingIndex(null)
@@ -150,7 +150,7 @@ export const predefinedFill = (userData: any, handleClosePopup: any, indexContex
 		return
 	}
 
-	if (billingAddresses.length === 1 && shippingAddresses.length === 0 && parcelLockers.length) {
+	if (billingAddresses?.length === 1 && shippingAddresses?.length === 0 && parcelLockers?.length) {
 		setSelectedBillingIndex(0)
 		setSelectedShippingIndex(null)
 		setSelectedDeliveryPointIndex(0)

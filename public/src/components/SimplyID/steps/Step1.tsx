@@ -97,7 +97,7 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 
 				lng: shortLang(i18n.language) || shortLang(appLocalizer?.language) || shortLang(getLangBrowser()),
 			}
-		}).then(async (res) => {
+		}).then(async (res: any) => {
 
 			setModalError("")
 			setErrorPinCode("")
@@ -128,7 +128,15 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 					i18n.changeLanguage(res.data?.language.toLowerCase())
 				}
 
-				setUserData({ ...res.data })
+				const newData = { ...res.data }
+				if (newData?.createdAt) {
+					delete newData.createdAt
+				}
+				if (newData?.updatedAt) {
+					delete newData.updatedAt
+				}
+
+				setUserData(newData)
 				saveDataSessionStorage({ key: 'UserData', data: res.data })
 				saveDataSessionStorage({ key: 'simplyinToken', data: res.authToken })
 				removeDataSessionStorage({ key: 'phoneToken' })
@@ -183,6 +191,7 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 		}
 		if (method === "sms") {
 			setCodeByEmail(false)
+
 			middlewareApi({
 				endpoint: "checkout/submitEmail",
 				method: 'POST',

@@ -103,8 +103,17 @@ export const ContextMenu = ({ userData, item, setEditItemIndex, property, setUse
 			if (res.error) {
 				throw new Error(res.error)
 			} else if (res.data) {
-				setUserData(res.data)
-				saveDataSessionStorage({ key: 'UserData', data: res.data })
+
+				const newData = { ...res.data }
+				if (newData?.createdAt) {
+					delete newData.createdAt
+				}
+				if (newData?.updatedAt) {
+					delete newData.updatedAt
+				}
+
+				setUserData(newData)
+				saveDataSessionStorage({ key: 'UserData', data: newData })
 
 				//selection of previously selected radio element
 				if (res.data[property].length) {
@@ -131,7 +140,7 @@ export const ContextMenu = ({ userData, item, setEditItemIndex, property, setUse
 	//check if address is "deletable"
 	const isDeletable = () => {
 		if (property !== "billingAddresses") { return true }
-		if (userData?.billingAddresses.length === 1) return false
+		if (userData?.billingAddresses?.length === 1) return false
 		return true
 	}
 
