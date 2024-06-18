@@ -9,11 +9,11 @@
  * @wordpress-plugin
  * Plugin Name: SimplyIN
  * Plugin URI:       
- * Description: SimplyIN application.
- * Version:           1.0.0
- * Author:            SimplyIN
+ * Description: SimplyIN application st 
+ * Version:           1.1.10 
+ * Author:            Simply.IN Sp. z o.o.
  * Author URI:        https://simply.in
- * License:           GPL-2.0+
+ * License:           https://joinup.ec.europa.eu/software/page/eupl
  * Domain Path:       /languages
  */
 
@@ -26,14 +26,17 @@ if (!defined('WPINC')) {
 require_once plugin_dir_path(__FILE__) . 'includes/class-simplyin.php';
 
 $env = parse_ini_file('.env');
-$backendEnvironment = $env['BACKEND_ENVIRONMENT_DEV'];
-$appVersionPrefix = $env['APP_VERSION_PREFIX_DEV'];
+$backendEnvironment = $env['BACKEND_ENVIRONMENT_STAGE'];
+$appVersionPrefix = $env['APP_VERSION_PREFIX_STAGE'];
 
 function run_simplyin()
 {
 	$plugin = new SimplyIn();
 	$plugin->run();
+
+
 }
+
 
 run_simplyin();
 
@@ -70,7 +73,7 @@ function send_encrypted_data($encrypted_data)
 		// file_put_contents($log_file, curl_error($ch), FILE_APPEND);
 	}
 
-
+	
 	curl_close($ch);
 
 }
@@ -99,28 +102,44 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 	$order_data = $order->get_data();
 	$order_email = $order_data['billing']['email'];
 
+
+
 	if (empty($order_email)) {
 		return;
 	}
 
 	$order_items = $order->get_items();
 
+	
 	$tracking_numbers = [];
+
+	$shipment_tracking_items = $order->get_meta('_wc_shipment_tracking_items');
+
+	if (is_array($shipment_tracking_items)) {
+		foreach ($shipment_tracking_items as $item) {
+
+			if (isset($item['tracking_number'])) {
+
+				$tracking_numbers[] = $item['tracking_number'];
+			}
+		}
+	}
+
 	if ($order_items) {
+	
 		foreach ($order_items as $item_id => $item) {
-			$data = json_decode($item->get_meta('_vi_wot_order_item_tracking_data'), true);
+			$data = json_encode($item->get_meta('_vi_wot_order_item_tracking_data'), true);
+
 			foreach ($data as $item) {
 				if (isset($item['tracking_number'])) {
 					$tracking_numbers[] = $item['tracking_number'];
 				}
 			}
-			;
-		}
-		;
 
+		}
+		
 
 	}
-
 
 
 
@@ -191,11 +210,7 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 
 
 
-
 	send_encrypted_data(json_encode($orderData));
-
-
-
 
 }
 
@@ -665,7 +680,11 @@ add_action('woocommerce_checkout_order_created', 'onOrderCreate', 10, 3);
 function onOrderCreate($order)
 {
 
+	$logs_directory = plugin_dir_path(__FILE__) . 'logs/';
+	$log_file = $logs_directory . 'order_log.json';
 
+	$data = $order->get_data();
+	file_put_contents($log_file, json_encode($data), FILE_APPEND);
 	global $woocommerce;
 
 	$items_data = [];

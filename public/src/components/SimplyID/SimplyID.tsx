@@ -1,4 +1,6 @@
 import { useState, useEffect, ChangeEvent, createContext, useMemo } from "react";
+import { z } from 'zod'
+import { useTranslation } from "react-i18next";
 import { SimplyinSmsPopupOpenerIcon } from "../../assets/SimplyinSmsPopupOpenerIcon.tsx";
 import { SimplyinContainer, } from "./SimplyID.styled";
 import { middlewareApi } from '../../services/middlewareApi.ts'
@@ -6,7 +8,6 @@ import { debounce } from 'lodash';
 import { changeInputValue, simplyinTokenInputField } from "./steps/Step1.tsx";
 import { useSelectedSimplyData } from "../../hooks/useSelectedSimplyData.ts";
 import PinCodeModal from "./PinCodeModal.tsx";
-import { useTranslation } from "react-i18next";
 import { useAuth } from "../../hooks/useAuth.ts";
 import { saveDataSessionStorage } from "../../services/sessionStorageApi.ts";
 import { predefinedFill } from "./steps/functions.ts";
@@ -14,17 +15,17 @@ import { predefinedFill } from "./steps/functions.ts";
 
 import { useCounterData } from "../../hooks/useCounterData.ts";
 
-
 export const ApiContext = createContext<any>(null);
 export const SelectedDataContext = createContext<any>(null);
 export const CounterContext = createContext<any>({});
 
 export const shortLang = (lang: string) => lang.substring(0, 2).toUpperCase();
+export const isValidEmail = (email: string) => z.string().email().safeParse(email).success
 
 export type TypedLoginType = "pinCode" | "app" | undefined
 //main simply app - email field
 export const SimplyID = () => {
-	const [modalStep, setModalStep] = useState(1)
+	const [modalStep, setModalStep] = useState<1 | 2 | "rejected">(1)
 	const [userData, setUserData] = useState({})
 	const { t } = useTranslation();
 	const [simplyInput, setSimplyInput] = useState("");
@@ -104,7 +105,7 @@ export const SimplyID = () => {
 
 	useEffect(() => {
 
-		if (!notificationTokenId || modalStep !== 1) {			
+		if (!notificationTokenId || modalStep !== 1) {
 			return
 		}
 
@@ -113,24 +114,35 @@ export const SimplyID = () => {
 			method: 'POST',
 			requestBody: { "email": simplyInput.trim().toLowerCase(), "notificationTokenId": notificationTokenId, language: shortLang(i18n.language) }
 		})
-			.then(({ ok, authToken, userData }) => {
+			.then(({ ok, rejected, authToken, userData }) => {
 				if (authToken) {
 					setAuthToken(authToken)
 					saveDataSessionStorage({ key: 'simplyinToken', data: authToken })
 					changeInputValue(simplyinTokenInputField, authToken);
 				}
 				if (ok) {
-					setUserData(userData)
+
+
+					const newData = { ...userData }
+					if (newData?.createdAt) {
+						delete newData.createdAt
+					}
+					if (newData?.updatedAt) {
+						delete newData.updatedAt
+					}
+
+					setUserData(newData)
 
 					if (userData?.language) {
 						i18n.changeLanguage(userData?.language.toLowerCase())
 					}
 
-					saveDataSessionStorage({ key: 'UserData', data: userData })
+					saveDataSessionStorage({ key: 'UserData', data: newData })
+
 					setVisible(true)
 					setModalStep(2)
 
-					predefinedFill(userData, handleClosePopup, {
+					predefinedFill(newData, handleClosePopup, {
 						setSelectedBillingIndex,
 						setSelectedShippingIndex,
 						setSelectedDeliveryPointIndex,
@@ -138,8 +150,11 @@ export const SimplyID = () => {
 						setPickupPointDelivery,
 						setSelectedUserData
 					})
-				} else if (counter < maxAttempts) {
-
+				} else if (ok === false && rejected === true) {
+					setVisible(true)
+					setModalStep("rejected")
+				}
+				else if (counter < maxAttempts) {
 					setTimeout(() => setCounter((prev) => prev + 1), 1000);
 				} else {
 					console.log('Login not accepted within 30 seconds');
@@ -165,30 +180,30 @@ export const SimplyID = () => {
 
 		if (!authToken) {
 			const debouncedRequest = debounce(() => {
+				if (isValidEmail(simplyInput.trim().toLowerCase())) {
+					middlewareApi({
+						endpoint: "checkout/submitEmail",
+						method: 'POST',
+						requestBody: { "email": simplyInput.trim().toLowerCase(), language: shortLang(i18n.language) }
+					}).then(({ data: phoneNumber, userUsedPushNotifications, notificationTokenId }) => {
 
-				middlewareApi({
-					endpoint: "checkout/submitEmail",
-					method: 'POST',
-					requestBody: { "email": simplyInput.trim().toLowerCase(), language: shortLang(i18n.language) }
-				}).then(({ data: phoneNumber, userUsedPushNotifications, notificationTokenId }) => {
 
+						setPhoneNumber(phoneNumber)
+						setVisible(true)
 
-					setPhoneNumber(phoneNumber)
-					setVisible(true)
+						setLoginType(userUsedPushNotifications ? "app" : "pinCode")
 
-					setLoginType(userUsedPushNotifications ? "app" : "pinCode")
-
-					if (userUsedPushNotifications) {
-						setNotificationTokenId(notificationTokenId)
-						// isLoginAccepted(notificationTokenId)
-					}
-				}).catch((err) => {
-					console.log(err);
-				})
-					.catch((err) => {
-						console.log('my err', err);
+						if (userUsedPushNotifications) {
+							setNotificationTokenId(notificationTokenId)
+							// isLoginAccepted(notificationTokenId)
+						}
+					}).catch((err) => {
+						console.log(err);
 					})
-
+						.catch((err) => {
+							console.log('my err', err);
+						})
+				}
 			}, 500);
 
 			debouncedRequest();
@@ -214,6 +229,7 @@ export const SimplyID = () => {
 
 		};
 	}, [])
+
 
 	const providerProps = useMemo(() => {
 		return {
@@ -286,18 +302,18 @@ export const SimplyID = () => {
 							></input>
 
 
-						{phoneNumber && <SimplyinSmsPopupOpenerIcon onClick={handleOpenSmsPopup} token={authToken} />}
-					</SimplyinContainer>
+							{phoneNumber && <SimplyinSmsPopupOpenerIcon onClick={handleOpenSmsPopup} token={authToken} />}
+						</SimplyinContainer>
 
 						{phoneNumber && <PinCodeModal
 
 							selectedUserData={selectedUserData}
-						setSelectedUserData={setSelectedUserData}
-						modalStep={modalStep}
-						setModalStep={setModalStep}
-						userData={userData}
-						setUserData={setUserData}
-						simplyInput={simplyInput}
+							setSelectedUserData={setSelectedUserData}
+							modalStep={modalStep}
+							setModalStep={setModalStep}
+							userData={userData}
+							setUserData={setUserData}
+							simplyInput={simplyInput}
 							setToken={setAuthToken}
 							phoneNumber={phoneNumber}
 							visible={visible}

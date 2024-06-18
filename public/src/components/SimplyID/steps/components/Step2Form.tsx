@@ -168,8 +168,12 @@ export const Step2Form = ({
 
 	const handleCancel = () => { setEditItemIndex(null) }
 
+
+
+
 	//saving address data function
 	const handleSave = (editedData: any) => {
+
 		if (editItem && 'property' in editItem && 'itemIndex' in editItem) {
 
 			const clonnedArray = [...userData[editItem.property]]
@@ -186,21 +190,31 @@ export const Step2Form = ({
 				if (res.error) {
 					throw new Error(res.error)
 				} else if (res.data) {
-					setUserData(res.data)
-					saveDataSessionStorage({ key: 'UserData', data: res.data })
+
+					const newData = { ...res.data }
+					if (newData?.createdAt) {
+						delete newData.createdAt
+					}
+					if (newData?.updatedAt) {
+						delete newData.updatedAt
+					}
+
+					setUserData(newData)
+					saveDataSessionStorage({ key: 'UserData', data: newData })
+
 
 					//Select just created item
 					if (isNewData) {
 						if (editItem.property === "billingAddresses") {
-							setSelectedBillingIndex(res.data.billingAddresses.length - 1 || 0)
+							setSelectedBillingIndex(res.data.billingAddresses?.length - 1 || 0)
 						}
 						if (editItem.property === "shippingAddresses") {
-							setSelectedShippingIndex(res.data.shippingAddresses.length - 1 || 0)
+							setSelectedShippingIndex(res.data.shippingAddresses?.length - 1 || 0)
 							//unselect same address
 							setSameDeliveryAddress(false)
 						}
 						if (editItem.property === "parcelLockers") {
-							setSelectedDeliveryPointIndex(res.data.parcelLockers.length - 1 || 0)
+							setSelectedDeliveryPointIndex(res.data.parcelLockers?.length - 1 || 0)
 
 						}
 					}

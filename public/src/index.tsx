@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 
 import ReactDOM from "react-dom";
 import { SimplyID } from "./components/SimplyID";
@@ -80,8 +81,44 @@ const placingEmailField = () => {
 			elementToMove?.setAttribute('data-priority', `1`);
 		}
 
-	} 
+	}
 
+}
+
+
+
+// Function to update the style
+function updateStyle() {
+
+	setTimeout(() => {
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		//@ts-ignore
+		const selectButton = document.getElementById("billing_country_field").querySelector("span.woocommerce-input-wrapper").querySelector("span.select2-container.select2-container--default")
+		const oldStyle = document.getElementById('dynamic-style');
+		if (oldStyle) oldStyle.remove();
+		const style = document.createElement('style');
+		style.id = 'dynamic-style';
+
+		// Add a CSS rule to the style element
+		style.textContent = `
+		.select2-dropdown.select2-dropdown--below {
+		  width: ${(selectButton?.getBoundingClientRect().width ?? 300)}px !important; /* Or calculate the width based on window size */
+		}`;
+
+		document.head.append(style);
+	}, 100)
+}
+//@ts-ignore
+const isSafari = window.safari !== undefined;
+
+
+if (isSafari) {
+
+	updateStyle();
+
+	// Update the style every time the window size changes
+	window.onresize = updateStyle;
+	window.onscroll = updateStyle;
 }
 
 
@@ -111,6 +148,15 @@ document.addEventListener("DOMContentLoaded", (async (): any => {
 			};
 		}
 	}, 1000)
+
+
+
+	if (isSafari) {
+
+		setTimeout(() => {
+			updateStyle()
+		}, 1000)
+	}
 
 	const reactAppContainer = document.createElement("div");
 	reactAppContainer.setAttribute("id", "reactAppContainer");
