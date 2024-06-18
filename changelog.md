@@ -1,3 +1,8 @@
+2024-06-18 (version: 1.1.11):
+- 5224da634dd417aecbe56ef2ee83c660cca9dfaa
+- 98cc9de5f71a58c05613dbfe548faed13e15be40
+- 8fb115bb9d4ca76d0adfc47d044dbe3736d4836a
+
 2024-05-14 (version: 1.1.10):
 - 5224da634dd417aecbe56ef2ee83c660cca9dfaa
 - 98cc9de5f71a58c05613dbfe548faed13e15be40
