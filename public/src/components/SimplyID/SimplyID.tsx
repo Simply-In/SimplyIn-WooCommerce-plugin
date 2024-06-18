@@ -70,9 +70,9 @@ export const SimplyID = () => {
 
 
 	useEffect(() => {
-		const YodaInput = document.getElementById("billing_email") || document.getElementById("email");
-		YodaInput?.remove();
-		const attributes: any = YodaInput?.attributes;
+		const SimplyInput = document.getElementById("billing_email") || document.getElementById("email");
+		SimplyInput?.remove();
+		const attributes: any = SimplyInput?.attributes;
 		const attributeKeeper: any = {};
 		for (const attribute of attributes) {
 			const attributeName = attribute.name;

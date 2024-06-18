@@ -33,8 +33,6 @@ function run_simplyin()
 {
 	$plugin = new SimplyIn();
 	$plugin->run();
-
-
 }
 
 
@@ -538,6 +536,7 @@ function customRestApiEndpoint()
 		array(
 			'methods' => array('GET', 'POST'),
 			'callback' => 'customRestApiCallback',
+			'permission_callback' => '__return_true'
 		)
 	);
 }

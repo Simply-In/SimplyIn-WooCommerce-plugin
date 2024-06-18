@@ -38,10 +38,6 @@ const nipFieldHandling = () => {
 		}
 	}
 
-
-
-
-
 }
 // moving email container field to top function
 const placingEmailField = () => {
