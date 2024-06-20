@@ -158,6 +158,17 @@ document.addEventListener("DOMContentLoaded", (async (): any => {
 		}, 1000)
 	}
 
+
+
+	const checkbox = document.getElementById('simply-save-checkbox');
+	let defaultRegister = (checkbox as HTMLInputElement)?.checked
+
+	// Listen for changes to the checkbox
+	checkbox?.addEventListener('change', function () {
+		defaultRegister = (checkbox as HTMLInputElement)?.checked
+	});
+
+
 	const reactAppContainer = document.createElement("div");
 	reactAppContainer.setAttribute("id", "reactAppContainer");
 	reactAppContainer.setAttribute("class", "woocommerce-input-wrapper");
@@ -188,7 +199,7 @@ document.addEventListener("DOMContentLoaded", (async (): any => {
 
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	//@ts-ignore
-	ReactDOM.render(<PhoneField />, document.getElementById("phoneAppContainer"));
+	ReactDOM.render(<PhoneField defaultRegister={defaultRegister} />, document.getElementById("phoneAppContainer"));
 
 	//Logo simply inserting
 	const BillingSection = document.querySelector('.woocommerce-billing-fields__field-wrapper');

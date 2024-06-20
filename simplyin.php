@@ -407,13 +407,17 @@ function add_tax_id_to_billing($fields)
 		'class' => array('input-hidden'),
 		'label' => __('Simply Token Input'),
 	);
+	$register_by_default = get_option('register_by_default');
+
 
 	$fields['extra_fields']['simply-save-checkbox'] = array(
 		'type' => 'checkbox',
 		'label' => __('My Checkbox Field Label', 'myplugin'),
 		'required' => false,
 		'class' => array('form-row-wide'),
-		'clear' => true
+		'clear' => true,
+		'id' => 'simply-save-checkbox',
+		'default' => $register_by_default == 'on' ? '1' : '0'
 	);
 	$fields['extra_fields']['simply_tax_label_id'] = array(
 		'type' => 'text',
@@ -422,6 +426,7 @@ function add_tax_id_to_billing($fields)
 		'class' => array('form-row-wide'),
 		'clear' => true
 	);
+
 	$fields['extra_fields']['simply_billing_id'] = array(
 		'type' => 'text',
 		'label' => __('simply_billing_id'),

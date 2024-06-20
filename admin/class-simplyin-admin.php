@@ -66,42 +66,58 @@ class SimplyIn_Admin {
 	public function registerAndBuildFields() {
 
 		add_settings_section(
-			// ID used to identify this section and with which to register options
 			'simplyin_settings_page_general_section',
-			// Title to be displayed on the administration page
 			'API Key',
-			// Callback used to render the description of the section
 			array($this, 'settings_page_display_general_account'),
-			// Page on which to add this section of options
 			'settings_simply_apikey'
 		);
 
-		unset($args);
-		$args = array(
-			'type' => 'input',
-			'subtype' => 'password',
-			'id' => 'simplyin_api_key',
-			'name' => 'simplyin_api_key',
-			'required' => 'true',
-			'get_options_list' => '',
-			'value_type' => 'normal',
-			'wp_data' => 'option'
-		);
+		// SimplyIN API Key field
 		add_settings_field(
 			'simplyin_api_key',
-			'',
+			'SimplyIN API Key',
 			array($this, 'settings_page_render_settings_field'),
 			'settings_simply_apikey',
 			'simplyin_settings_page_general_section',
-			$args
+			array(
+				'type' => 'input',
+				'subtype' => 'password',
+				'id' => 'simplyin_api_key',
+				'name' => 'simplyin_api_key',
+				'required' => 'true',
+				'value_type' => 'normal',
+				'wp_data' => 'option'
+			)
+		);
+
+		// Register by Default checkbox field
+		add_settings_field(
+			'register_by_default',
+			'Register by Default',
+			array($this, 'settings_page_render_settings_field'),
+			'settings_simply_apikey',
+			'simplyin_settings_page_general_section',
+			array(
+				'type' => 'input',
+				'subtype' => 'checkbox',
+				'id' => 'register_by_default',
+				'name' => 'register_by_default',
+				'value_type' => 'normal',
+				'wp_data' => 'option'
+			)
+		);
+
+		// Register settings
+		register_setting(
+			'settings_simply_apikey',
+			'simplyin_api_key'
 		);
 
 		register_setting(
 			'settings_simply_apikey',
-			'simplyin_api_key',
+			'register_by_default'
 		);
-
-
+	
 	}
 
 	public function settings_page_display_general_account() {
@@ -175,47 +191,45 @@ class SimplyIn_Admin {
 	);
 
 
-	public function settings_page_render_settings_field($args) {
+	public function settings_page_render_settings_field($args)
+	{
 
-		if($args['wp_data'] == 'option') {
+		if ($args['wp_data'] == 'option') {
 			$wp_data_value = get_option($args['name']);
-		} elseif($args['wp_data'] == 'post_meta') {
+		} elseif ($args['wp_data'] == 'post_meta') {
 			$wp_data_value = get_post_meta($args['post_id'], $args['name'], true);
 		}
 
 		global $allowedposttags;
 
-
 		foreach ($this->allowed_tags as $tag) {
 			$allowedposttags[$tag] = array_combine($this->allowed_atts, array_fill(0, count($this->allowed_atts), true));
 		}
 
-
-		switch($args['type']) {
-
+		switch ($args['type']) {
 			case 'input':
 				$value = ($args['value_type'] == 'serialized') ? serialize($wp_data_value) : $wp_data_value;
-				if($args['subtype'] != 'checkbox') {
-					$prependStart = (isset($args['prepend_value'])) ? '<div class="input-prepend"> <span class="add-on">'.$args['prepend_value'].'</span>' : '';
+				if ($args['subtype'] != 'checkbox') {
+					// Render input fields
+					$prependStart = (isset($args['prepend_value'])) ? '<div class="input-prepend"> <span class="add-on">' . $args['prepend_value'] . '</span>' : '';
 					$prependEnd = (isset($args['prepend_value'])) ? '</div>' : '';
-					$step = (isset($args['step'])) ? 'step="'.$args['step'].'"' : '';
-					$min = (isset($args['min'])) ? 'min="'.$args['min'].'"' : '';
-					$max = (isset($args['max'])) ? 'max="'.$args['max'].'"' : '';
-					if(isset($args['disabled'])) {
+					$step = (isset($args['step'])) ? 'step="' . $args['step'] . '"' : '';
+					$min = (isset($args['min'])) ? 'min="' . $args['min'] . '"' : '';
+					$max = (isset($args['max'])) ? 'max="' . $args['max'] . '"' : '';
+					$disabled_attr = (isset($args['disabled'])) ? 'disabled' : '';
+					$required_attr = (isset($args['required']) && $args['required'] == 'true') ? 'required' : '';
 
-						echo wp_kses($prependStart.'<input type="'.$args['subtype'].'" id="'.$args['id'].'_disabled" '.$step.' '.$max.' '.$min.' name="'.$args['name'].'_disabled" size="40" disabled value="'.esc_attr($value).'" /><input type="hidden" id="'.$args['id'].'" '.$step.' '.$max.' '.$min.' name="'.$args['name'].'" size="40" value="'.esc_attr($value).'" />'.$prependEnd, $allowedposttags);
-					} else {
-						echo wp_kses($prependStart.'<input type="'.$args['subtype'].'" id="'.$args['id'].'" "'.$args['required'].'" '.$step.' '.$max.' '.$min.' name="'.$args['name'].'" size="40" value="'.esc_attr($value).'" />'.$prependEnd, $allowedposttags);
-					}
-
+					echo wp_kses($prependStart . '<input type="' . $args['subtype'] . '" id="' . $args['id'] . '" ' . $required_attr . ' ' . $step . ' ' . $max . ' ' . $min . ' name="' . $args['name'] . '" size="40" value="' . esc_attr($value) . '" ' . $disabled_attr . ' />' . $prependEnd, $allowedposttags);
 
 				} else {
-					$checked = ($value) ? 'checked' : '';
-					echo wp_kses('<input type="'.$args['subtype'].'" id="'.$args['id'].'" "'.$args['required'].'" name="'.$args['name'].'" size="40" value="1" '.$checked.' />', $allowedposttags);
+					// Render checkbox
+					$checked = ($wp_data_value) ? 'checked' : 'false';
+					echo '<input type="' . $args['subtype'] . '" id="' . $args['id'] . '" name="' . $args['name'] . '" ' . $checked . ' />';
+					echo 'Register in <a href="https://www.simply.in" target="_blank">Simply.IN</a> by default';
+
 				}
 				break;
 			default:
-
 				break;
 		}
 	}
