@@ -59,12 +59,14 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 	const [codeByEmail, setCodeByEmail] = useState(false)
 	const [isCodeResended, setIsCodeResended] = useState(false)
 
+
 	const {
 		setSelectedBillingIndex,
 		setSelectedShippingIndex,
 		setSelectedDeliveryPointIndex,
 		setSameDeliveryAddress,
-		setPickupPointDelivery
+		setPickupPointDelivery,
+		downloadIconsAllowed
 	} = useContext(SelectedDataContext)
 
 	const {
@@ -419,7 +421,7 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 											>
 												{t('modal-step-1.sendViaEmail')}
 											</Link>
-										</PopupSendAgain>	
+										</PopupSendAgain>
 
 
 								}
@@ -436,7 +438,7 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 					</div>}
 			</>
 
-			{loginType === "pinCode" &&
+			{loginType === "pinCode" && downloadIconsAllowed &&
 				<>
 					<Divider style={{ marginTop: 24, marginBottom: 12 }} />
 				<PopupTextSecondary>

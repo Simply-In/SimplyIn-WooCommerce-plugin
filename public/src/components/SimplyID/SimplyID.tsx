@@ -38,6 +38,8 @@ export const SimplyID = () => {
 
 	const [loginType, setLoginType] = useState<TypedLoginType>()
 	const [counter, setCounter] = useState(0)
+	const [downloadIconsAllowed, setDownloadIconsAllowed] = useState(true)
+
 	const { authToken, setAuthToken } = useAuth()
 	const {
 		selectedBillingIndex,
@@ -187,7 +189,9 @@ export const SimplyID = () => {
 						requestBody: { "email": simplyInput.trim().toLowerCase(), language: shortLang(i18n.language) }
 					}).then(({ data: phoneNumber, userUsedPushNotifications, notificationTokenId }) => {
 
-
+						if (userUsedPushNotifications) {
+							setDownloadIconsAllowed(false)
+						}
 						setPhoneNumber(phoneNumber)
 						setVisible(true)
 
@@ -195,7 +199,6 @@ export const SimplyID = () => {
 
 						if (userUsedPushNotifications) {
 							setNotificationTokenId(notificationTokenId)
-							// isLoginAccepted(notificationTokenId)
 						}
 					}).catch((err) => {
 						console.log(err);
@@ -242,7 +245,8 @@ export const SimplyID = () => {
 			selectedDeliveryPointIndex,
 			setSelectedDeliveryPointIndex,
 			pickupPointDelivery,
-			setPickupPointDelivery
+			setPickupPointDelivery,
+			downloadIconsAllowed
 		}
 	}, [selectedBillingIndex,
 		setSelectedBillingIndex,
@@ -253,7 +257,8 @@ export const SimplyID = () => {
 		selectedDeliveryPointIndex,
 		setSelectedDeliveryPointIndex,
 		pickupPointDelivery,
-		setPickupPointDelivery])
+		setPickupPointDelivery,
+		downloadIconsAllowed])
 
 
 	const counterProps = useMemo(() => {
