@@ -1,10 +1,13 @@
+d
 <?php
 
-class SimplyIn_Admin {
+class SimplyIn_Admin
+{
 
 	private $plugin_name;
 	private $version;
-	public function __construct($plugin_name, $version) {
+	public function __construct($plugin_name, $version)
+	{
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
@@ -19,30 +22,34 @@ class SimplyIn_Admin {
 	 *
 	 * @since    1.0.0
 	 */
-	public function enqueue_admin_styles() {
+	public function enqueue_admin_styles()
+	{
 
-		wp_enqueue_style('admincss', plugin_dir_url(__FILE__).'css/simplyin-admin.css', array(), $this->version, 'all');
-		wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__).'js/simplyin-admin.js', array('jquery'), $this->version, false);
+		wp_enqueue_style('admincss', plugin_dir_url(__FILE__) . 'css/simplyin-admin.css', array(), $this->version, 'all');
+		wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/simplyin-admin.js', array('jquery'), $this->version, false);
 	}
 
-	public function addPluginAdminMenu() {
-		add_menu_page($this->plugin_name, 'SimplyIn', 'administrator', $this->plugin_name.'-settings', array($this, 'displayPluginAdminSettings'), 'dashicons-chart-area', 26);
+	public function addPluginAdminMenu()
+	{
+		add_menu_page($this->plugin_name, 'SimplyIn', 'administrator', $this->plugin_name . '-settings', array($this, 'displayPluginAdminSettings'), 'dashicons-chart-area', 26);
 
 	}
 
 
 
-	public function displayPluginAdminDashboard() {
-		require_once plugin_dir_path(dirname(__FILE__)).'admin/partials/'.$this->plugin_name.'-admin-display.php';
+	public function displayPluginAdminDashboard()
+	{
+		require_once plugin_dir_path(dirname(__FILE__)) . 'admin/partials/' . $this->plugin_name . '-admin-display.php';
 	}
 
-	public function displayPluginAdminSettings() {
+	public function displayPluginAdminSettings()
+	{
 
-		if(isset($_GET['error_message'])) {
+		if (isset($_GET['error_message'])) {
 			add_action('admin_notices', array($this, 'simplyinSettingsMessages'));
 			do_action('admin_notices', $_GET['error_message']);
 		}
-		require_once 'partials/'.$this->plugin_name.'-admin-settings-display.php';
+		require_once 'partials/' . $this->plugin_name . '-admin-settings-display.php';
 	}
 
 	public function simplyinSettingsMessages($error_message)
@@ -63,7 +70,8 @@ class SimplyIn_Admin {
 		);
 	}
 
-	public function registerAndBuildFields() {
+	public function registerAndBuildFields()
+	{
 
 		add_settings_section(
 			'simplyin_settings_page_general_section',
@@ -117,10 +125,11 @@ class SimplyIn_Admin {
 			'settings_simply_apikey',
 			'register_by_default'
 		);
-	
+
 	}
 
-	public function settings_page_display_general_account() {
+	public function settings_page_display_general_account()
+	{
 		echo '<p>To activate <a href="https://www.simply.in" target="_blank">Simply.IN</a> in your store, paste below the API key generated in the <a href="https://merchant.simplyin.app/" target="_blank">merchant panel</a>. Detailed instructions are available in the panel.</p>';
 	}
 
@@ -224,8 +233,21 @@ class SimplyIn_Admin {
 				} else {
 					// Render checkbox
 					$checked = ($wp_data_value) ? 'checked' : 'false';
-					echo '<input type="' . $args['subtype'] . '" id="' . $args['id'] . '" name="' . $args['name'] . '" ' . $checked . ' />';
-					echo 'Register in <a href="https://www.simply.in" target="_blank">Simply.IN</a> by default';
+					echo '<div class="registerByDefaultContainer">
+							<div>
+								<h2>User registration during checkout</h2>
+								<div class="row">
+								<p>The "Save your details <a href="https://www.simply.in" target="_blank">Simply.IN</a>" checkbox is selected by default for users who do not have an account at <a href="https://www.simply.in" target="_blank">Simply.IN</a></p>
+									<div>
+										<label class="switch">
+											<input type="' . $args['subtype'] . '" id="' . $args['id'] . '" name="' . $args['name'] . '" ' . $checked . ' />
+											<span class="slider round"></span>
+										</label>
+									</div>
+								</div>
+								</div>
+						</div>';
+					// echo '';
 
 				}
 				break;
@@ -234,5 +256,5 @@ class SimplyIn_Admin {
 		}
 	}
 
-	
+
 }
