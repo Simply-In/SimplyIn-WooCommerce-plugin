@@ -151,9 +151,9 @@ $allowedposttags['i'] = $allowed_atts;
 
 	.form-pw img {
 		width: 19px;
-		position: absolute;
-		right: 14px;
-		bottom: 7px;
+		/* position: absolute; */
+		/* right: 14px; */
+		/* bottom: 7px; */
 		cursor: pointer;
 	}
 
@@ -225,10 +225,10 @@ $allowedposttags['i'] = $allowed_atts;
 
 	.eye-icon {
 		position: absolute;
-		right: 3px !important;
+		/* right: 3px !important; */
 		padding: 0px 8px;
 		z-index: 100;
-		top: 5px;
+		/* top: 5px; */
 		background: white;
 	}
 
@@ -248,7 +248,10 @@ $allowedposttags['i'] = $allowed_atts;
 		justify-content: space-between;
 		align-items: center;
 	}
-
+	
+	.registerByDefaultContainer > div{
+		width: 100%
+	}
 	.switch {
 		position: relative;
 		display: inline-block;
@@ -321,6 +324,17 @@ $allowedposttags['i'] = $allowed_atts;
 	.form-table {
 		position: relative
 	}
+	#eye-container{
+		position:absolute;
+		width:100%;
+		height:100%;
+		display:flex;
+		flex-direction:row;
+		justify-content: flex-end;
+		align-items: center;
+		top:0;
+		right:0;
+	}
 </style>
 
 
@@ -378,8 +392,8 @@ $allowedposttags['i'] = $allowed_atts;
 					echo wp_kses('
 					
 					<div id="eye-container">
-					<img src=' . $dir . '../img/icons/view.png alt="" onclick="showhides()" class="show-pass eye-icon">
-					<img id="iconCrosed" src=' . $dir . '../img/icons/hidden.png alt="" style="display: none" onclick="showhides()" class="hide-pass eye-icon" >				
+						<img src=' . $dir . '../img/icons/view.png alt="" onclick="showhides()" class="show-pass eye-icon">
+						<img id="iconCrosed" src=' . $dir . '../img/icons/hidden.png alt="" style="display: none" onclick="showhides()" class="hide-pass eye-icon" >				
 					</div>
 					', $allowedposttags);
 
@@ -404,6 +418,7 @@ $allowedposttags['i'] = $allowed_atts;
 
 		const eyeContainer = document.getElementById('eye-container');
 		eyeContainer.remove()
-		const inputParent = document.getElementById("simplyin_api_key").parentNode
+		const inputParent = document.getElementById("simplyin_api_key").parentNode.parentNode
+		inputParent.style.position = 'relative'
 		inputParent.appendChild(eyeContainer)
 	</script>
