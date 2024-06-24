@@ -1,4 +1,3 @@
-d
 <?php
 
 class SimplyIn_Admin
