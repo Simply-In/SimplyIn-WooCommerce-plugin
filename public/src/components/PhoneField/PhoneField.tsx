@@ -20,10 +20,10 @@ const MyCustomInput = React.forwardRef((props, ref: any) => (
 
 
 //Function to rendering and validate phone number input
-export const PhoneField = () => {
+export const PhoneField = ({ defaultRegister }: { defaultRegister: boolean }) => {
 	const [attributeObject, setAttributeObject] = useState<unknown>({});
 	const [phoneInput, setPhoneInput] = useState<string>("");
-	const [checked, setChecked] = useState(false);
+	const [checked, setChecked] = useState(defaultRegister);
 	const [error, setError] = useState("")
 	const [simplyinToken, setSimplyinToken] = useState<string>("")
 	const checkedRef = useRef(false);
@@ -36,12 +36,11 @@ export const PhoneField = () => {
 	};
 
 
-
 	useEffect(() => {
 		const phoneInputField = document.getElementById("billing_phone");
+
 		const defaultCheckbox = document.getElementById("simply-save-checkbox_field")
 		defaultCheckbox?.remove();
-
 		const attributes: any = phoneInputField?.attributes;
 
 		const attributeKeeper: any = {};
@@ -51,6 +50,28 @@ export const PhoneField = () => {
 			attributeKeeper[attributeName] = attributeValue;
 		}
 		setAttributeObject(attributeKeeper);
+
+
+		const billingPhoneField = document.getElementById('billing_phone') as HTMLInputElement;
+
+		if (billingPhoneField) {
+			billingPhoneField.addEventListener('input', function singlePhoneNumberChange() {
+				if (billingPhoneField.value) {
+					const countrySelect = document.getElementById('billing_country') as HTMLSelectElement;
+					const countryCode = countrySelect?.value || "PL"; // Default to "PL" if not available
+
+					const selectedCountryNumber = parsePhoneNumber(billingPhoneField.value, countryCode as Country || "PL")
+					if (selectedCountryNumber?.nationalNumber && selectedCountryNumber?.nationalNumber?.length > 8) {
+						if (isValidPhoneNumber(selectedCountryNumber?.number)) {
+							setCountryCode(countryCode as Country);
+							setPhoneInput(selectedCountryNumber.number);
+							this.removeEventListener("input", singlePhoneNumberChange)
+						}
+					}
+
+				}
+			});
+		}
 
 
 	}, []);
@@ -173,9 +194,9 @@ export const PhoneField = () => {
 						<FormControlLabel
 							id="checkbox-container-flex"
 							control={
-								<Checkbox 
+								<Checkbox
 									checked={simplyinToken ? !!simplyinToken : checked}
-									onChange={handleChangeCheckbox} 
+									onChange={handleChangeCheckbox}
 									id="simply-save-checkbox"
 									name="simply-save-checkbox" />
 							}

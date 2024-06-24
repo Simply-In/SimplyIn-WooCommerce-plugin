@@ -1,16 +1,16 @@
 /* eslint-disable no-constant-condition */
 import { useContext, useEffect, useState } from 'react'
 import Countdown from 'react-countdown'
-import { PopupTitle, PopupTextMain, PinInputContainer, PopupTextSecondary, PopupCountDownContainer, PopupCodeNotDelivered, PopupSendAgain, CounterSpan } from '../SimplyID.styled'
+import { PopupTitle, PopupTextMain, PinInputContainer, PopupTextSecondary, PopupCountDownContainer, PopupCodeNotDelivered, PopupSendAgain, CounterSpan, MobileSystemsLinksContainer, SingleSystemLink } from '../SimplyID.styled'
 import { middlewareApi } from '../../../services/middlewareApi'
 import { PopupTextError } from '../../PhoneField/PhoneField.styled'
 import { removeDataSessionStorage, saveDataSessionStorage } from '../../../services/sessionStorageApi'
 import { CounterContext, SelectedDataContext, TypedLoginType } from '../SimplyID'
 import { OtpInput as OtpInputReactJS } from 'reactjs-otp-input'
-import { Link } from '@mui/material'
+import { Divider, Link } from '@mui/material'
 
 // import { AndroidIcon } from '../../../assets/AndroidIcon'
-// import { IosIcon } from '../../../assets/IosIcon'
+import { IosIcon } from '../../../assets/IosIcon'
 
 import { useTranslation } from "react-i18next";
 import { predefinedFill } from './functions'
@@ -59,12 +59,14 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 	const [codeByEmail, setCodeByEmail] = useState(false)
 	const [isCodeResended, setIsCodeResended] = useState(false)
 
+
 	const {
 		setSelectedBillingIndex,
 		setSelectedShippingIndex,
 		setSelectedDeliveryPointIndex,
 		setSameDeliveryAddress,
-		setPickupPointDelivery
+		setPickupPointDelivery,
+		downloadIconsAllowed
 	} = useContext(SelectedDataContext)
 
 	const {
@@ -419,7 +421,7 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 											>
 												{t('modal-step-1.sendViaEmail')}
 											</Link>
-										</PopupSendAgain>	
+										</PopupSendAgain>
 
 
 								}
@@ -436,17 +438,17 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 					</div>}
 			</>
 
-			{/* {loginType === "pinCode" &&
+			{loginType === "pinCode" && downloadIconsAllowed &&
 				<>
 					<Divider style={{ marginTop: 24, marginBottom: 12 }} />
 				<PopupTextSecondary>
 					Loguj się za pomocą aplikacji. Pobierz teraz.
 				</PopupTextSecondary>
 				<MobileSystemsLinksContainer>
-					<SingleSystemLink href='#'><AndroidIcon />Android</SingleSystemLink>
-					<SingleSystemLink href='#'><IosIcon />iOS</SingleSystemLink>
+					{/* <SingleSystemLink target="_blank" href='#'><AndroidIcon />Android</SingleSystemLink> */}
+					<SingleSystemLink target="_blank" href='https://apps.apple.com/pl/app/simply-in/id6476778468?l=pl'><IosIcon />iOS</SingleSystemLink>
 					</MobileSystemsLinksContainer>
-				</>} */}
+				</>}
 		</>
 	)
 }
