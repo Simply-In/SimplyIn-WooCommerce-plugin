@@ -6,7 +6,7 @@ import { SimplyinContainer, } from "./SimplyID.styled";
 import { middlewareApi } from '../../services/middlewareApi.ts'
 import { debounce } from 'lodash';
 import { changeInputValue, simplyinTokenInputField } from "./steps/Step1.tsx";
-import { useSelectedSimplyData } from "../../hooks/useSelectedSimplyData.ts";
+import { isNumber, useSelectedSimplyData } from "../../hooks/useSelectedSimplyData.ts";
 import PinCodeModal from "./PinCodeModal.tsx";
 import { useAuth } from "../../hooks/useAuth.ts";
 import { saveDataSessionStorage } from "../../services/sessionStorageApi.ts";
@@ -14,6 +14,7 @@ import { predefinedFill } from "./steps/functions.ts";
 
 
 import { useCounterData } from "../../hooks/useCounterData.ts";
+import { TabType } from "./steps/Step2.tsx";
 
 export const ApiContext = createContext<any>(null);
 export const SelectedDataContext = createContext<any>(null);
@@ -51,7 +52,12 @@ export const SimplyID = () => {
 		selectedDeliveryPointIndex,
 		setSelectedDeliveryPointIndex,
 		pickupPointDelivery,
-		setPickupPointDelivery
+		setPickupPointDelivery,
+		selectedTab,
+		setSelectedTab,
+		deliveryType,
+		setDeliveryType
+
 
 	} = useSelectedSimplyData();
 
@@ -87,6 +93,28 @@ export const SimplyID = () => {
 	}, []);
 
 
+	useEffect(() => {
+		if (visible === false) {
+			const BillingIndex = (sessionStorage.getItem("BillingIndex") || 0) as number
+			const ShippingIndex = sessionStorage.getItem("ShippingIndex") as number | null
+			const ParcelIndex = sessionStorage.getItem("ParcelIndex") as number | null
+			const SelectedTab = sessionStorage.getItem("SelectedTab") as TabType
+
+			if ((isNumber(ShippingIndex))) {
+				setDeliveryType("address")
+			} else {
+				setDeliveryType("machine")
+			}
+
+			setSelectedBillingIndex(BillingIndex)
+			setSelectedShippingIndex(ShippingIndex)
+			setSelectedDeliveryPointIndex(ParcelIndex)
+			setSelectedTab(SelectedTab)
+
+
+		}
+
+	}, [visible])
 	//opening simply modal
 	const handleOpenSmsPopup = () => {
 		setVisible((prev) => !prev)
@@ -246,7 +274,11 @@ export const SimplyID = () => {
 			setSelectedDeliveryPointIndex,
 			pickupPointDelivery,
 			setPickupPointDelivery,
-			downloadIconsAllowed
+			downloadIconsAllowed,
+			selectedTab,
+			setSelectedTab,
+			deliveryType, setDeliveryType
+
 		}
 	}, [selectedBillingIndex,
 		setSelectedBillingIndex,
@@ -258,7 +290,11 @@ export const SimplyID = () => {
 		setSelectedDeliveryPointIndex,
 		pickupPointDelivery,
 		setPickupPointDelivery,
-		downloadIconsAllowed])
+		downloadIconsAllowed,
+		selectedTab,
+		setSelectedTab,
+		deliveryType, setDeliveryType
+	])
 
 
 	const counterProps = useMemo(() => {
