@@ -53,7 +53,6 @@ export const Step2Form = ({
 	setSelectedShippingIndex,
 	setSelectedDeliveryPointIndex,
 	setSameDeliveryAddress,
-	selectedTab,
 	setSelectedTab
 
 
