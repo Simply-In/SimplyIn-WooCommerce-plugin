@@ -230,6 +230,7 @@ $allowedposttags['i'] = $allowed_atts;
 		z-index: 100;
 		/* top: 5px; */
 		background: white;
+		pointer-events: auto;
 	}
 
 	#register_by_default {
@@ -334,6 +335,7 @@ $allowedposttags['i'] = $allowed_atts;
 		align-items: center;
 		top:0;
 		right:0;
+		pointer-events:none;
 	}
 </style>
 
