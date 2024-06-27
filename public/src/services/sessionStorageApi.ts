@@ -1,5 +1,5 @@
 interface ISessionStorageData {
-	key: 'UserData' | "simplyinToken" | "phoneToken" | "phoneInput" | "electronicContactApprove" | "marketingContactApprove" | "useParcel" | "isInpostKeyValid" | "nipField" | "BillingIndex" | "ShippingIndex" | "ParcelIndex"
+	key: 'UserData' | "simplyinToken" | "phoneToken" | "phoneInput" | "electronicContactApprove" | "marketingContactApprove" | "useParcel" | "isInpostKeyValid" | "nipField" | "BillingIndex" | "ShippingIndex" | "ParcelIndex" | "SelectedTab"
 	data: any
 }
 

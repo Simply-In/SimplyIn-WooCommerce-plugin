@@ -35,7 +35,8 @@
 			"codeHasBeenSent": "Kod został wysłany",
 			"codeHasBeenSentAgain": "Kod został ponownie wysłany",
 			"codeInvalid": "Błędny kod weryfikacyjny",
-			"checkInApp": "Sprawdź powiadomienia w aplikacji mobilnej i zatwierdź logowanie"
+			"checkInApp": "Sprawdź powiadomienia w aplikacji mobilnej i zatwierdź logowanie",
+			"loginWithApp": "Loguj się za pomocą aplikacji. Pobierz teraz."
 		},
 		"modal-step-2": {
 			"address": "Adres",

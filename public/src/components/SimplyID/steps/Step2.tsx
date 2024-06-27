@@ -27,6 +27,7 @@ import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import { DeliveryType, isNumber } from '../../../hooks/useSelectedSimplyData';
+import { loadDataFromSessionStorage } from '../../../services/sessionStorageApi';
 
 interface IStep2 {
 	handleClosePopup: () => void;
@@ -88,9 +89,10 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 	} = useContext(SelectedDataContext)
 
 
+
 	const handleChangeTab = (_: React.SyntheticEvent, newValue: TabType) => {
 		setSelectedTab(newValue);
-		setSelectedDeliveryPointIndex(0)
+		setSelectedDeliveryPointIndex(selectedShippingIndex || 0)
 	};
 
 	const handleExpandClick = (property: "billing" | "shipping" | "deliveryPoint", value?: boolean) => {
@@ -108,6 +110,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 		else if (type === "shipping") {
 			setSelectedShippingIndex(+(event.target as HTMLInputElement).value);
 			setSameDeliveryAddress(false)
+			setPickupPointDelivery(false)
 		}
 		else if (type === "parcelLockers") {
 			setSelectedDeliveryPointIndex(+(event.target as HTMLInputElement).value);
@@ -120,7 +123,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 		setEditItemIndex({ property: property, itemIndex: userData[property]?.length ? userData[property]?.length : 0, isNewData: true })
 	}
 
-	const filteredParcelLockers = useMemo(() => userData?.parcelLockers.filter((el: any) => selectedTab === "parcel_machine" ? el.service_type !== "service_point" : el.service_type === "service_point"), [selectedTab, userData?.parcelLockers])
+	const filteredParcelLockers = useMemo(() => userData?.parcelLockers.filter((el: any) => selectedTab === "parcel_machine" ? el.service_type === "parcel_machine" : el.service_type !== "parcel_machine"), [selectedTab, userData?.parcelLockers])
 
 
 
@@ -201,21 +204,28 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 	};
 
 	useEffect(() => {
-		const BillingIndex = (sessionStorage.getItem("BillingIndex") || 0) as number
-		const ShippingIndex = sessionStorage.getItem("ShippingIndex") as number | null
-		const ParcelIndex = sessionStorage.getItem("ParcelIndex") as number | null
-		const SelectedTab = sessionStorage.getItem("SelectedTab") as TabType
+
+		//event on 1st render step 2 (after login)
+
+
+		const BillingIndex = (loadDataFromSessionStorage({ key: "BillingIndex" }) || 0) as number
+		const ShippingIndex = loadDataFromSessionStorage({ key: "ShippingIndex" }) as number | null
+
+		const ParcelIndex = loadDataFromSessionStorage({ key: "ParcelIndex" }) as number | null
+		// const SelectedTab = loadDataFromSessionStorage({ key: "SelectedTab" }) as TabType
+		const SelectedTab = sessionStorage.getItem("SelectedTab")
 
 		if ((isNumber(ShippingIndex))) {
 			setDeliveryType("address")
-		} else {
+		} else if (isNumber(ParcelIndex)) {
 			setDeliveryType("machine")
 		}
 
 		setSelectedBillingIndex(BillingIndex)
 		setSelectedShippingIndex(ShippingIndex)
 		setSelectedDeliveryPointIndex(ParcelIndex)
-		setSelectedTab(SelectedTab)
+		setSelectedTab(SelectedTab || "parcel_machine")
+
 	}, [])
 
 

@@ -9,7 +9,7 @@ import { CounterContext, SelectedDataContext, TypedLoginType } from '../SimplyID
 import { OtpInput as OtpInputReactJS } from 'reactjs-otp-input'
 import { Divider, Link } from '@mui/material'
 
-// import { AndroidIcon } from '../../../assets/AndroidIcon'
+import { AndroidIcon } from '../../../assets/AndroidIcon'
 import { IosIcon } from '../../../assets/IosIcon'
 
 import { useTranslation } from "react-i18next";
@@ -442,10 +442,10 @@ export const Step1 = ({ handleClosePopup, phoneNumber, setModalStep, setUserData
 				<>
 					<Divider style={{ marginTop: 24, marginBottom: 12 }} />
 				<PopupTextSecondary>
-					Loguj się za pomocą aplikacji. Pobierz teraz.
+					{t('modal-step-1.loginWithApp')}
 				</PopupTextSecondary>
 				<MobileSystemsLinksContainer>
-					{/* <SingleSystemLink target="_blank" href='#'><AndroidIcon />Android</SingleSystemLink> */}
+					<SingleSystemLink target="_blank" href='https://play.google.com/store/apps/details?id=simplyin.app'><AndroidIcon />Android</SingleSystemLink>
 					<SingleSystemLink target="_blank" href='https://apps.apple.com/pl/app/simply-in/id6476778468?l=pl'><IosIcon />iOS</SingleSystemLink>
 					</MobileSystemsLinksContainer>
 				</>}

@@ -9,7 +9,7 @@ import { changeInputValue, simplyinTokenInputField } from "./steps/Step1.tsx";
 import { isNumber, useSelectedSimplyData } from "../../hooks/useSelectedSimplyData.ts";
 import PinCodeModal from "./PinCodeModal.tsx";
 import { useAuth } from "../../hooks/useAuth.ts";
-import { saveDataSessionStorage } from "../../services/sessionStorageApi.ts";
+import { loadDataFromSessionStorage, saveDataSessionStorage } from "../../services/sessionStorageApi.ts";
 import { predefinedFill } from "./steps/functions.ts";
 
 
@@ -94,22 +94,27 @@ export const SimplyID = () => {
 
 
 	useEffect(() => {
+
+		//event on visibility change (visible modal)
 		if (visible === false) {
-			const BillingIndex = (sessionStorage.getItem("BillingIndex") || 0) as number
-			const ShippingIndex = sessionStorage.getItem("ShippingIndex") as number | null
-			const ParcelIndex = sessionStorage.getItem("ParcelIndex") as number | null
-			const SelectedTab = sessionStorage.getItem("SelectedTab") as TabType
+
+
+			const BillingIndex = (loadDataFromSessionStorage({ key: "BillingIndex" }) || 0) as number
+			const ShippingIndex = loadDataFromSessionStorage({ key: "ShippingIndex" }) as number | null
+
+			const ParcelIndex = loadDataFromSessionStorage({ key: "ParcelIndex" }) as number | null
+			const SelectedTab = loadDataFromSessionStorage({ key: "SelectedTab" }) as TabType
 
 			if ((isNumber(ShippingIndex))) {
 				setDeliveryType("address")
-			} else {
+			} else if (isNumber(ParcelIndex)) {
 				setDeliveryType("machine")
 			}
 
 			setSelectedBillingIndex(BillingIndex)
 			setSelectedShippingIndex(ShippingIndex)
 			setSelectedDeliveryPointIndex(ParcelIndex)
-			setSelectedTab(SelectedTab)
+			setSelectedTab(SelectedTab || "parcel_machine")
 
 
 		}

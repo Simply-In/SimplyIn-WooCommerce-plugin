@@ -35,7 +35,9 @@
 			"codeHasBeenSent": "The code was resent",
 			"codeHasBeenSentAgain": "The code has been sent",
 			"codeInvalid": "Verification code invalid",
-			"checkInApp": "Check notifications in the mobile app and confirm login"
+			"checkInApp": "Check notifications in the mobile app and confirm login",
+			"loginWithApp": "Log in using the app. Download now."
+
 		},
 		"modal-step-2": {
 			"address": "Address",
