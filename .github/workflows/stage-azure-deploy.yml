@@ -92,7 +92,7 @@ jobs:
     - name: Zip files excluding the ZIP file itself
       run: |
         # Exclude the ZIP file from being included in the ZIP itself
-        zip -r simplyin-woo-stage.zip . -x 'simplyin-woo-stage.zip'
+        zip -r simplyin-woo-stage.zip . -x './simplyin-woo-stage.zip'
 
     - name: Upload zip file
       uses: actions/upload-artifact@v2
