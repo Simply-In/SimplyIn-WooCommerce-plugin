@@ -8,8 +8,8 @@ on:
 env: 
   BACKEND_ENVIRONMENT_PROD: ${{vars.BACKEND_ENVIRONMENT_PROD}}
   APP_VERSION_PREFIX_PROD: ${{vars.APP_VERSION_PREFIX_PROD}}
-  AZURE_STORAGE_ACCOUNT_PROD: ${{vars.AZURE_STORAGE_ACCOUNT_STAGE}} #container-name 
-  AZURE_STORAGE_CONTAINER_NAME_WOO: ${{vars.AZURE_STORAGE_CONTAINER_NAME_WOO}}
+  AZURE_STORAGE_ACCOUNT_PROD: ${{vars.AZURE_STORAGE_ACCOUNT_STAGE}}  #permisions
+  AZURE_STORAGE_CONTAINER_NAME_WOO: ${{vars.AZURE_STORAGE_CONTAINER_NAME_WOO}} #container-name
   AZURE_CREDENTIALS: ${{secrets.AZURE_CREDENTIALS}}
 jobs:
   version:
@@ -60,7 +60,7 @@ jobs:
     - name: Upload files
       uses: actions/upload-artifact@v2
       with:
-        name: simplyin-woo-prod
+        name: simplyin-woo-prod-test
         path: .
 
   create-zip-file:
@@ -71,13 +71,13 @@ jobs:
     - name: Download files
       uses: actions/download-artifact@v2
       with:
-        name: simplyin-woo-prod
+        name: simplyin-woo-prod-test
         path: .
     
     - name: Zip files excluding the ZIP file itself
       run: |
         # Exclude the ZIP file from being included in the ZIP itself
-        zip -r simplyin-woo-prod.zip .
+        zip -r simplyin-woo-prod-test.zip .
 
   deploy-zip-file-in-azure:
     runs-on: ubuntu-latest
@@ -96,5 +96,5 @@ jobs:
       run: |
         pwd
         ls -lahtr
-        #az storage blob upload-batch --account-name ${{ env.AZURE_STORAGE_ACCOUNT_PROD }} --destination ${{ env.AZURE_STORAGE_CONTAINER_NAME_WOO }} --source ./simplyin-woo-prod.zip --pattern "*.zip" --auth-mode login ${{env.SUBSCRIPTION}} --overwrite
+        #az storage blob upload-batch --account-name ${{ env.AZURE_STORAGE_ACCOUNT_PROD }} --destination ${{ env.AZURE_STORAGE_CONTAINER_NAME_WOO }} --source ./simplyin-woo-prod-test.zip --pattern "*.zip" --auth-mode login ${{env.SUBSCRIPTION}} --overwrite
         az storage blob upload-batch --account-name ${{ env.AZURE_STORAGE_ACCOUNT_PROD }} --destination ${{ env.AZURE_STORAGE_CONTAINER_NAME_WOO }} --source . --pattern "*.zip" --auth-mode login ${{env.SUBSCRIPTION}} --overwrite
