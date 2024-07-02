@@ -123,7 +123,7 @@ jobs:
       run: |
         pwd
         ls -lahtr
-        #az storage blob upload-batch --account-name ${{ env.AZURE_STORAGE_ACCOUNT_STAGE }} --destination ${{ env.AZURE_STORAGE_CONTAINER_NAME_WOO_STAGE }} --source ./simplyin-woo-stage.zip --pattern "*.zip" --auth-mode login ${{env.SUBSCRIPTION}}
-        az storage blob upload-batch --account-name ${{ env.AZURE_STORAGE_ACCOUNT_STAGE }} --destination ${{ env.AZURE_STORAGE_CONTAINER_NAME_WOO_STAGE }} --source . --pattern "*.zip" --auth-mode login ${{env.SUBSCRIPTION}}
+        #az storage blob upload-batch --account-name ${{ env.AZURE_STORAGE_ACCOUNT_STAGE }} --destination ${{ env.AZURE_STORAGE_CONTAINER_NAME_WOO_STAGE }} --source ./simplyin-woo-stage.zip --pattern "*.zip" --overwrite --auth-mode login ${{env.SUBSCRIPTION}}
+        az storage blob upload-batch --account-name ${{ env.AZURE_STORAGE_ACCOUNT_STAGE }} --destination ${{ env.AZURE_STORAGE_CONTAINER_NAME_WOO_STAGE }} --source . --pattern "*.zip" --auth-mode --overwrite login ${{env.SUBSCRIPTION}}
 
 
