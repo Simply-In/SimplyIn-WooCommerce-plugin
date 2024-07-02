@@ -13,9 +13,9 @@ env:
   AZURE_STORAGE_CONTAINER_NAME_WOO_STAGE: ${{vars.AZURE_STORAGE_CONTAINER_NAME_WOO_STAGE}}
   AZURE_CREDENTIALS: ${{secrets.AZURE_CREDENTIALS}}
 jobs:
-  # version:
-  #   name: Version bump
-  #   uses: ./.github/workflows/stage-version.yml
+  version:
+    name: Version bump
+    uses: ./.github/workflows/stage-version.yml
 
   build-app:
     runs-on: ubuntu-latest
