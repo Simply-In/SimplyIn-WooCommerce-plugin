@@ -39,7 +39,7 @@ jobs:
     
     - name: Replace environment in simplyin.php
       run: |
-        sed -i '29s/.*/\$backendEnvironment = \$env['\''BACKEND_ENVIRONMENT_STAGE'\''']; /' simplyin.php
+          sed -i "29s/.*/\$backendEnvironment = \$env['BACKEND_ENVIRONMENT_STAGE']; /" simplyin.php
         
     - name: Commit and push if it changed
       run: |
