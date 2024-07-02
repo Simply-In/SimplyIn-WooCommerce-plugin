@@ -1,5 +1,5 @@
 import { useContext, useEffect, useMemo, useState } from 'react'
-import { PopupHeader, Step2Title, SectionTitle, RadioElementContainer, DataValueContainer, DataValueLabel, DataValueTitle, AddNewData, AddNewDataText, NoDataLabel } from '../SimplyID.styled'
+import { PopupHeader, Step2Title, SectionTitle, RadioElementContainer, DataValueContainer, DataValueLabel, DataValueTitle, AddNewData, AddNewDataText, NoDataLabel, DeliveryPointContainer, RadioElementContainerMachine } from '../SimplyID.styled'
 import { IconButton, CardContent, CardActions, Collapse, Button, FormControl, Typography } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
@@ -495,7 +495,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 								<TabContext value={selectedTab}>
 									<Box sx={{ borderColor: 'divider' }}>
 										<TabList onChange={handleChangeTab} >
-											<Tab label={t('modal-step-2.parcelMachines')} value="parcel_machine" style={{ padding: "0px", fontSize: "16px", fontWeight: "700", fontFamily: "Inter, sans-serif" }} />
+											<Tab label={t('modal-step-2.parcelMachines')} value="parcel_machine" style={{ padding: "0px", fontSize: "16px", fontWeight: "700", fontFamily: "Inter, sans-serif", textTransform: "none" }} />
 											<Tab label={t('modal-step-2.pudo')} value="service_point" style={{ padding: "0px", fontSize: "16px", fontWeight: "700", fontFamily: "Inter, sans-serif" }} />
 										</TabList>
 									</Box>
@@ -504,7 +504,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 											?
 											filteredParcelLockers.map((el: any, index: number) => {
 												return (
-													<RadioElementContainer key={el?.id ?? index} >
+													<RadioElementContainerMachine key={el?.id ?? index} >
 														<FormControlLabel value={index} control={<Radio />}
 															label={
 																<div style={{ display: "flex" }}>
@@ -522,13 +522,15 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 																			height: '42px'
 																		}} />
 																	</div>
-																	<DataValueContainer>
-																		<DataValueTitle>{el?.addressName || el?.lockerId || <>{t('modal-step-2.point')}{" "}{index + 1}</>}</DataValueTitle>
-																		<DataValueLabel>{el?.address ?? ""}</DataValueLabel>
-																	</DataValueContainer>
-																	<div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignContent: "center", transform: "scale(1.4)" }}>
-																		{el?.icon || ""}
-																	</div>
+																		<DeliveryPointContainer>
+																			<DataValueContainer>
+																				<DataValueTitle>{el?.addressName || el?.lockerId || <>{t('modal-step-2.point')}{" "}{index + 1}</>}</DataValueTitle>
+																				<DataValueLabel>{el?.address ?? ""}</DataValueLabel>
+																			</DataValueContainer>
+																			<div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignContent: "center", transform: "scale(1.4)" }}>
+																				{el?.icon || ""}
+																			</div>
+																		</DeliveryPointContainer>
 																</div>
 															} style={{ marginBottom: 0 }} />
 														<ContextMenu
@@ -541,7 +543,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 															selectedPropertyIndex={selectedDeliveryPointIndex}
 															setSelectedPropertyIndex={setSelectedDeliveryPointIndex}
 															selectedTab={selectedTab} />
-													</RadioElementContainer>)
+													</RadioElementContainerMachine>)
 
 											})
 											:
@@ -554,7 +556,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 											?
 											filteredParcelLockers.map((el: any, index: number) => {
 												return (
-													<RadioElementContainer key={el?.id ?? index} >
+													<RadioElementContainerMachine key={el?.id ?? index} >
 														<FormControlLabel value={index} control={<Radio />}
 															label={
 																<div style={{ display: "flex" }}>
@@ -572,13 +574,15 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 																			height: '42px'
 																		}} />
 																	</div>
-																	<DataValueContainer>
-																		<DataValueTitle>{el?.addressName || el?.lockerId || <>{t('modal-step-2.point')}{" "}{index + 1}</>}</DataValueTitle>
-																		<DataValueLabel>{el?.address ?? ""}</DataValueLabel>
-																	</DataValueContainer>
-																	<div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignContent: "center", transform: "scale(1.4)" }}>
-																		{el?.icon || ""}
-																	</div>
+																		<DeliveryPointContainer >
+																			<DataValueContainer>
+																				<DataValueTitle>{el?.addressName || el?.lockerId || <>{t('modal-step-2.point')}{" "}{index + 1}</>}</DataValueTitle>
+																				<DataValueLabel>{el?.address ?? ""}</DataValueLabel>
+																			</DataValueContainer>
+																			<div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignContent: "center", transform: "scale(1.4)" }}>
+																				{el?.icon || ""}
+																			</div>
+																		</DeliveryPointContainer>
 																</div>
 															} style={{ marginBottom: 0 }} />
 														<ContextMenu
@@ -591,7 +595,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 															selectedPropertyIndex={selectedDeliveryPointIndex}
 															setSelectedPropertyIndex={setSelectedDeliveryPointIndex}
 															selectedTab={selectedTab} />
-													</RadioElementContainer>)
+													</RadioElementContainerMachine>)
 
 											})
 											:

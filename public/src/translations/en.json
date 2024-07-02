@@ -51,15 +51,15 @@
 			"shippingData": "Shipping data",
 			"addNewShippingData": "Add new shipping data",
 			"doorDelivery": "Door Delivery",
-			"parcelDelivery": "Delivery to a PUDO or APM",
-			"addNewParcelData": "Add new PUDO or APM",
+			"parcelDelivery": "Delivery to a parcel machine or PUDO",
+			"addNewParcelData": "Add new APM or PUDO",
 			"sameData": "Billing data is the same as delivery data",
 			"notSelectedDeliveryPoint": "The pick-up point has not been selected",
 			"delivery": "Delivery",
 			"point": "Point",
 			"pudo": "PUDO",
 			"parcelMachines": "APM",
-			"PudoAndParcelMachines": "PUDO and APM"
+			"PudoAndParcelMachines": "Select a parcel machine or PUDO"
 		},
 		"modal-step-rejected": {
 			"loginRejected": "Login rejected"

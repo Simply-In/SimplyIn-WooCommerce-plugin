@@ -90,7 +90,7 @@ export const PinCodeModal = ({ userData, setUserData, phoneNumber, visible, setV
 							<CloseIcon />
 						</CloseContainer>
 					</PopupHeader>
-					<PopupContainer style={{ margin: "8px 16px 16px" }}>
+					<PopupContainer style={{ margin: "8px" }}>
 						{modalStep === 1 &&
 							<Step1
 								setToken={setToken}

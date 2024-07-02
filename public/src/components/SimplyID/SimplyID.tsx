@@ -103,7 +103,8 @@ export const SimplyID = () => {
 			const ShippingIndex = loadDataFromSessionStorage({ key: "ShippingIndex" }) as number | null
 
 			const ParcelIndex = loadDataFromSessionStorage({ key: "ParcelIndex" }) as number | null
-			const SelectedTab = loadDataFromSessionStorage({ key: "SelectedTab" }) as TabType
+			// const SelectedTab = loadDataFromSessionStorage({ key: "SelectedTab" }) as TabType
+			const SelectedTab = sessionStorage.getItem("selectedTab") as TabType
 
 			if ((isNumber(ShippingIndex))) {
 				setDeliveryType("address")

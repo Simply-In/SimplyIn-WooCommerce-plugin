@@ -42,6 +42,7 @@ type loadFunctionArgsType = Pick<ISessionStorageData, 'key'>
 export const loadDataFromSessionStorage = ({ key }: loadFunctionArgsType) => {
 	try {
 		const serializedData = sessionStorage.getItem(key);
+
 		if (serializedData === null) {
 			return undefined;
 		}
