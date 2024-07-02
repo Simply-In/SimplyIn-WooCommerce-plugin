@@ -65,10 +65,11 @@ jobs:
       with:
         name: simplyin-woo-preprod
         path: .
-
-    - name: Zip files
+    
+    - name: Zip files excluding the ZIP file itself
       run: |
-        zip -r simplyin-woo-preprod.zip .
+        # Exclude the ZIP file from being included in the ZIP itself
+        zip -r simplyin-woo-stage.zip . -x '*.zip'
 
   deploy-zip-file-in-azure:
     runs-on: ubuntu-latest
