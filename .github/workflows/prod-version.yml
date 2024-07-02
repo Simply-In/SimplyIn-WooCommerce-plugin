@@ -1,4 +1,4 @@
-name: Prod-test versioning
+name: Prod versioning
 
 on:
   workflow_call:

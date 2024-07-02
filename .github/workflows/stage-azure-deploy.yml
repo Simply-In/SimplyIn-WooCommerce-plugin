@@ -36,15 +36,11 @@ jobs:
     - name: Replace environment type in simplyin.php
       run: |
         sed -i '12s/.*/ * Description: SimplyIN application ${{ env.APP_VERSION_PREFIX_STAGE }} /' simplyin.php
+    
+    - name: Replace environment in simplyin.php
+      run: |
+        sed -i '29s/.*/$backendEnvironment = $env['BACKEND_ENVIRONMENT_STAGE']; /' simplyin.php
         
-    - name: Replace BACKEND_ENVIRONMENT_DEV with BACKEND_ENVIRONMENT_STAGE
-      run: |
-        sed -i 's/BACKEND_ENVIRONMENT_DEV/BACKEND_ENVIRONMENT_STAGE/g' simplyin.php
-
-    - name: Replace APP_VERSION_PREFIX_DEV with APP_VERSION_PREFIX_STAGE
-      run: |
-        sed -i 's/APP_VERSION_PREFIX_DEV/APP_VERSION_PREFIX_STAGE/g' simplyin.php
-
     - name: Commit and push if it changed
       run: |
         git diff
