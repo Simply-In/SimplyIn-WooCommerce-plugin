@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - stage
+      - stage-cicd
 
 env: 
   BACKEND_ENVIRONMENT_STAGE: ${{vars.BACKEND_ENVIRONMENT_STAGE}}
@@ -12,9 +13,9 @@ env:
   AZURE_STORAGE_CONTAINER_NAME_WOO_STAGE: ${{vars.AZURE_STORAGE_CONTAINER_NAME_WOO_STAGE}}
   AZURE_CREDENTIALS: ${{secrets.AZURE_CREDENTIALS}}
 jobs:
-  version:
-    name: Version bump
-    uses: ./.github/workflows/stage-version.yml
+  # version:
+  #   name: Version bump
+  #   uses: ./.github/workflows/stage-version.yml
 
   build-app:
     runs-on: ubuntu-latest
@@ -92,8 +93,7 @@ jobs:
     - name: Zip files excluding the ZIP file itself
       run: |
         # Exclude the ZIP file from being included in the ZIP itself
-        zip -r simplyin-woo-stage.zip . -x './simplyin-woo-stage.zip'
-
+        zip -r simplyin-woo-stage.zip . 
     - name: Upload zip file
       uses: actions/upload-artifact@v2
       with:
@@ -123,7 +123,7 @@ jobs:
       run: |
         pwd
         ls -lahtr
-        #az storage blob upload-batch --account-name ${{ env.AZURE_STORAGE_ACCOUNT_STAGE }} --destination ${{ env.AZURE_STORAGE_CONTAINER_NAME_WOO_STAGE }} --source ./simplyin-woo-stage.zip --pattern "*.zip" --overwrite --auth-mode login ${{env.SUBSCRIPTION}}
-        az storage blob upload-batch --account-name ${{ env.AZURE_STORAGE_ACCOUNT_STAGE }} --destination ${{ env.AZURE_STORAGE_CONTAINER_NAME_WOO_STAGE }} --source . --pattern "*.zip" --auth-mode --overwrite login ${{env.SUBSCRIPTION}}
+        #az storage blob upload-batch --account-name ${{ env.AZURE_STORAGE_ACCOUNT_STAGE }} --destination ${{ env.AZURE_STORAGE_CONTAINER_NAME_WOO_STAGE }} --source ./simplyin-woo-stage.zip --pattern "*.zip" --auth-mode login ${{env.SUBSCRIPTION}} --overwrite
+        az storage blob upload-batch --account-name ${{ env.AZURE_STORAGE_ACCOUNT_STAGE }} --destination ${{ env.AZURE_STORAGE_CONTAINER_NAME_WOO_STAGE }} --source . --pattern "*.zip" --auth-mode login ${{env.SUBSCRIPTION}} --overwrite
 
 
