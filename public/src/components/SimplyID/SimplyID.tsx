@@ -6,14 +6,15 @@ import { SimplyinContainer, } from "./SimplyID.styled";
 import { middlewareApi } from '../../services/middlewareApi.ts'
 import { debounce } from 'lodash';
 import { changeInputValue, simplyinTokenInputField } from "./steps/Step1.tsx";
-import { useSelectedSimplyData } from "../../hooks/useSelectedSimplyData.ts";
+import { isNumber, useSelectedSimplyData } from "../../hooks/useSelectedSimplyData.ts";
 import PinCodeModal from "./PinCodeModal.tsx";
 import { useAuth } from "../../hooks/useAuth.ts";
-import { saveDataSessionStorage } from "../../services/sessionStorageApi.ts";
+import { loadDataFromSessionStorage, saveDataSessionStorage } from "../../services/sessionStorageApi.ts";
 import { predefinedFill } from "./steps/functions.ts";
 
 
 import { useCounterData } from "../../hooks/useCounterData.ts";
+import { TabType } from "./steps/Step2.tsx";
 
 export const ApiContext = createContext<any>(null);
 export const SelectedDataContext = createContext<any>(null);
@@ -38,6 +39,8 @@ export const SimplyID = () => {
 
 	const [loginType, setLoginType] = useState<TypedLoginType>()
 	const [counter, setCounter] = useState(0)
+	const [downloadIconsAllowed, setDownloadIconsAllowed] = useState(true)
+
 	const { authToken, setAuthToken } = useAuth()
 	const {
 		selectedBillingIndex,
@@ -49,7 +52,12 @@ export const SimplyID = () => {
 		selectedDeliveryPointIndex,
 		setSelectedDeliveryPointIndex,
 		pickupPointDelivery,
-		setPickupPointDelivery
+		setPickupPointDelivery,
+		selectedTab,
+		setSelectedTab,
+		deliveryType,
+		setDeliveryType
+
 
 	} = useSelectedSimplyData();
 
@@ -70,9 +78,9 @@ export const SimplyID = () => {
 
 
 	useEffect(() => {
-		const YodaInput = document.getElementById("billing_email") || document.getElementById("email");
-		YodaInput?.remove();
-		const attributes: any = YodaInput?.attributes;
+		const SimplyInput = document.getElementById("billing_email") || document.getElementById("email");
+		SimplyInput?.remove();
+		const attributes: any = SimplyInput?.attributes;
 		const attributeKeeper: any = {};
 		for (const attribute of attributes) {
 			const attributeName = attribute.name;
@@ -85,6 +93,34 @@ export const SimplyID = () => {
 	}, []);
 
 
+	useEffect(() => {
+
+		//event on visibility change (visible modal)
+		if (visible === false) {
+
+
+			const BillingIndex = (loadDataFromSessionStorage({ key: "BillingIndex" }) || 0) as number
+			const ShippingIndex = loadDataFromSessionStorage({ key: "ShippingIndex" }) as number | null
+
+			const ParcelIndex = loadDataFromSessionStorage({ key: "ParcelIndex" }) as number | null
+			// const SelectedTab = loadDataFromSessionStorage({ key: "SelectedTab" }) as TabType
+			const SelectedTab = sessionStorage.getItem("selectedTab") as TabType
+
+			if ((isNumber(ShippingIndex))) {
+				setDeliveryType("address")
+			} else if (isNumber(ParcelIndex)) {
+				setDeliveryType("machine")
+			}
+
+			setSelectedBillingIndex(BillingIndex)
+			setSelectedShippingIndex(ShippingIndex)
+			setSelectedDeliveryPointIndex(ParcelIndex)
+			setSelectedTab(SelectedTab || "parcel_machine")
+
+
+		}
+
+	}, [visible])
 	//opening simply modal
 	const handleOpenSmsPopup = () => {
 		setVisible((prev) => !prev)
@@ -187,7 +223,9 @@ export const SimplyID = () => {
 						requestBody: { "email": simplyInput.trim().toLowerCase(), language: shortLang(i18n.language) }
 					}).then(({ data: phoneNumber, userUsedPushNotifications, notificationTokenId }) => {
 
-
+						if (userUsedPushNotifications) {
+							setDownloadIconsAllowed(false)
+						}
 						setPhoneNumber(phoneNumber)
 						setVisible(true)
 
@@ -195,7 +233,6 @@ export const SimplyID = () => {
 
 						if (userUsedPushNotifications) {
 							setNotificationTokenId(notificationTokenId)
-							// isLoginAccepted(notificationTokenId)
 						}
 					}).catch((err) => {
 						console.log(err);
@@ -242,7 +279,12 @@ export const SimplyID = () => {
 			selectedDeliveryPointIndex,
 			setSelectedDeliveryPointIndex,
 			pickupPointDelivery,
-			setPickupPointDelivery
+			setPickupPointDelivery,
+			downloadIconsAllowed,
+			selectedTab,
+			setSelectedTab,
+			deliveryType, setDeliveryType
+
 		}
 	}, [selectedBillingIndex,
 		setSelectedBillingIndex,
@@ -253,7 +295,12 @@ export const SimplyID = () => {
 		selectedDeliveryPointIndex,
 		setSelectedDeliveryPointIndex,
 		pickupPointDelivery,
-		setPickupPointDelivery])
+		setPickupPointDelivery,
+		downloadIconsAllowed,
+		selectedTab,
+		setSelectedTab,
+		deliveryType, setDeliveryType
+	])
 
 
 	const counterProps = useMemo(() => {

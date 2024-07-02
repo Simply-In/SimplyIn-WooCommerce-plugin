@@ -17,6 +17,7 @@ interface IEditFormMachine {
 	setLockerIdValue: any
 	setValue: any
 	setAdditionalInfo: any
+	setPointType: any
 }
 
 
@@ -55,6 +56,7 @@ export const EditFormMachine = ({
 	setLockerIdValue,
 	setValue,
 	setAdditionalInfo,
+	setPointType
 
 }: IEditFormMachine) => {
 	const { t } = useTranslation();
@@ -181,6 +183,7 @@ export const EditFormMachine = ({
 					setLockerIdValue={setLockerIdValue}
 					setValue={setValue}
 					setAdditionalInfo={setAdditionalInfo}
+					setPointType={setPointType}
 
 				/>
 			</div>

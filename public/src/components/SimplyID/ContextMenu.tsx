@@ -20,6 +20,7 @@ import { middlewareApi } from '../../services/middlewareApi';
 import { ApiContext } from '../SimplyID/SimplyID';
 import { saveDataSessionStorage } from '../../services/sessionStorageApi';
 import { useTranslation } from 'react-i18next';
+import { TabType } from './steps/Step2';
 
 const ContextMenuWrapper = styled.div`
 cursor:pointer;
@@ -45,10 +46,14 @@ interface IContextMenu {
 	setUserData: any
 	userData: any
 	selectedPropertyIndex: any
-	setSelectedPropertyIndex: any
+	setSelectedPropertyIndex: any,
+	element?: any
+	selectedTab?: TabType
 }
+
+
 //context menu of addresse or parcel locker item
-export const ContextMenu = ({ userData, item, setEditItemIndex, property, setUserData, selectedPropertyIndex, setSelectedPropertyIndex }: IContextMenu) => {
+export const ContextMenu = ({ userData, element, item, setEditItemIndex, property, setUserData, setSelectedPropertyIndex, selectedTab, selectedPropertyIndex }: IContextMenu) => {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const [openDialog, setOpenDialog] = useState(false);
 	const apiToken = useContext(ApiContext)?.authToken;
@@ -85,13 +90,17 @@ export const ContextMenu = ({ userData, item, setEditItemIndex, property, setUse
 
 	//deleting selected address
 	const handleDeleteConfirmed = () => {
-		const selectedRadioItem = userData[property].find((el: any) => el._id === userData[property][selectedPropertyIndex]?._id) || null
-		const selectedId = userData[property][item]._id
+		const selectedRadioItem = selectedTab ? userData?.parcelLockers.filter((el: any) => selectedTab === el.service_type).find((el: any) => el._id === element?._id) : userData[property].find((el: any) => el._id === element?._id)
+
+		const currentlySelectedItem = selectedTab ? userData?.parcelLockers.filter((el: any) => selectedTab === el.service_type)[selectedPropertyIndex] : userData[property][selectedPropertyIndex]
+
+		const selectedId = element?._id
+
 		const updatedProperty = userData[property]?.filter((el: any) => {
 			return el._id !== selectedId
 		});
 
-		// const requestData = { ...userData, [property]: updatedProperty }
+
 		const requestData = { userData: { ...userData, [property]: updatedProperty } }
 		middlewareApi({
 			endpoint: "userData",
@@ -117,15 +126,50 @@ export const ContextMenu = ({ userData, item, setEditItemIndex, property, setUse
 
 				//selection of previously selected radio element
 				if (res.data[property].length) {
-					const filteredPropertyArray = res.data[property].filter((el: any, id: number) => {
-						if (selectedRadioItem && el._id === selectedRadioItem._id) {
-							setSelectedPropertyIndex(id)
-						}
-						return el._id === selectedRadioItem?._id
-					})
 
-					if (selectedRadioItem && !filteredPropertyArray.length) {
+					let customKey: any
+					if (property === "parcelLockers") {
+
+						customKey = "ParcelIndex"
+					} else if (property === "billingAddresses") {
+						customKey = "BillingIndex"
+					} else if (property === "shippingAddresses") {
+						customKey = "ShippingIndex"
+					}
+					if (!customKey) {
+						return
+					}
+
+
+					let filteredParcelLockers
+
+					if (selectedTab) {
+						filteredParcelLockers = res.data?.parcelLockers.filter((el: any) => selectedTab === el.service_type)
+
+
+						filteredParcelLockers.filter((el: any, id: number) => {
+							if (currentlySelectedItem && currentlySelectedItem?._id === el?._id) {
+								console.log('for new selection this element', el, "and id:", id);
+								setSelectedPropertyIndex(id)
+								saveDataSessionStorage({ key: customKey as "ParcelIndex" | "BillingIndex" | "ShippingIndex", data: id })
+							}
+						})
+
+					} else {
+						filteredParcelLockers = res.data[property].filter((el: any, id: number) => {
+							if (currentlySelectedItem && el._id === (currentlySelectedItem as any)._id) {
+								setSelectedPropertyIndex(id)
+							}
+							return el._id === selectedRadioItem?._id
+						})
+					}
+
+
+					if (selectedRadioItem && !filteredParcelLockers.length) {
+
 						setSelectedPropertyIndex(0)
+						saveDataSessionStorage({ key: customKey as "ParcelIndex" | "BillingIndex" | "ShippingIndex", data: 0 })
+
 					}
 				} else {
 					setSelectedPropertyIndex(null)

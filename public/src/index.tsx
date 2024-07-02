@@ -38,10 +38,6 @@ const nipFieldHandling = () => {
 		}
 	}
 
-
-
-
-
 }
 // moving email container field to top function
 const placingEmailField = () => {
@@ -127,6 +123,27 @@ if (isSafari) {
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore
 document.addEventListener("DOMContentLoaded", (async (): any => {
+	setTimeout(() => {
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		//@ts-ignore
+		const selectButton = document.getElementById("billing_country_field").querySelector("span.woocommerce-input-wrapper").querySelector("span")
+		// Add an inline onClick event to the button
+		if (selectButton) {
+			selectButton.onclick = function () {
+				setTimeout(() => {
+					const dropdownElement = document.querySelector('.select2-dropdown.select2-dropdown--below');
+					if (dropdownElement) {
+
+						if (!(dropdownElement as any)?.style?.width) {
+							(dropdownElement as any).style.width = (selectButton)?.clientWidth
+						}
+					} else {
+						console.log('Element not found');
+					}
+				}, 100)
+			};
+		}
+	}, 1000)
 
 
 
@@ -136,6 +153,17 @@ document.addEventListener("DOMContentLoaded", (async (): any => {
 			updateStyle()
 		}, 1000)
 	}
+
+
+
+	const checkbox = document.getElementById('simply-save-checkbox');
+	let defaultRegister = (checkbox as HTMLInputElement)?.checked
+
+	// Listen for changes to the checkbox
+	checkbox?.addEventListener('change', function () {
+		defaultRegister = (checkbox as HTMLInputElement)?.checked
+	});
+
 
 	const reactAppContainer = document.createElement("div");
 	reactAppContainer.setAttribute("id", "reactAppContainer");
@@ -167,7 +195,7 @@ document.addEventListener("DOMContentLoaded", (async (): any => {
 
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	//@ts-ignore
-	ReactDOM.render(<PhoneField />, document.getElementById("phoneAppContainer"));
+	ReactDOM.render(<PhoneField defaultRegister={defaultRegister} />, document.getElementById("phoneAppContainer"));
 
 	//Logo simply inserting
 	const BillingSection = document.querySelector('.woocommerce-billing-fields__field-wrapper');
