@@ -1,5 +1,5 @@
 interface ISessionStorageData {
-	key: 'UserData' | "simplyinToken" | "phoneToken" | "phoneInput" | "electronicContactApprove" | "marketingContactApprove" | "useParcel" | "isInpostKeyValid" | "nipField"
+	key: 'UserData' | "simplyinToken" | "phoneToken" | "phoneInput" | "electronicContactApprove" | "marketingContactApprove" | "useParcel" | "isInpostKeyValid" | "nipField" | "BillingIndex" | "ShippingIndex" | "ParcelIndex" | "SelectedTab"
 	data: any
 }
 
@@ -42,6 +42,7 @@ type loadFunctionArgsType = Pick<ISessionStorageData, 'key'>
 export const loadDataFromSessionStorage = ({ key }: loadFunctionArgsType) => {
 	try {
 		const serializedData = sessionStorage.getItem(key);
+
 		if (serializedData === null) {
 			return undefined;
 		}

@@ -1,5 +1,5 @@
-import { useContext, useEffect, useState } from 'react'
-import { PopupHeader, Step2Title, SectionTitle, RadioElementContainer, DataValueContainer, DataValueLabel, DataValueTitle, AddNewData, AddNewDataText, NoDataLabel } from '../SimplyID.styled'
+import { useContext, useEffect, useMemo, useState } from 'react'
+import { PopupHeader, Step2Title, SectionTitle, RadioElementContainer, DataValueContainer, DataValueLabel, DataValueTitle, AddNewData, AddNewDataText, NoDataLabel, DeliveryPointContainer, RadioElementContainerMachine } from '../SimplyID.styled'
 import { IconButton, CardContent, CardActions, Collapse, Button, FormControl, Typography } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
@@ -21,7 +21,13 @@ import { resetDeliveryMethod, selectPickupPointInpost } from '../../../functions
 import { useTranslation } from "react-i18next";
 import { getPlaceholder } from './functions';
 
-
+import Box from '@mui/material/Box';
+import Tab from '@mui/material/Tab';
+import TabContext from '@mui/lab/TabContext';
+import TabList from '@mui/lab/TabList';
+import TabPanel from '@mui/lab/TabPanel';
+import { DeliveryType, isNumber } from '../../../hooks/useSelectedSimplyData';
+import { loadDataFromSessionStorage } from '../../../services/sessionStorageApi';
 
 interface IStep2 {
 	handleClosePopup: () => void;
@@ -49,6 +55,7 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
 
 
 
+export type TabType = "parcel_machine" | "service_point"
 
 export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUserData, editItemIndex, setEditItemIndex }: IStep2) => {
 	const { t } = useTranslation();
@@ -68,11 +75,25 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 		setSameDeliveryAddress,
 		selectedDeliveryPointIndex,
 		setSelectedDeliveryPointIndex,
-		pickupPointDelivery,
-		setPickupPointDelivery } = useContext(SelectedDataContext)
 
-	type DeliveryType = "address" | "machine"
-	const [deliveryType, setDeliveryType] = useState<DeliveryType>("address");
+		pickupPointDelivery,
+		setPickupPointDelivery,
+
+		selectedTab,
+		setSelectedTab,
+
+		deliveryType,
+		setDeliveryType
+
+
+	} = useContext(SelectedDataContext)
+
+
+
+	const handleChangeTab = (_: React.SyntheticEvent, newValue: TabType) => {
+		setSelectedTab(newValue);
+		setSelectedDeliveryPointIndex(selectedShippingIndex || 0)
+	};
 
 	const handleExpandClick = (property: "billing" | "shipping" | "deliveryPoint", value?: boolean) => {
 
@@ -89,6 +110,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 		else if (type === "shipping") {
 			setSelectedShippingIndex(+(event.target as HTMLInputElement).value);
 			setSameDeliveryAddress(false)
+			setPickupPointDelivery(false)
 		}
 		else if (type === "parcelLockers") {
 			setSelectedDeliveryPointIndex(+(event.target as HTMLInputElement).value);
@@ -101,13 +123,12 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 		setEditItemIndex({ property: property, itemIndex: userData[property]?.length ? userData[property]?.length : 0, isNewData: true })
 	}
 
+	const filteredParcelLockers = useMemo(() => userData?.parcelLockers.filter((el: any) => selectedTab === "parcel_machine" ? el.service_type === "parcel_machine" : el.service_type !== "parcel_machine"), [selectedTab, userData?.parcelLockers])
+
+
+
 
 	const handleSelectData = () => {
-
-
-
-
-
 		if (!userData?.billingAddresses[selectedBillingIndex]) {
 			return
 		}
@@ -117,6 +138,8 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 				sessionStorage.setItem("BillingIndex", `${selectedBillingIndex}`)
 				sessionStorage.setItem("ShippingIndex", `${selectedShippingIndex}`)
 				sessionStorage.setItem("ParcelIndex", `null`)
+				sessionStorage.setItem("SelectedTab", `${selectedTab}`)
+
 
 				return ({
 					...prev,
@@ -131,11 +154,13 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 				sessionStorage.setItem("BillingIndex", `${selectedBillingIndex}`)
 				sessionStorage.setItem("ShippingIndex", `null`)
 				sessionStorage.setItem("ParcelIndex", `${selectedDeliveryPointIndex}`)
+				sessionStorage.setItem("SelectedTab", `${selectedTab}`)
+
 				return ({
 					...prev,
 					billingAddresses: userData?.billingAddresses[selectedBillingIndex || 0],
 					shippingAddresses: null,
-					parcelLockers: userData?.parcelLockers[selectedDeliveryPointIndex]?.lockerId || null
+					parcelLockers: filteredParcelLockers[selectedDeliveryPointIndex]?.lockerId || null
 				})
 			})
 			if (selectedDeliveryPointIndex !== undefined) {
@@ -162,22 +187,47 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 	// function for handling delivery type change - shipping or pickup point
 	const handleChangeDelivery = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setDeliveryType((event.target as HTMLInputElement).value as DeliveryType);
-
 		if ((event.target as HTMLInputElement).value === "machine") {
-			if (userData?.parcelLockers?.length && !selectedDeliveryPointIndex) {
-				setSelectedDeliveryPointIndex(0)
+			if (filteredParcelLockers?.length) {
 				setPickupPointDelivery(true)
+				if (!isNumber(selectedDeliveryPointIndex) || selectedDeliveryPointIndex > filteredParcelLockers?.length) {
+					setSelectedDeliveryPointIndex(0)
+				}
+
+
+			}
+		} else {
+			if (!isNumber(selectedShippingIndex)) {
+				setSameDeliveryAddress(true)
 			}
 		}
 	};
 
 	useEffect(() => {
-		if (selectedDeliveryPointIndex !== null && selectedShippingIndex == null) {
-			return setDeliveryType("machine")
+
+		//event on 1st render step 2 (after login)
+
+
+		const BillingIndex = (loadDataFromSessionStorage({ key: "BillingIndex" }) || 0) as number
+		const ShippingIndex = loadDataFromSessionStorage({ key: "ShippingIndex" }) as number | null
+
+		const ParcelIndex = loadDataFromSessionStorage({ key: "ParcelIndex" }) as number | null
+		// const SelectedTab = loadDataFromSessionStorage({ key: "SelectedTab" }) as TabType
+		const SelectedTab = sessionStorage.getItem("SelectedTab")
+
+		if ((isNumber(ShippingIndex))) {
+			setDeliveryType("address")
+		} else if (isNumber(ParcelIndex)) {
+			setDeliveryType("machine")
 		}
-		setDeliveryType("address")
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+
+		setSelectedBillingIndex(BillingIndex)
+		setSelectedShippingIndex(ShippingIndex)
+		setSelectedDeliveryPointIndex(ParcelIndex)
+		setSelectedTab(SelectedTab || "parcel_machine")
+
 	}, [])
+
 
 
 
@@ -250,6 +300,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 											<ContextMenu userData={userData} setUserData={setUserData} item={index} setEditItemIndex={setEditItemIndex} property={'billingAddresses'}
 												selectedPropertyIndex={selectedBillingIndex}
 												setSelectedPropertyIndex={setSelectedBillingIndex}
+												element={el}
 
 											/>
 										</RadioElementContainer>)
@@ -363,7 +414,8 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 													} style={{ marginBottom: 0 }} />
 												<ContextMenu setUserData={setUserData} item={index} setEditItemIndex={setEditItemIndex} property={"shippingAddresses"} userData={userData}
 													selectedPropertyIndex={selectedShippingIndex}
-													setSelectedPropertyIndex={setSelectedShippingIndex} />
+													setSelectedPropertyIndex={setSelectedShippingIndex}
+													element={el} />
 											</RadioElementContainer>)
 
 									})
@@ -386,7 +438,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 				{deliveryType === "machine" &&
 					<>
 						<CardActions disableSpacing sx={{ padding: 0 }}>
-						<SectionTitle>{t('modal-step-2.parcelMachines')}</SectionTitle>
+						<SectionTitle>{t('modal-step-2.PudoAndParcelMachines')}</SectionTitle>
 						<ExpandMore
 							expand={expanded.deliveryPoint}
 							onClick={() => handleExpandClick("deliveryPoint")}
@@ -397,18 +449,20 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 						</ExpandMore>
 					</CardActions>
 					<Collapse in={!expanded.deliveryPoint} timeout="auto" unmountOnExit>
-						{userData?.parcelLockers.length
+						{filteredParcelLockers.length
 							?
 							<DataValueContainer style={{ padding: 8 }}>
 
 								{pickupPointDelivery && (selectedDeliveryPointIndex !== null && !isNaN(selectedDeliveryPointIndex)) ?
 									<>
 										<DataValueTitle>
-											{userData?.parcelLockers[selectedDeliveryPointIndex]?.addressName || t('modal-step-2.address') + +selectedDeliveryPointIndex + 1}
+											{filteredParcelLockers[selectedDeliveryPointIndex]?.addressName ||
+												filteredParcelLockers[selectedDeliveryPointIndex]?.lockerId ||
+												t('modal-step-2.address') + +selectedDeliveryPointIndex + 1}
 										</DataValueTitle>
 										{userData?.parcelLockers &&
 											<DataValueLabel>
-												{userData?.parcelLockers[selectedDeliveryPointIndex]?.address || ""}
+												{filteredParcelLockers[selectedDeliveryPointIndex]?.address || ""}
 											</DataValueLabel>
 										}
 									</>
@@ -429,58 +483,129 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 
 					</Collapse>
 					<Collapse in={expanded.deliveryPoint} timeout="auto" unmountOnExit>
-						<CardContent sx={{ padding: '8px', paddingBottom: '0px !important' }}>
+						<CardContent sx={{ padding: '8px 0px 0px 0px !important' }}>
 							<RadioGroup
 								value={selectedDeliveryPointIndex}
 								aria-labelledby="demo-radio-buttons-group-label"
 								name="radio-buttons-group"
-								onChange={(e) => handleChange(e, "parcelLockers")}
-
+								onChange={(e) => {
+									handleChange(e, "parcelLockers")
+								}}
 							>
-								{userData?.parcelLockers.length
-									?
-									userData?.parcelLockers.map((el: any, index: number) => {
-										return (
-											<RadioElementContainer key={el?.id ?? index}>
-												<FormControlLabel value={index} control={<Radio />}
-													label={
-														<div style={{ display: "flex" }}>
+								<TabContext value={selectedTab}>
+									<Box sx={{ borderColor: 'divider' }}>
+										<TabList onChange={handleChangeTab} >
+											<Tab label={t('modal-step-2.parcelMachines')} value="parcel_machine" style={{ padding: "0px", fontSize: "16px", fontWeight: "700", fontFamily: "Inter, sans-serif", textTransform: "none" }} />
+											<Tab label={t('modal-step-2.pudo')} value="service_point" style={{ padding: "0px", fontSize: "16px", fontWeight: "700", fontFamily: "Inter, sans-serif" }} />
+										</TabList>
+									</Box>
+									<TabPanel value="parcel_machine" style={{ padding: "24px 4px" }}>
+										{filteredParcelLockers.length
+											?
+											filteredParcelLockers.map((el: any, index: number) => {
+												return (
+													<RadioElementContainerMachine key={el?.id ?? index} >
+														<FormControlLabel value={index} control={<Radio />}
+															label={
+																<div style={{ display: "flex" }}>
+																	<div className="logo"
+																		style={{
+																			display: "flex",
+																			justifyContent: "center",
+																			alignItems: "center",
+																			minWidth: "50px",
+																			width: "50px",
+																			marginRight: "8px"
+																		}}>
+																		<img src={el?.logoUrl || getPlaceholder()} alt={el.label || "supplier logo"} style={{
+																			width: '42px',
+																			height: '42px'
+																		}} />
+																	</div>
+																		<DeliveryPointContainer>
+																			<DataValueContainer>
+																				<DataValueTitle>{el?.addressName || el?.lockerId || <>{t('modal-step-2.point')}{" "}{index + 1}</>}</DataValueTitle>
+																				<DataValueLabel>{el?.address ?? ""}</DataValueLabel>
+																			</DataValueContainer>
+																			<div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignContent: "center", transform: "scale(1.4)" }}>
+																				{el?.icon || ""}
+																			</div>
+																		</DeliveryPointContainer>
+																</div>
+															} style={{ marginBottom: 0 }} />
+														<ContextMenu
+															setUserData={setUserData}
+															item={index}
+															element={el}
+															setEditItemIndex={setEditItemIndex}
+															property={"parcelLockers"}
+															userData={userData}
+															selectedPropertyIndex={selectedDeliveryPointIndex}
+															setSelectedPropertyIndex={setSelectedDeliveryPointIndex}
+															selectedTab={selectedTab} />
+													</RadioElementContainerMachine>)
 
-															<div className="logo"
-																style={{
-																	display: "flex",
-																	justifyContent: "center",
-																	alignItems: "center",
-																	minWidth: "50px",
-																	width: "50px",
-																	marginRight: "8px"
-																}}>
-																<img src={el?.logoUrl || getPlaceholder()} alt={el.label || "supplier logo"} style={{
-																	width: '42px',
-																	height: '42px'
-																}} />
-															</div>
-															<DataValueContainer>
-																<DataValueTitle>{el?.addressName ?? el?.lockerId ?? <>{t('modal-step-2.point')}{" "}{index + 1}</>}</DataValueTitle>
-																<DataValueLabel>{el?.address ?? ""}</DataValueLabel>
-															</DataValueContainer>
-														</div>
-														} style={{ marginBottom: 0 }} />
-												<ContextMenu
-													setUserData={setUserData}
-													item={index}
-													setEditItemIndex={setEditItemIndex}
-													property={"parcelLockers"}
-													userData={userData}
-													selectedPropertyIndex={selectedDeliveryPointIndex}
-													setSelectedPropertyIndex={setSelectedDeliveryPointIndex} />
-												</RadioElementContainer>)
+											})
+											:
 
-										})
-									:
+											<NoDataLabel>{t('modal-step-2.noData')}</NoDataLabel>
+										}
+									</TabPanel>
+									<TabPanel value="service_point" style={{ padding: "24px 4px" }}>
+										{filteredParcelLockers.length
+											?
+											filteredParcelLockers.map((el: any, index: number) => {
+												return (
+													<RadioElementContainerMachine key={el?.id ?? index} >
+														<FormControlLabel value={index} control={<Radio />}
+															label={
+																<div style={{ display: "flex" }}>
+																	<div className="logo"
+																		style={{
+																			display: "flex",
+																			justifyContent: "center",
+																			alignItems: "center",
+																			minWidth: "50px",
+																			width: "50px",
+																			marginRight: "8px"
+																		}}>
+																		<img src={el?.logoUrl || getPlaceholder()} alt={el.label || "supplier logo"} style={{
+																			width: '42px',
+																			height: '42px'
+																		}} />
+																	</div>
+																		<DeliveryPointContainer >
+																			<DataValueContainer>
+																				<DataValueTitle>{el?.addressName || el?.lockerId || <>{t('modal-step-2.point')}{" "}{index + 1}</>}</DataValueTitle>
+																				<DataValueLabel>{el?.address ?? ""}</DataValueLabel>
+																			</DataValueContainer>
+																			<div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignContent: "center", transform: "scale(1.4)" }}>
+																				{el?.icon || ""}
+																			</div>
+																		</DeliveryPointContainer>
+																</div>
+															} style={{ marginBottom: 0 }} />
+														<ContextMenu
+															setUserData={setUserData}
+															element={el}
+															item={index}
+															setEditItemIndex={setEditItemIndex}
+															property={"parcelLockers"}
+															userData={userData}
+															selectedPropertyIndex={selectedDeliveryPointIndex}
+															setSelectedPropertyIndex={setSelectedDeliveryPointIndex}
+															selectedTab={selectedTab} />
+													</RadioElementContainerMachine>)
 
-									<NoDataLabel>{t('modal-step-2.noData')}</NoDataLabel>
-								}
+											})
+											:
+
+											<NoDataLabel>{t('modal-step-2.noData')}</NoDataLabel>
+										}
+
+									</TabPanel>
+
+								</TabContext>
 							</RadioGroup>
 						</CardContent>
 
@@ -522,6 +647,8 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 					setSelectedShippingIndex={setSelectedShippingIndex}
 					setSelectedDeliveryPointIndex={setSelectedDeliveryPointIndex}
 					setSameDeliveryAddress={setSameDeliveryAddress}
+				selectedTab={selectedTab}
+				setSelectedTab={setSelectedTab}
 
 				/>}
 

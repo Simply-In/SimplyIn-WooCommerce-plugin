@@ -10,7 +10,7 @@ env:
   APP_VERSION_PREFIX_PREPROD: ${{vars.APP_VERSION_PREFIX_PREPROD}}
   AZURE_STORAGE_ACCOUNT_PREPROD: ${{vars.AZURE_STORAGE_ACCOUNT_PREPROD}}
   AZURE_STORAGE_CONTAINER_NAME_WOO_PREPROD: ${{vars.AZURE_STORAGE_CONTAINER_NAME_WOO_PREPROD}}
-  AZURE_CREDENTIALS: ${{vars.AZURE_CREDENTIALS}}
+  AZURE_CREDENTIALS: ${{secrets.AZURE_CREDENTIALS}}
 jobs:
  
   build-app:
@@ -65,9 +65,10 @@ jobs:
       with:
         name: simplyin-woo-preprod
         path: .
-
-    - name: Zip files
+    
+    - name: Zip files excluding the ZIP file itself
       run: |
+        # Exclude the ZIP file from being included in the ZIP itself
         zip -r simplyin-woo-preprod.zip .
 
   deploy-zip-file-in-azure:
@@ -85,4 +86,7 @@ jobs:
     
     - name: Upload files to Azure Storage
       run: |
-        az storage blob upload-batch --account-name ${{ env.AZURE_STORAGE_ACCOUNT_PREPROD }} --destination ${{ env.AZURE_STORAGE_CONTAINER_NAME_WOO_PREPROD }} --source . --pattern "*.zip"
+        pwd
+        ls -lahtr
+        #az storage blob upload-batch --account-name ${{ env.AZURE_STORAGE_ACCOUNT_PROD }} --destination ${{ env.AZURE_STORAGE_CONTAINER_NAME_WOO_PREPROD }} --source ./simplyin-woo-preprod.zip --pattern "*.zip" --auth-mode login ${{env.SUBSCRIPTION}} --overwrite
+        az storage blob upload-batch --account-name ${{ env.AZURE_STORAGE_ACCOUNT_PROD }} --destination ${{ env.AZURE_STORAGE_CONTAINER_NAME_WOO_PREPROD }} --source . --pattern "*.zip" --auth-mode login ${{env.SUBSCRIPTION}} --overwrite
