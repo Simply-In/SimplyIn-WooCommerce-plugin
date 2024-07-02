@@ -22,6 +22,11 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
+
+    - name: Fetch latest changes
+      run: |
+        git fetch origin
+        git reset --hard origin/prod-test
     
     - name: Replace version in simplyin.php
       run: |
