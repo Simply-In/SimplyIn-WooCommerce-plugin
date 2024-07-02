@@ -1,4 +1,4 @@
-name: Prod-test versioning
+name: Prod versioning
 
 on:
   workflow_call:
@@ -26,7 +26,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Pass the token as an environment variable
         if: github.event_name != 'workflow_dispatch'
-        run: node scripts/bump-version.js --parent-branch=origin/dev
+        run: node scripts/bump-prod-version.js --parent-branch=origin/dev
 
       - name: Trigger deploy on success
         run: |
