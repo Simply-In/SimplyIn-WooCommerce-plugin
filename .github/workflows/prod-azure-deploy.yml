@@ -1,17 +1,20 @@
-name: Preprod Azure deploy
+name: Prod Azure deploy
 
 on:
   push:
     branches:
-      - preprod
+      - prod-test
 
 env: 
-  BACKEND_ENVIRONMENT_PREPROD: ${{vars.BACKEND_ENVIRONMENT_PREPROD}}
-  APP_VERSION_PREFIX_PREPROD: ${{vars.APP_VERSION_PREFIX_PREPROD}}
+  BACKEND_ENVIRONMENT_PROD: ${{vars.BACKEND_ENVIRONMENT_PROD}}
+  APP_VERSION_PREFIX_PROD: ${{vars.APP_VERSION_PREFIX_PROD}}
   AZURE_STORAGE_ACCOUNT_PROD: ${{vars.AZURE_STORAGE_ACCOUNT_PROD}} #container-name 
-  AZURE_STORAGE_CONTAINER_NAME_WOO_PREPROD: ${{vars.AZURE_STORAGE_CONTAINER_NAME_WOO_PREPROD}}
+  AZURE_STORAGE_CONTAINER_NAME_WOO_PROD: ${{vars.AZURE_STORAGE_CONTAINER_NAME_WOO_PROD}}
   AZURE_CREDENTIALS: ${{secrets.AZURE_CREDENTIALS}}
 jobs:
+  version:
+    name: Version bump
+    uses: ./.github/workflows/prod-test-version.yml
  
   build-app:
     runs-on: ubuntu-latest
@@ -27,7 +30,7 @@ jobs:
 
     - name: Replace environment type in simplyin.php
       run: |
-        sed -i '12s/.*/ * Description: SimplyIN application description. ${{ env.APP_VERSION_PREFIX_PREPROD }} /' simplyin.php
+        sed -i '12s/.*/ * Description: SimplyIN application description. ${{ env.APP_VERSION_PREFIX_PROD }} /' simplyin.php
         
 
     - name: Dependencies install 
@@ -52,7 +55,7 @@ jobs:
     - name: Upload files
       uses: actions/upload-artifact@v2
       with:
-        name: simplyin-woo-preprod
+        name: simplyin-woo-prod
         path: .
 
   create-zip-file:
@@ -63,13 +66,13 @@ jobs:
     - name: Download files
       uses: actions/download-artifact@v2
       with:
-        name: simplyin-woo-preprod
+        name: simplyin-woo-prod
         path: .
     
     - name: Zip files excluding the ZIP file itself
       run: |
         # Exclude the ZIP file from being included in the ZIP itself
-        zip -r simplyin-woo-preprod.zip .
+        zip -r simplyin-woo-prod.zip .
 
   deploy-zip-file-in-azure:
     runs-on: ubuntu-latest
@@ -88,5 +91,5 @@ jobs:
       run: |
         pwd
         ls -lahtr
-        #az storage blob upload-batch --account-name ${{ env.AZURE_STORAGE_ACCOUNT_PROD }} --destination ${{ env.AZURE_STORAGE_CONTAINER_NAME_WOO_PREPROD }} --source ./simplyin-woo-preprod.zip --pattern "*.zip" --auth-mode login ${{env.SUBSCRIPTION}} --overwrite
-        az storage blob upload-batch --account-name ${{ env.AZURE_STORAGE_ACCOUNT_PROD }} --destination ${{ env.AZURE_STORAGE_CONTAINER_NAME_WOO_PREPROD }} --source . --pattern "*.zip" --auth-mode login ${{env.SUBSCRIPTION}} --overwrite
+        #az storage blob upload-batch --account-name ${{ env.AZURE_STORAGE_ACCOUNT_PROD }} --destination ${{ env.AZURE_STORAGE_CONTAINER_NAME_WOO_PROD }} --source ./simplyin-woo-prod.zip --pattern "*.zip" --auth-mode login ${{env.SUBSCRIPTION}} --overwrite
+        az storage blob upload-batch --account-name ${{ env.AZURE_STORAGE_ACCOUNT_PROD }} --destination ${{ env.AZURE_STORAGE_CONTAINER_NAME_WOO_PROD }} --source . --pattern "*.zip" --auth-mode login ${{env.SUBSCRIPTION}} --overwrite
