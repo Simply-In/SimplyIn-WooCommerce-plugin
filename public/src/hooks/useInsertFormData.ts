@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { selectPickupPointInpost } from '../functions/selectInpostPoint';
 import { isSameShippingAndBillingAddresses } from '../components/SimplyID/steps/functions';
+import { loadDataFromSessionStorage } from '../services/sessionStorageApi';
 
 
 //function to insert selected data into `elementId` field
@@ -285,7 +286,14 @@ export const useInsertFormData = (userData: any, formElements: any) => {
 
 
 		if (userData?.parcelLockers) {
-			selectPickupPointInpost({ deliveryPointID: userData?.parcelLockers?.lockerId })
+
+			const parcelIndex = loadDataFromSessionStorage({ key: "ParcelIndex" })
+			const userData = loadDataFromSessionStorage({ key: "UserData" })
+			const SelectedTab = sessionStorage.getItem("SelectedTab")
+
+			const filteredParcelLockers = userData?.parcelLockers.filter((el: any) => SelectedTab === "parcel_machine" ? el.service_type === "parcel_machine" : el.service_type !== "parcel_machine")
+			const parcelId = filteredParcelLockers[parcelIndex]?.lockerId
+			selectPickupPointInpost({ deliveryPointID: parcelId })
 		}
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
