@@ -164,7 +164,11 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 				})
 			})
 			if (selectedDeliveryPointIndex !== undefined) {
-				selectPickupPointInpost({ deliveryPointID: userData?.parcelLockers[selectedDeliveryPointIndex]?.lockerId });
+
+				const filteredParcelLockers = userData?.parcelLockers.filter((el: any) => selectedTab === "parcel_machine" ? el.service_type === "parcel_machine" : el.service_type !== "parcel_machine")
+				const parcelId = filteredParcelLockers[selectedDeliveryPointIndex]?.lockerId
+
+				selectPickupPointInpost({ deliveryPointID: parcelId });
 			}
 		}
 		handleClosePopup()
