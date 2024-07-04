@@ -33,6 +33,14 @@ jobs:
       run: |
           sed -i "29s/.*/\$backendEnvironment = \$env['BACKEND_ENVIRONMENT_PREPROD']; /" simplyin.php
 
+    - name: Commit and push if it changed
+      run: |
+        git diff
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "GitHub Actions Bot"
+        git commit -am "Update backend environment variable" || exit 0
+        git push
+        
     - name: Dependencies install 
       run: |
         cd public
