@@ -8,7 +8,7 @@ on:
 env: 
   BACKEND_ENVIRONMENT_STAGE: ${{vars.BACKEND_ENVIRONMENT_STAGE}}
   APP_VERSION_PREFIX_STAGE: ${{vars.APP_VERSION_PREFIX_STAGE}}
-  AZURE_STORAGE_ACCOUNT_PROD: ${{vars.AZURE_STORAGE_ACCOUNT_PROD}} #container-name 
+  AZURE_STORAGE_ACCOUNT_PROD: ${{vars.AZURE_STORAGE_ACCOUNT_STAGE}} #container-name 
   AZURE_STORAGE_CONTAINER_NAME_WOO: ${{vars.AZURE_STORAGE_CONTAINER_NAME_WOO}}
   AZURE_CREDENTIALS: ${{secrets.AZURE_CREDENTIALS}}
 jobs:
@@ -36,11 +36,8 @@ jobs:
     - name: Replace environment type in simplyin.php
       run: |
         sed -i '12s/.*/ * Description: SimplyIN application ${{ env.APP_VERSION_PREFIX_STAGE }} /' simplyin.php
-    
-    - name: Replace environment in simplyin.php
-      run: |
-          sed -i "29s/.*/\$backendEnvironment = \$env['BACKEND_ENVIRONMENT_STAGE']; /" simplyin.php
-        
+        sed -i "s|\\\$backendEnvironment = \\\$env\\['BACKEND_ENVIRONMENT_.*|\\\$backendEnvironment = \\\$env\\['BACKEND_ENVIRONMENT_STAGE'\\];|g" simplyin.php
+
     - name: Commit and push if it changed
       run: |
         git diff
