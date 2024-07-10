@@ -500,7 +500,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 									<Box sx={{ borderColor: 'divider' }}>
 										<TabList onChange={handleChangeTab} >
 											<Tab label={t('modal-step-2.parcelMachines')} value="parcel_machine" style={{ padding: "0px", fontSize: "16px", fontWeight: "700", fontFamily: "Inter, sans-serif", textTransform: "none" }} />
-											<Tab label={t('modal-step-2.pudo')} value="service_point" style={{ padding: "0px", fontSize: "16px", fontWeight: "700", fontFamily: "Inter, sans-serif" }} />
+											<Tab label={t('modal-step-2.pudo')} value="service_point" style={{ marginLeft: "12px", padding: "0px", fontSize: "16px", fontWeight: "700", fontFamily: "Inter, sans-serif", textTransform: "none" }} />
 										</TabList>
 									</Box>
 									<TabPanel value="parcel_machine" style={{ padding: "24px 4px" }}>
