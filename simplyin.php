@@ -684,11 +684,9 @@ add_action('woocommerce_checkout_order_created', 'onOrderCreate', 10, 3);
 function onOrderCreate($order)
 {
 
-	$logs_directory = plugin_dir_path(__FILE__) . 'logs/';
-	$log_file = $logs_directory . 'order_log.json';
+	
 
 	$data = $order->get_data();
-	file_put_contents($log_file, json_encode($data), FILE_APPEND);
 	global $woocommerce;
 
 	$items_data = [];
@@ -707,6 +705,26 @@ function onOrderCreate($order)
 			];
 		}
 	}
+	$payment_method = $order->get_payment_method();
+	$payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
+
+    // Initialize the payment method title
+    $payment_method_title = '';
+
+    // Check if the payment method ID exists in the available payment gateways
+    if (isset($payment_gateways[$payment_method])) {
+        // Get the title of the payment method
+        $payment_method_title = $payment_gateways[$payment_method]->get_title();
+    }
+
+	// $logs_directory = plugin_dir_path(__FILE__) . 'logs/';
+	// $log_file = $logs_directory . 'order_log.json';
+	// file_put_contents($log_file, json_encode($payment_method), FILE_APPEND);
+	// file_put_contents($log_file, json_encode($payment_method_title), FILE_APPEND);
+
+
+
+
 
 
 	$phoneAppInputField = isset($_POST['phoneAppInputField']) ? sanitize_text_field($_POST['phoneAppInputField']) : '';
@@ -744,6 +762,8 @@ function onOrderCreate($order)
 				"marketingConsent" => false,
 			),
 			"newOrderData" => array(
+				"payment_method" => $payment_method,
+				"payment_method_title" => $payment_method_title,
 				"shopOrderNumber" => $order->get_order_number(),
 				"price" => (float) $order->get_total(),
 				"currency" => $order->get_currency(),
