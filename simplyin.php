@@ -10,7 +10,7 @@
  * Plugin Name: SimplyIN
  * Plugin URI:       
  * Description: SimplyIN application preprod 
- * Version:           1.0.11 
+ * Version:           1.0.12 
  * Author:            Simply.IN Sp. z o.o.
  * Author URI:        https://simply.in
  * License:           https://joinup.ec.europa.eu/software/page/eupl
