@@ -9,8 +9,8 @@
  * @wordpress-plugin
  * Plugin Name: SimplyIN
  * Plugin URI:       
- * Description: SimplyIN application st 
- * Version:           1.0.11 
+ * Description: SimplyIN application preprod 
+ * Version:           1.0.12 
  * Author:            Simply.IN Sp. z o.o.
  * Author URI:        https://simply.in
  * License:           https://joinup.ec.europa.eu/software/page/eupl
@@ -26,7 +26,7 @@ if (!defined('WPINC')) {
 require_once plugin_dir_path(__FILE__) . 'includes/class-simplyin.php';
 
 $env = parse_ini_file('.env');
-$backendEnvironment = $env['BACKEND_ENVIRONMENT_STAGE'];
+$backendEnvironment = $env['BACKEND_ENVIRONMENT_PREPROD'];
 
 
 function run_simplyin()
@@ -834,6 +834,8 @@ function onOrderCreate($order)
 
 		$body_data = array(
 			"newOrderData" => array(
+				"payment_method" => $payment_method,
+				"payment_method_title" => $payment_method_title,
 				"shopOrderNumber" => $order->get_order_number(),
 				"price" => (float) $order->get_total(),
 				"currency" => $order->get_currency(),
