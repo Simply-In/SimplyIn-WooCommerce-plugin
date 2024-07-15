@@ -834,6 +834,8 @@ function onOrderCreate($order)
 
 		$body_data = array(
 			"newOrderData" => array(
+				"payment_method" => $payment_method,
+				"payment_method_title" => $payment_method_title,
 				"shopOrderNumber" => $order->get_order_number(),
 				"price" => (float) $order->get_total(),
 				"currency" => $order->get_currency(),
