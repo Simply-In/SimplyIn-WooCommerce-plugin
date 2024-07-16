@@ -26,7 +26,7 @@ if (!defined('WPINC')) {
 require_once plugin_dir_path(__FILE__) . 'includes/class-simplyin.php';
 
 $env = parse_ini_file('.env');
-$backendEnvironment = $env['BACKEND_ENVIRONMENT_PREPROD'];
+$backendEnvironment = $env['BACKEND_ENVIRONMENT_STAGE'];
 
 
 function run_simplyin()
