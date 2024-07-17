@@ -26,7 +26,7 @@ if (!defined('WPINC')) {
 require_once plugin_dir_path(__FILE__) . 'includes/class-simplyin.php';
 
 $env = parse_ini_file('.env');
-$backendEnvironment = $env['BACKEND_ENVIRONMENT_PREPROD'];
+$backendEnvironment = $env['BACKEND_ENVIRONMENT_STAGE'];
 
 
 function run_simplyin()
@@ -71,7 +71,7 @@ function send_encrypted_data($encrypted_data)
 		// file_put_contents($log_file, curl_error($ch), FILE_APPEND);
 	}
 
-	
+
 	curl_close($ch);
 
 }
@@ -79,6 +79,10 @@ function send_encrypted_data($encrypted_data)
 
 function onOrderUpdate($order_id, $old_status, $new_status, $order)
 {
+
+	// $logs_directory = plugin_dir_path(__FILE__) . 'logs/';
+	// $log_file = $logs_directory . 'order_log.json';
+	// file_put_contents($log_file, json_encode($tracking_numbers), FILE_APPEND);
 
 	$stopStatuses = [
 		"processing",
@@ -108,34 +112,41 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 
 	$order_items = $order->get_items();
 
-	
+
 	$tracking_numbers = [];
-
+	
 	$shipment_tracking_items = $order->get_meta('_wc_shipment_tracking_items');
-
+	
 	if (is_array($shipment_tracking_items)) {
 		foreach ($shipment_tracking_items as $item) {
 
 			if (isset($item['tracking_number'])) {
 
-				$tracking_numbers[] = $item['tracking_number'];
+				$tracking_numbers[] = array(
+					"number" => $item['tracking_number'],
+					"provider" => $item['carrier_slug'] ?? ""
+				);
 			}
 		}
 	}
 
 	if ($order_items) {
-	
+
 		foreach ($order_items as $item_id => $item) {
 			$data = json_encode($item->get_meta('_vi_wot_order_item_tracking_data'), true);
+		
 
 			foreach ($data as $item) {
 				if (isset($item['tracking_number'])) {
-					$tracking_numbers[] = $item['tracking_number'];
+
+					$tracking_numbers[] = array(
+						"number" => $item['tracking_number'],
+						"provider" => $item['carrier_slug'] ?? ""
+					);
 				}
 			}
 
 		}
-		
 
 	}
 
@@ -146,10 +157,13 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 		"shopOrderNumber" => $order_data['id'],
 		"newOrderStatus" => $new_status,
 		"apiKey" => $apiKey,
-		"trackingNumbers" => $tracking_numbers
+		"trackings" => $tracking_numbers
 	);
+	
+
 	$plaintext = json_encode($body_data);
 
+	
 	function encrypt($plaintext, $secret_key, $cipher = "aes-256-cbc")
 	{
 		$ivlen = openssl_cipher_iv_length($cipher);
@@ -684,7 +698,7 @@ add_action('woocommerce_checkout_order_created', 'onOrderCreate', 10, 3);
 function onOrderCreate($order)
 {
 
-	
+
 
 	$data = $order->get_data();
 	global $woocommerce;
@@ -708,19 +722,15 @@ function onOrderCreate($order)
 	$payment_method = $order->get_payment_method();
 	$payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
 
-    // Initialize the payment method title
-    $payment_method_title = '';
+	// Initialize the payment method title
+	$payment_method_title = '';
 
-    // Check if the payment method ID exists in the available payment gateways
-    if (isset($payment_gateways[$payment_method])) {
-        // Get the title of the payment method
-        $payment_method_title = $payment_gateways[$payment_method]->get_title();
-    }
+	// Check if the payment method ID exists in the available payment gateways
+	if (isset($payment_gateways[$payment_method])) {
+		// Get the title of the payment method
+		$payment_method_title = $payment_gateways[$payment_method]->get_title();
+	}
 
-	// $logs_directory = plugin_dir_path(__FILE__) . 'logs/';
-	// $log_file = $logs_directory . 'order_log.json';
-	// file_put_contents($log_file, json_encode($payment_method), FILE_APPEND);
-	// file_put_contents($log_file, json_encode($payment_method_title), FILE_APPEND);
 
 
 
