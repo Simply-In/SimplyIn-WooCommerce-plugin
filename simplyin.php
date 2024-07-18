@@ -82,7 +82,7 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 
 	// $logs_directory = plugin_dir_path(__FILE__) . 'logs/';
 	// $log_file = $logs_directory . 'order_log.json';
-	// file_put_contents($log_file, json_encode($tracking_numbers), FILE_APPEND);
+
 
 	$stopStatuses = [
 		"processing",
@@ -112,16 +112,34 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 
 	$order_items = $order->get_items();
 
+	$order_id = $order->get_id(); // Assuming $order is an instance of WC_Order
+
+
+	$order = wc_get_order($order_id); // Get an instance of the WC_Order object
+	$order_items = $order->get_items();
 
 	$tracking_numbers = [];
-	
+
+	if ($order_items) {
+		foreach ($order_items as $item_id => $item) {
+			$data = json_decode($item->get_meta('_vi_wot_order_item_tracking_data'), true);
+			foreach ($data as $item) {
+				if (isset($item['tracking_number'])) {
+					$tracking_numbers[] = array(
+						"number" => $item['tracking_number'],
+						"provider" => $item['carrier_slug'] ?? ""
+					);
+				}
+			}
+		}
+	}
+
+
 	$shipment_tracking_items = $order->get_meta('_wc_shipment_tracking_items');
-	
+
 	if (is_array($shipment_tracking_items)) {
 		foreach ($shipment_tracking_items as $item) {
-
 			if (isset($item['tracking_number'])) {
-
 				$tracking_numbers[] = array(
 					"number" => $item['tracking_number'],
 					"provider" => $item['carrier_slug'] ?? ""
@@ -131,23 +149,17 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 	}
 
 	if ($order_items) {
-
 		foreach ($order_items as $item_id => $item) {
 			$data = json_encode($item->get_meta('_vi_wot_order_item_tracking_data'), true);
-		
-
 			foreach ($data as $item) {
 				if (isset($item['tracking_number'])) {
-
 					$tracking_numbers[] = array(
 						"number" => $item['tracking_number'],
 						"provider" => $item['carrier_slug'] ?? ""
 					);
 				}
 			}
-
 		}
-
 	}
 
 
@@ -159,11 +171,15 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 		"apiKey" => $apiKey,
 		"trackings" => $tracking_numbers
 	);
-	
+
+
+	// $logs_directory = plugin_dir_path(__FILE__) . 'logs/';
+	// $log_file = $logs_directory . 'order_log.json';
 
 	$plaintext = json_encode($body_data);
+	// file_put_contents($log_file, $plaintext, FILE_APPEND);
 
-	
+
 	function encrypt($plaintext, $secret_key, $cipher = "aes-256-cbc")
 	{
 		$ivlen = openssl_cipher_iv_length($cipher);
