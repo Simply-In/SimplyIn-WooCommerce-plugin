@@ -112,10 +112,10 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 
 	$order_items = $order->get_items();
 
-	$order_id = $order->get_id(); // Assuming $order is an instance of WC_Order
+	$_order_id = $order->get_id(); // Assuming $order is an instance of WC_Order
 
 
-	$order = wc_get_order($order_id); // Get an instance of the WC_Order object
+	$order = wc_get_order($_order_id); // Get an instance of the WC_Order object
 	$order_items = $order->get_items();
 
 	$tracking_numbers = [];
