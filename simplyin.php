@@ -9,7 +9,7 @@
  * @wordpress-plugin
  * Plugin Name: SimplyIN
  * Plugin URI:       
- * Description: SimplyIN application   
+ * Description: SimplyIN application preprod 
  * Version:           1.0.3 
  * Author:            Simply.IN Sp. z o.o.
  * Author URI:        https://simply.in
@@ -26,7 +26,7 @@ if (!defined('WPINC')) {
 require_once plugin_dir_path(__FILE__) . 'includes/class-simplyin.php';
 
 $env = parse_ini_file('.env');
-$backendEnvironment = $env['BACKEND_ENVIRONMENT_PROD'];
+$backendEnvironment = $env['BACKEND_ENVIRONMENT_PREPROD'];
 
 
 function run_simplyin()
