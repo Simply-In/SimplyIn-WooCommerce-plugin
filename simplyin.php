@@ -80,9 +80,6 @@ function send_encrypted_data($encrypted_data)
 function onOrderUpdate($order_id, $old_status, $new_status, $order)
 {
 
-	// $logs_directory = plugin_dir_path(__FILE__) . 'logs/';
-	// $log_file = $logs_directory . 'order_log.json';
-
 
 	$stopStatuses = [
 		"processing",
