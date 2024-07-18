@@ -234,12 +234,12 @@ export const PhoneField = ({ defaultRegister }: { defaultRegister: boolean }) =>
 					<PhoneInputDescriptionLink target="_blank" href={appLocalizer?.base_url || "./"}>{" "}Simply.IN.</PhoneInputDescriptionLink>
 				</PhoneInputDescription>
 				<PhoneInputDescriptionSecondary>
-					{t('payment.createAccountDescription-3')} <PhoneInputDescriptionLink target="_blank" href="https://simply.in/terms-and-conditions">{" "}{t('payment.createAccountDescription-4')}
+					{t('payment.createAccountDescription-3')} <PhoneInputDescriptionLink target="_blank" href="https://simply.in/terms-b2c">{" "}{t('payment.createAccountDescription-4')}
 						{" "}Simply.In.{" "}</PhoneInputDescriptionLink >
 					{t('payment.createAccountDescription-5')}
 					<PhoneInputDescriptionLink target="_blank" href="https://simply.in/">{" "}Simply.In.</PhoneInputDescriptionLink>
 					{t('payment.createAccountDescription-6')}
-					<PhoneInputDescriptionLink target="_blank" href="https://simply.in/gdpr-rules">{" "}{t('payment.createAccountDescription-7')} </PhoneInputDescriptionLink>
+					<PhoneInputDescriptionLink target="_blank" href="https://simply.in/privacy-policy">{" "}{t('payment.createAccountDescription-7')} </PhoneInputDescriptionLink>
 				</PhoneInputDescriptionSecondary>
 				{/*  */}
 

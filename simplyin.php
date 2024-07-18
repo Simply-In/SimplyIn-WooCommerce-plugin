@@ -9,7 +9,7 @@
  * @wordpress-plugin
  * Plugin Name: SimplyIN
  * Plugin URI:       
- * Description: SimplyIN application   
+ * Description: SimplyIN application preprod 
  * Version:           1.0.3 
  * Author:            Simply.IN Sp. z o.o.
  * Author URI:        https://simply.in
@@ -26,7 +26,7 @@ if (!defined('WPINC')) {
 require_once plugin_dir_path(__FILE__) . 'includes/class-simplyin.php';
 
 $env = parse_ini_file('.env');
-$backendEnvironment = $env['BACKEND_ENVIRONMENT_PROD'];
+$backendEnvironment = $env['BACKEND_ENVIRONMENT_PREPROD'];
 
 
 function run_simplyin()
@@ -71,7 +71,7 @@ function send_encrypted_data($encrypted_data)
 		// file_put_contents($log_file, curl_error($ch), FILE_APPEND);
 	}
 
-	
+
 	curl_close($ch);
 
 }
@@ -79,6 +79,10 @@ function send_encrypted_data($encrypted_data)
 
 function onOrderUpdate($order_id, $old_status, $new_status, $order)
 {
+
+	// $logs_directory = plugin_dir_path(__FILE__) . 'logs/';
+	// $log_file = $logs_directory . 'order_log.json';
+
 
 	$stopStatuses = [
 		"processing",
@@ -108,35 +112,54 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 
 	$order_items = $order->get_items();
 
-	
+	$_order_id = $order->get_id(); // Assuming $order is an instance of WC_Order
+
+
+	$order = wc_get_order($_order_id); // Get an instance of the WC_Order object
+	$order_items = $order->get_items();
+
 	$tracking_numbers = [];
+
+	if ($order_items) {
+		foreach ($order_items as $item_id => $item) {
+			$data = json_decode($item->get_meta('_vi_wot_order_item_tracking_data'), true);
+			foreach ($data as $item) {
+				if (isset($item['tracking_number'])) {
+					$tracking_numbers[] = array(
+						"number" => $item['tracking_number'],
+						"provider" => $item['carrier_slug'] ?? ""
+					);
+				}
+			}
+		}
+	}
+
 
 	$shipment_tracking_items = $order->get_meta('_wc_shipment_tracking_items');
 
 	if (is_array($shipment_tracking_items)) {
 		foreach ($shipment_tracking_items as $item) {
-
 			if (isset($item['tracking_number'])) {
-
-				$tracking_numbers[] = $item['tracking_number'];
+				$tracking_numbers[] = array(
+					"number" => $item['tracking_number'],
+					"provider" => $item['carrier_slug'] ?? ""
+				);
 			}
 		}
 	}
 
 	if ($order_items) {
-	
 		foreach ($order_items as $item_id => $item) {
 			$data = json_encode($item->get_meta('_vi_wot_order_item_tracking_data'), true);
-
 			foreach ($data as $item) {
 				if (isset($item['tracking_number'])) {
-					$tracking_numbers[] = $item['tracking_number'];
+					$tracking_numbers[] = array(
+						"number" => $item['tracking_number'],
+						"provider" => $item['carrier_slug'] ?? ""
+					);
 				}
 			}
-
 		}
-		
-
 	}
 
 
@@ -146,9 +169,16 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 		"shopOrderNumber" => $order_data['id'],
 		"newOrderStatus" => $new_status,
 		"apiKey" => $apiKey,
-		"trackingNumbers" => $tracking_numbers
+		"trackings" => $tracking_numbers
 	);
+
+
+	// $logs_directory = plugin_dir_path(__FILE__) . 'logs/';
+	// $log_file = $logs_directory . 'order_log.json';
+
 	$plaintext = json_encode($body_data);
+	// file_put_contents($log_file, $plaintext, FILE_APPEND);
+
 
 	function encrypt($plaintext, $secret_key, $cipher = "aes-256-cbc")
 	{
@@ -684,11 +714,9 @@ add_action('woocommerce_checkout_order_created', 'onOrderCreate', 10, 3);
 function onOrderCreate($order)
 {
 
-	$logs_directory = plugin_dir_path(__FILE__) . 'logs/';
-	$log_file = $logs_directory . 'order_log.json';
+
 
 	$data = $order->get_data();
-	file_put_contents($log_file, json_encode($data), FILE_APPEND);
 	global $woocommerce;
 
 	$items_data = [];
@@ -707,6 +735,22 @@ function onOrderCreate($order)
 			];
 		}
 	}
+	$payment_method = $order->get_payment_method();
+	$payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
+
+	// Initialize the payment method title
+	$payment_method_title = '';
+
+	// Check if the payment method ID exists in the available payment gateways
+	if (isset($payment_gateways[$payment_method])) {
+		// Get the title of the payment method
+		$payment_method_title = $payment_gateways[$payment_method]->get_title();
+	}
+
+
+
+
+
 
 
 	$phoneAppInputField = isset($_POST['phoneAppInputField']) ? sanitize_text_field($_POST['phoneAppInputField']) : '';
@@ -744,6 +788,8 @@ function onOrderCreate($order)
 				"marketingConsent" => false,
 			),
 			"newOrderData" => array(
+				"payment_method" => $payment_method,
+				"payment_method_title" => $payment_method_title,
 				"shopOrderNumber" => $order->get_order_number(),
 				"price" => (float) $order->get_total(),
 				"currency" => $order->get_currency(),
@@ -814,6 +860,8 @@ function onOrderCreate($order)
 
 		$body_data = array(
 			"newOrderData" => array(
+				"payment_method" => $payment_method,
+				"payment_method_title" => $payment_method_title,
 				"shopOrderNumber" => $order->get_order_number(),
 				"price" => (float) $order->get_total(),
 				"currency" => $order->get_currency(),
