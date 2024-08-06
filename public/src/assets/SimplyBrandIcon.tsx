@@ -49,10 +49,9 @@ const SimplyBrandIcon = () => {
 
 		<div style={{ display: "flex", flexDirection: "column", fontSize: "14px", width: "100%", justifyContent: "center" }}>
 			<div style={{ display: "flex", width: "auto", flexDirection: "column", alignItems: "center" }}>
-				<svg width="" height="32" viewBox="0 0 932 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-					<path d="M264.253 16L1.99993 16" stroke="url(#paint0_linear_8948_22555)" stroke-width="4" stroke-linecap="round" />
+				<svg width="" height="32" viewBox="0 0 932 32" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%" }}>
+					<path d="M264.253 16L1.99993 16" stroke="url(#paint0_linear_8948_22555)" strokeWidth="4" strokeLinecap="round" />
 					<g transform="translate(50%, 50%)" >
-
 						<g >
 							<path d="M294.621 9.4703C294.621 10.4907 293.764 11.307 292.703 11.307C292.294 11.307 292.294 11.307 291.192 10.9397C290.58 10.7356 289.845 10.6132 289.274 10.6132C288.009 10.6132 287.07 11.2254 287.07 12.0417C287.07 12.4091 287.315 12.8172 287.682 13.0213C288.213 13.3479 288.213 13.3479 290.009 13.7968C294.213 14.8172 295.968 16.4499 295.968 19.2254C295.968 20.7356 295.356 22.1642 294.335 23.1846C293.152 24.3683 291.152 25.0213 288.743 25.0213C284.947 25.0213 282.294 23.7968 282.294 22.1234C282.294 21.103 283.151 20.2458 284.172 20.2458C284.702 20.2458 284.702 20.2458 286.784 20.9805C287.437 21.2254 288.254 21.3479 288.907 21.3479C290.376 21.3479 291.315 20.6132 291.315 19.5519C291.315 19.0213 291.07 18.5723 290.58 18.3274C290.049 18.0009 289.641 17.8785 287.56 17.307C285.355 16.6948 284.458 16.3274 283.641 15.5928C282.825 14.8989 282.417 13.7968 282.417 12.4907C282.417 9.30704 285.355 7.02132 289.437 7.02132C292.458 6.89887 294.621 7.9601 294.621 9.4703Z" fill={isLightColor(backgroundColor) ? "#303030" : "white"} />
 							<path d="M298.009 9.71576C298.009 8.77698 298.05 8.53209 298.295 8.08311C298.621 7.51168 299.397 7.10352 300.213 7.10352C300.988 7.10352 301.764 7.51168 302.091 8.08311C302.335 8.53209 302.376 8.73617 302.376 9.71576V22.1647C302.376 23.1035 302.335 23.3484 302.091 23.7974C301.764 24.3688 300.988 24.777 300.213 24.777C299.397 24.777 298.662 24.3688 298.295 23.7974C298.05 23.3484 298.009 23.1443 298.009 22.1647V9.71576Z" fill={isLightColor(backgroundColor) ? "#303030" : "white"} />
@@ -71,15 +70,15 @@ const SimplyBrandIcon = () => {
 							</text>
 						</g>
 					</g>
-					<path d="M667.747 16L930 16" stroke="url(#paint1_linear_8948_22555)" stroke-width="4" stroke-linecap="round" />
+					<path d="M667.747 16L930 16" stroke="url(#paint1_linear_8948_22555)" strokeWidth="4" strokeLinecap="round" />
 					<defs>
 						<linearGradient id="paint0_linear_8948_22555" x1="264.253" y1="15.5" x2="1.99994" y2="15.5" gradientUnits="userSpaceOnUse">
-							<stop stop-color="#F2F2FE" />
-							<stop offset="1" stop-color="#4545EE" />
+							<stop stopColor="#F2F2FE" />
+							<stop offset="1" stopColor="#4545EE" />
 						</linearGradient>
 						<linearGradient id="paint1_linear_8948_22555" x1="667.747" y1="16.5" x2="930" y2="16.5" gradientUnits="userSpaceOnUse">
-							<stop stop-color="#F2F2FE" />
-							<stop offset="1" stop-color="#4545EE" />
+							<stop stopColor="#F2F2FE" />
+							<stop offset="1" stopColor="#4545EE" />
 						</linearGradient>
 						<clipPath id="clip0_8948_22555">
 							<rect width="122.493" height="32" fill="white" transform="translate(282.253)" />
