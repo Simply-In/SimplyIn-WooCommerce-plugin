@@ -174,13 +174,8 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 	);
 
 
-	// $logs_directory = plugin_dir_path(__FILE__) . 'logs/';
-	// $log_file = $logs_directory . 'order_log.json';
-
 	$plaintext = json_encode($body_data);
-	// file_put_contents($log_file, $plaintext, FILE_APPEND);
-
-
+	
 	function encrypt($plaintext, $secret_key, $cipher = "aes-256-cbc")
 	{
 		$ivlen = openssl_cipher_iv_length($cipher);
