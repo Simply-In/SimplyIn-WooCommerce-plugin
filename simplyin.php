@@ -9,8 +9,8 @@
  * @wordpress-plugin
  * Plugin Name: SimplyIN
  * Plugin URI:       
- * Description: SimplyIN application pp
- * Version:           1.0.3 
+ * Description: SimplyIN application preprod 
+ * Version:           1.1.0 
 
  * Author:            Simply.IN Sp. z o.o.
  * Author URI:        https://simply.in
