@@ -9,8 +9,8 @@
  * @wordpress-plugin
  * Plugin Name: SimplyIN
  * Plugin URI:       
- * Description: SimplyIN application   
- * Version:           1.1.1 
+ * Description: SimplyIN application st 
+ * Version:           1.0.21 
  * Author:            Simply.IN Sp. z o.o.
  * Author URI:        https://simply.in
  * License:           https://joinup.ec.europa.eu/software/page/eupl
@@ -174,13 +174,8 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 	);
 
 
-	// $logs_directory = plugin_dir_path(__FILE__) . 'logs/';
-	// $log_file = $logs_directory . 'order_log.json';
-
 	$plaintext = json_encode($body_data);
-	// file_put_contents($log_file, $plaintext, FILE_APPEND);
-
-
+	
 	function encrypt($plaintext, $secret_key, $cipher = "aes-256-cbc")
 	{
 		$ivlen = openssl_cipher_iv_length($cipher);
