@@ -90,95 +90,111 @@ export const ContextMenu = ({ userData, element, item, setEditItemIndex, propert
 
 	//deleting selected address
 	const handleDeleteConfirmed = () => {
-		const selectedRadioItem = selectedTab ? userData?.parcelLockers.filter((el: any) => selectedTab === el.service_type).find((el: any) => el._id === element?._id) : userData[property].find((el: any) => el._id === element?._id)
+		const selectedRadioItem = findSelectedItem();
+		const currentlySelectedItem = findCurrentlySelectedItem();
+		const selectedId = element?._id;
 
-		const currentlySelectedItem = selectedTab ? userData?.parcelLockers.filter((el: any) => selectedTab === el.service_type)[selectedPropertyIndex] : userData[property][selectedPropertyIndex]
+		const updatedProperty = removeItemById(userData[property], selectedId);
 
-		const selectedId = element?._id
-
-		const updatedProperty = userData[property]?.filter((el: any) => {
-			return el._id !== selectedId
+		const requestData = { userData: { ...userData, [property]: updatedProperty } };
+		updateUserData(requestData).then(res => {
+			handleApiResponse(res, currentlySelectedItem, selectedRadioItem);
 		});
-
-
-		const requestData = { userData: { ...userData, [property]: updatedProperty } }
-		middlewareApi({
-			endpoint: "userData",
-			method: 'PATCH',
-			token: apiToken,
-			requestBody: requestData
-		}).then(res => {
-
-			if (res.error) {
-				throw new Error(res.error)
-			} else if (res.data) {
-
-				const newData = { ...res.data }
-				if (newData?.createdAt) {
-					delete newData.createdAt
-				}
-				if (newData?.updatedAt) {
-					delete newData.updatedAt
-				}
-
-				setUserData(newData)
-				saveDataSessionStorage({ key: 'UserData', data: newData })
-
-				//selection of previously selected radio element
-				if (res.data[property].length) {
-
-					let customKey: any
-					if (property === "parcelLockers") {
-
-						customKey = "ParcelIndex"
-					} else if (property === "billingAddresses") {
-						customKey = "BillingIndex"
-					} else if (property === "shippingAddresses") {
-						customKey = "ShippingIndex"
-					}
-					if (!customKey) {
-						return
-					}
-
-
-					let filteredParcelLockers
-
-					if (selectedTab) {
-						filteredParcelLockers = res.data?.parcelLockers.filter((el: any) => selectedTab === el.service_type)
-
-
-						filteredParcelLockers.filter((el: any, id: number) => {
-							if (currentlySelectedItem && currentlySelectedItem?._id === el?._id) {
-								console.log('for new selection this element', el, "and id:", id);
-								setSelectedPropertyIndex(id)
-								saveDataSessionStorage({ key: customKey as "ParcelIndex" | "BillingIndex" | "ShippingIndex", data: id })
-							}
-						})
-
-					} else {
-						filteredParcelLockers = res.data[property].filter((el: any, id: number) => {
-							if (currentlySelectedItem && el._id === (currentlySelectedItem as any)._id) {
-								setSelectedPropertyIndex(id)
-							}
-							return el._id === selectedRadioItem?._id
-						})
-					}
-
-
-					if (selectedRadioItem && !filteredParcelLockers.length) {
-
-						setSelectedPropertyIndex(0)
-						saveDataSessionStorage({ key: customKey as "ParcelIndex" | "BillingIndex" | "ShippingIndex", data: 0 })
-
-					}
-				} else {
-					setSelectedPropertyIndex(null)
-				}
-			}
-		})
 
 		handleCloseDialog();
 		handleClose();
+	};
+
+	const findSelectedItem = () => {
+		return selectedTab
+			? userData?.parcelLockers.filter((el: any) => selectedTab === el.service_type).find((el: any) => el._id === element?._id)
+			: userData[property].find((el: any) => el._id === element?._id);
+	};
+
+	const findCurrentlySelectedItem = () => {
+		return selectedTab
+			? userData?.parcelLockers.filter((el: any) => selectedTab === el.service_type)[selectedPropertyIndex]
+			: userData[property][selectedPropertyIndex];
+	};
+
+	const removeItemById = (items: any, id: any) => {
+		return items.filter((el: any) => el._id !== id);
+	};
+
+	const updateUserData = async (requestData: any) => {
+		try {
+			const res = await middlewareApi({
+				endpoint: "userData",
+				method: 'PATCH',
+				token: apiToken,
+				requestBody: requestData
+			});
+			if (res.error) {
+				throw new Error(res.error);
+			}
+			return res;
+		} catch (err) {
+			console.error('Error updating user data:', err);
+			throw err;
+		}
+	};
+
+	const handleApiResponse = (res: any, currentlySelectedItem: any, selectedRadioItem: any) => {
+		if (res.data) {
+			const newData = cleanData(res.data);
+			setUserData(newData);
+			saveDataSessionStorage({ key: 'UserData', data: newData });
+
+			updateSelectedIndex(res.data, currentlySelectedItem, selectedRadioItem);
+		}
+	};
+
+	const cleanData = (data: any) => {
+		const { createdAt, updatedAt, ...cleanedData } = data;
+		return cleanedData;
+	};
+
+	const updateSelectedIndex = (data: any, currentlySelectedItem: any, selectedRadioItem: any) => {
+		if (data[property].length) {
+			const customKey = getCustomKey(property);
+			if (!customKey) return;
+
+			const filteredData = filterData(data, selectedTab);
+			const selectedIndex = getSelectedIndex(filteredData, currentlySelectedItem);
+
+			if (selectedRadioItem && !filteredData.length) {
+				setSelectedPropertyIndex(0);
+				saveDataSessionStorage({ key: customKey, data: 0 });
+			} else {
+				setSelectedPropertyIndex(selectedIndex);
+				saveDataSessionStorage({ key: customKey, data: selectedIndex });
+			}
+		} else {
+			setSelectedPropertyIndex(null);
+		}
+	};
+
+	const getCustomKey = (property: any) => {
+		switch (property) {
+			case "parcelLockers":
+				return "ParcelIndex";
+			case "billingAddresses":
+				return "BillingIndex";
+			case "shippingAddresses":
+				return "ShippingIndex";
+			default:
+				return null;
+		}
+	};
+
+	const filterData = (data: any, selectedTab: any) => {
+		return selectedTab
+			? data.parcelLockers.filter((el: any) => selectedTab === el.service_type)
+			: data[property];
+	};
+
+	const getSelectedIndex = (filteredData: any, currentlySelectedItem: any) => {
+		return filteredData.findIndex((el: any) => currentlySelectedItem?._id === el?._id);
 	};
 
 	//check if address is "deletable"
