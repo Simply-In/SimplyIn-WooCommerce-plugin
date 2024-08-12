@@ -10,7 +10,7 @@
  * Plugin Name: SimplyIN
  * Plugin URI:       
  * Description: SimplyIN application   
- * Version:           1.1.1 
+ * Version:           1.2.0 
  * Author:            Simply.IN Sp. z o.o.
  * Author URI:        https://simply.in
  * License:           https://joinup.ec.europa.eu/software/page/eupl
@@ -22,6 +22,7 @@ if (!defined('WPINC')) {
 	die;
 }
 
+define('CONTENT_TYPE_JSON', 'Content-Type: application/json');
 
 require_once plugin_dir_path(__FILE__) . 'includes/class-simplyin.php';
 
@@ -51,7 +52,7 @@ function send_encrypted_data($encrypted_data)
 
 
 	$base_url = home_url();
-	$headers = array('Content-Type: application/json', 'Origin: ' . $base_url);
+	$headers = array(CONTENT_TYPE_JSON, 'Origin: ' . $base_url);
 
 
 	$ch = curl_init();
@@ -170,13 +171,8 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 	);
 
 
-	// $logs_directory = plugin_dir_path(__FILE__) . 'logs/';
-	// $log_file = $logs_directory . 'order_log.json';
-
 	$plaintext = json_encode($body_data);
-	// file_put_contents($log_file, $plaintext, FILE_APPEND);
-
-
+	
 	function encrypt($plaintext, $secret_key, $cipher = "aes-256-cbc")
 	{
 		$ivlen = openssl_cipher_iv_length($cipher);
@@ -578,7 +574,8 @@ function customRestApiCallback()
 	global $simplyin_config;
 
 	$base_url = home_url();
-	$headers = array('Content-Type: application/json', 'Origin: ' . $base_url);
+	// $headers = array('Content-Type: application/json', 'Origin: ' . $base_url);
+	$headers = array(CONTENT_TYPE_JSON, 'Origin: ' . $base_url);
 	// $headers = array('Content-Type: application/json');
 	$data = json_decode(file_get_contents("php://input"), true);
 	$endpoint = $data['endpoint'];
@@ -661,8 +658,8 @@ function sendPostRequest($bodyData, $endpoint, $token)
 
 
 	$base_url = home_url();
-	$headers = array('Content-Type: application/json', 'Origin: ' . $base_url);
-
+	// $headers = array('Content-Type: application/json', 'Origin: ' . $base_url);
+	$headers = array(CONTENT_TYPE_JSON, 'Origin: ' . $base_url);
 
 	global $simplyin_config;
 	update_option('Backend_SimplyIn', $simplyin_config['backendSimplyIn']);
@@ -710,12 +707,39 @@ add_action('woocommerce_checkout_order_created', 'onOrderCreate', 10, 3);
 
 function onOrderCreate($order)
 {
-
-
-
-	$data = $order->get_data();
 	global $woocommerce;
+	$plugin_version = get_plugin_version();
+	$woocommerce_version = get_option('woocommerce_version');
 
+	$items_data = get_order_items_data($order);
+	$payment_method_data = get_payment_method_data($order);
+
+	$phoneAppInputField = get_sanitized_post_data('phoneAppInputField');
+	$simplyin_Token_Input_Value = get_sanitized_post_data('simplyinTokenInput');
+	$create_new_accountVal = get_sanitized_post_data('simply-save-checkbox');
+	$parcel_machine_id = get_sanitized_post_data('parcel_machine_id');
+	$custom_tax_field_id = get_sanitized_post_data('simply_tax_label_id');
+	$simply_billing_id = get_sanitized_post_data('simply_billing_id');
+	$simply_shipping_id = get_sanitized_post_data('simply_shipping_id');
+	$taxId = get_sanitized_post_data($custom_tax_field_id);
+
+	if (should_create_new_account($create_new_accountVal, $simplyin_Token_Input_Value)) {
+		$body_data = build_new_account_order_data($order, $phoneAppInputField, $taxId, $parcel_machine_id, $items_data, $payment_method_data, $plugin_version, $woocommerce_version);
+		sendPostRequest($body_data, 'checkout/createOrderAndAccount', "");
+	} elseif (has_auth_token($simplyin_Token_Input_Value)) {
+		$body_data = build_existing_account_order_data($order, $simplyin_Token_Input_Value, $simply_billing_id, $simply_shipping_id, $taxId, $parcel_machine_id, $items_data, $payment_method_data, $plugin_version, $woocommerce_version);
+		sendPostRequest($body_data, 'checkout/createOrderWithoutAccount', $simplyin_Token_Input_Value);
+	}
+}
+
+function get_plugin_version()
+{
+	$plugin_data = get_plugin_data(__FILE__);
+	return $plugin_data['Version'];
+}
+
+function get_order_items_data($order)
+{
 	$items_data = [];
 	if ($order) {
 		$items = $order->get_items();
@@ -728,183 +752,156 @@ function onOrderCreate($order)
 				'price' => (float) $order->get_item_total($item),
 				'quantity' => $item->get_quantity(),
 				'thumbnailUrl' => wp_get_attachment_image_url($product->get_image_id(), 'thumbnail') ?? "",
-				"currency" => $order->get_currency(),
+				'currency' => $order->get_currency(),
 			];
 		}
 	}
+	return $items_data;
+}
+
+function get_payment_method_data($order)
+{
 	$payment_method = $order->get_payment_method();
 	$payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
+	$payment_method_title = isset($payment_gateways[$payment_method]) ? $payment_gateways[$payment_method]->get_title() : '';
+	return ['method' => $payment_method, 'title' => $payment_method_title];
+}
 
-	// Initialize the payment method title
-	$payment_method_title = '';
+function get_sanitized_post_data($field_name)
+{
+	return isset($_POST[$field_name]) ? sanitize_text_field($_POST[$field_name]) : '';
+}
 
-	// Check if the payment method ID exists in the available payment gateways
-	if (isset($payment_gateways[$payment_method])) {
-		// Get the title of the payment method
-		$payment_method_title = $payment_gateways[$payment_method]->get_title();
-	}
+function should_create_new_account($create_new_accountVal, $simplyin_Token_Input_Value)
+{
+	return $create_new_accountVal === "on" && empty($simplyin_Token_Input_Value);
+}
 
+function has_auth_token($simplyin_Token_Input_Value)
+{
+	return !empty($simplyin_Token_Input_Value);
+}
 
+function build_new_account_order_data($order, $phoneAppInputField, $taxId, $parcel_machine_id, $items_data, $payment_method_data, $plugin_version, $woocommerce_version)
+{
+	$locale = get_locale();
+	$languageCode = strtoupper(substr($locale, 0, 2));
 
-
-
-
-
-	$phoneAppInputField = isset($_POST['phoneAppInputField']) ? sanitize_text_field($_POST['phoneAppInputField']) : '';
-
-	//user authToken
-	$simplyin_Token_Input_Value = isset($_POST['simplyinTokenInput']) ? sanitize_text_field($_POST['simplyinTokenInput']) : '';
-	//create new account checkbox
-	$create_new_accountVal = isset($_POST['simply-save-checkbox']) ? sanitize_text_field($_POST['simply-save-checkbox']) : '';
-	//parcel machine id
-	$parcel_machine_id = isset($_POST['parcel_machine_id']) ? sanitize_text_field($_POST['parcel_machine_id']) : '';
-	//identify custom or default tax id field
-	$custom_tax_field_id = isset($_POST['simply_tax_label_id']) ? sanitize_text_field($_POST['simply_tax_label_id']) : '';
-	$simply_billing_id = isset($_POST['simply_billing_id']) ? sanitize_text_field($_POST['simply_billing_id']) : '';
-	$simply_shipping_id = isset($_POST['simply_shipping_id']) ? sanitize_text_field($_POST['simply_shipping_id']) : '';
-	//get tax id from field in form
-	$taxId = isset($_POST[$custom_tax_field_id]) ? sanitize_text_field($_POST[$custom_tax_field_id]) : '';
-
-	$plugin_data = get_plugin_data(__FILE__);
-	$plugin_version = $plugin_data['Version'];
-	$woocommerce_version = get_option('woocommerce_version');
-
-	if ($create_new_accountVal === "on" && empty($simplyin_Token_Input_Value)) {
-		// echo 'new account';
-		$locale = get_locale();
-		$languageCode = strtoupper(substr($locale, 0, 2));
-
-		$body_data = array(
-			"newAccountData" => array(
-				"name" => trim($order->get_billing_first_name()),
-				"surname" => trim($order->get_billing_last_name()),
-				"phoneNumber" => trim($phoneAppInputField),
-				"email" => trim($order->get_billing_email()),
-				"uniqueId" => "string",
-				"language" => $languageCode,
-				"marketingConsent" => false,
-			),
-			"newOrderData" => array(
-				"payment_method" => $payment_method,
-				"payment_method_title" => $payment_method_title,
-				"shopOrderNumber" => $order->get_order_number(),
-				"price" => (float) $order->get_total(),
-				"currency" => $order->get_currency(),
-				"items" => $items_data,
-				"placedDuringAccountCreation" => true,
-				"billingData" => array(
-					"icon" => "🏡",
-					"addressName" => "",
-					"name" => trim($order->get_billing_first_name()),
-					"surname" => trim($order->get_billing_last_name()),
-					"street" => trim($order->get_billing_address_1()),
-					"appartmentNumber" => trim($order->get_billing_address_2()),
-					"city" => trim($order->get_billing_city()),
-					"postalCode" => trim($order->get_billing_postcode()),
-					"country" => trim($order->get_billing_country()),
-					"state" => trim($order->get_billing_state()),
-					"companyName" => trim($order->get_billing_company()),
-					"taxId" => trim($taxId)
-				),
-
-				"shopName" => get_bloginfo('name'),
-				"pluginVersion" => $plugin_version,
-				"shopVersion" => $woocommerce_version,
-				"shopUserEmail" => wp_get_current_user()->data->user_email ?? ''
-			),
-		);
-
-		if (!empty($parcel_machine_id)) {
-			$body_data["newOrderData"]["parcelLockerMinimalInfo"] = array(
-				"lockerId" => $parcel_machine_id,
-				"providerName" => "inpost"
-			);
-		}
-		if (empty($parcel_machine_id)) {
-			$body_data["newOrderData"]["shippingData"] = array(
-				"icon" => "🏡",
-				"addressName" => "",
-				"name" => trim($order->get_shipping_first_name()),
-				"surname" => trim($order->get_shipping_last_name()),
-				"street" => trim($order->get_shipping_address_1()),
-				"appartmentNumber" => trim($order->get_shipping_address_2()),
-				"city" => trim($order->get_shipping_city()),
-				"postalCode" => trim($order->get_shipping_postcode()),
-				"country" => trim($order->get_shipping_country()),
-				"state" => trim($order->get_shipping_state()),
-				"companyName" => trim($order->get_shipping_company()),
-			);
-		}
-
-		sendPostRequest($body_data, 'checkout/createOrderAndAccount', "");
-	}
-
-	if (isset($simplyin_Token_Input_Value) && $simplyin_Token_Input_Value !== "") {
-
-		$billingData = array(
-			"_id" => $simply_billing_id,
+	$body_data = [
+		"newAccountData" => [
 			"name" => trim($order->get_billing_first_name()),
 			"surname" => trim($order->get_billing_last_name()),
-			"street" => trim($order->get_billing_address_1()),
-			"appartmentNumber" => trim($order->get_billing_address_2()),
-			"city" => trim($order->get_billing_city()),
-			"postalCode" => trim($order->get_billing_postcode()),
-			"country" => trim($order->get_billing_country()),
-			"state" => trim($order->get_billing_state()),
-			"companyName" => trim($order->get_billing_company()),
-			"taxId" => trim($taxId)
-		);
+			"phoneNumber" => trim($phoneAppInputField),
+			"email" => trim($order->get_billing_email()),
+			"uniqueId" => "string",
+			"language" => $languageCode,
+			"marketingConsent" => false,
+		],
+		"newOrderData" => [
+			"payment_method" => $payment_method_data['method'],
+			"payment_method_title" => $payment_method_data['title'],
+			"shopOrderNumber" => $order->get_order_number(),
+			"price" => (float) $order->get_total(),
+			"currency" => $order->get_currency(),
+			"items" => $items_data,
+			"placedDuringAccountCreation" => true,
+			"billingData" => get_billing_data($order, $taxId),
+			"shopName" => get_bloginfo('name'),
+			"pluginVersion" => $plugin_version,
+			"shopVersion" => $woocommerce_version,
+			"shopUserEmail" => wp_get_current_user()->data->user_email ?? '',
+		],
+	];
 
-		$body_data = array(
-			"newOrderData" => array(
-				"payment_method" => $payment_method,
-				"payment_method_title" => $payment_method_title,
-				"shopOrderNumber" => $order->get_order_number(),
-				"price" => (float) $order->get_total(),
-				"currency" => $order->get_currency(),
-				"items" => $items_data,
-				"placedDuringAccountCreation" => false,
-				"billingData" => $billingData,
-				"shopName" => get_bloginfo('name'),
-				"pluginVersion" => $plugin_version,
-				"shopVersion" => $woocommerce_version,
-				"shopUserEmail" => wp_get_current_user()->data->user_email ?? "",
-			),
-		);
-
-		if (!empty($parcel_machine_id)) {
-			$body_data["newOrderData"]["parcelLockerMinimalInfo"] = array(
-				"lockerId" => $parcel_machine_id,
-				"providerName" => "inpost"
-			);
-		}
-		if (empty($parcel_machine_id)) {
-			$shippingData = array(
-				"icon" => "🏡",
-				"addressName" => "",
-				"name" => trim($order->get_shipping_first_name()),
-				"surname" => trim($order->get_shipping_last_name()),
-				"street" => trim($order->get_shipping_address_1()),
-				"appartmentNumber" => trim($order->get_shipping_address_2()),
-				"city" => trim($order->get_shipping_city()),
-				"postalCode" => trim($order->get_shipping_postcode()),
-				"country" => trim($order->get_shipping_country()),
-				"state" => trim($order->get_shipping_state()),
-				"companyName" => trim($order->get_shipping_company()),
-			);
-
-			if ($simply_shipping_id !== "") {
-				$shippingData["_id"] = $simply_shipping_id;
-			}
-			$body_data["newOrderData"]["shippingData"] = $shippingData;
-		}
-
-		sendPostRequest($body_data, 'checkout/createOrderWithoutAccount', $simplyin_Token_Input_Value);
-
-
-
+	if (!empty($parcel_machine_id)) {
+		$body_data["newOrderData"]["parcelLockerMinimalInfo"] = [
+			"lockerId" => $parcel_machine_id,
+			"providerName" => "inpost"
+		];
+	} else {
+		$body_data["newOrderData"]["shippingData"] = get_shipping_data($order);
 	}
 
-
+	return $body_data;
 }
+
+function build_existing_account_order_data($order, $simplyin_Token_Input_Value, $simply_billing_id, $simply_shipping_id, $taxId, $parcel_machine_id, $items_data, $payment_method_data, $plugin_version, $woocommerce_version)
+{
+	$billingData = get_billing_data($order, $taxId, $simply_billing_id);
+
+	$body_data = [
+		"newOrderData" => [
+			"payment_method" => $payment_method_data['method'],
+			"payment_method_title" => $payment_method_data['title'],
+			"shopOrderNumber" => $order->get_order_number(),
+			"price" => (float) $order->get_total(),
+			"currency" => $order->get_currency(),
+			"items" => $items_data,
+			"placedDuringAccountCreation" => false,
+			"billingData" => $billingData,
+			"shopName" => get_bloginfo('name'),
+			"pluginVersion" => $plugin_version,
+			"shopVersion" => $woocommerce_version,
+			"shopUserEmail" => wp_get_current_user()->data->user_email ?? '',
+		],
+	];
+
+	if (!empty($parcel_machine_id)) {
+		$body_data["newOrderData"]["parcelLockerMinimalInfo"] = [
+			"lockerId" => $parcel_machine_id,
+			"providerName" => "inpost"
+		];
+	} else {
+		$shippingData = get_shipping_data($order, $simply_shipping_id);
+		$body_data["newOrderData"]["shippingData"] = $shippingData;
+	}
+
+	return $body_data;
+}
+
+function get_billing_data($order, $taxId, $simply_billing_id = '')
+{
+	$billingData = [
+		"name" => trim($order->get_billing_first_name()),
+		"surname" => trim($order->get_billing_last_name()),
+		"street" => trim($order->get_billing_address_1()),
+		"appartmentNumber" => trim($order->get_billing_address_2()),
+		"city" => trim($order->get_billing_city()),
+		"postalCode" => trim($order->get_billing_postcode()),
+		"country" => trim($order->get_billing_country()),
+		"state" => trim($order->get_billing_state()),
+		"companyName" => trim($order->get_billing_company()),
+		"taxId" => trim($taxId)
+	];
+
+	if (!empty($simply_billing_id)) {
+		$billingData["_id"] = $simply_billing_id;
+	}
+
+	return $billingData;
+}
+
+function get_shipping_data($order, $simply_shipping_id = '')
+{
+	$shippingData = [
+		"icon" => "🏡",
+		"addressName" => "",
+		"name" => trim($order->get_shipping_first_name()),
+		"surname" => trim($order->get_shipping_last_name()),
+		"street" => trim($order->get_shipping_address_1()),
+		"appartmentNumber" => trim($order->get_shipping_address_2()),
+		"city" => trim($order->get_shipping_city()),
+		"postalCode" => trim($order->get_shipping_postcode()),
+		"country" => trim($order->get_shipping_country()),
+		"state" => trim($order->get_shipping_state()),
+		"companyName" => trim($order->get_shipping_company()),
+	];
+
+	if (!empty($simply_shipping_id)) {
+		$shippingData["_id"] = $simply_shipping_id;
+	}
+
+	return $shippingData;
+}
+
 
