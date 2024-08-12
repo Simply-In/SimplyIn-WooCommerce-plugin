@@ -9,8 +9,10 @@
  * @wordpress-plugin
  * Plugin Name: SimplyIN
  * Plugin URI:       
- * Description: SimplyIN application preprod 
+ * Description: SimplyIN application st 
+ * Version:           1.1.0 
  * Version:           1.0.3 
+
  * Author:            Simply.IN Sp. z o.o.
  * Author URI:        https://simply.in
  * License:           https://joinup.ec.europa.eu/software/page/eupl
@@ -27,7 +29,9 @@ define('CONTENT_TYPE_JSON', 'Content-Type: application/json');
 require_once plugin_dir_path(__FILE__) . 'includes/class-simplyin.php';
 
 $env = parse_ini_file('.env');
-$backendEnvironment = $env['BACKEND_ENVIRONMENT_PREPROD'];
+
+$backendEnvironment = $env['BACKEND_ENVIRONMENT_STAGE'];
+
 
 
 function run_simplyin()
@@ -174,13 +178,8 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 	);
 
 
-	// $logs_directory = plugin_dir_path(__FILE__) . 'logs/';
-	// $log_file = $logs_directory . 'order_log.json';
-
 	$plaintext = json_encode($body_data);
-	// file_put_contents($log_file, $plaintext, FILE_APPEND);
-
-
+	
 	function encrypt($plaintext, $secret_key, $cipher = "aes-256-cbc")
 	{
 		$ivlen = openssl_cipher_iv_length($cipher);
