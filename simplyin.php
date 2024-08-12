@@ -27,7 +27,7 @@ define('CONTENT_TYPE_JSON', 'Content-Type: application/json');
 require_once plugin_dir_path(__FILE__) . 'includes/class-simplyin.php';
 
 $env = parse_ini_file('.env');
-$backendEnvironment = $env['BACKEND_ENVIRONMENT_STAGE'];
+$backendEnvironment = $env['BACKEND_ENVIRONMENT_PROD'];
 
 
 function run_simplyin()
@@ -113,10 +113,10 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 
 	$order_items = $order->get_items();
 
-	$order_id = $order->get_id(); // Assuming $order is an instance of WC_Order
+	$_order_id = $order->get_id(); // Assuming $order is an instance of WC_Order
 
 
-	$order = wc_get_order($order_id); // Get an instance of the WC_Order object
+	$order = wc_get_order($_order_id); // Get an instance of the WC_Order object
 	$order_items = $order->get_items();
 
 	$tracking_numbers = [];
