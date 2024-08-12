@@ -140,68 +140,89 @@ export const SimplyID = () => {
 	const maxAttempts = 180 * 1000 / 500; // 60 seconds divided by 500ms
 
 	useEffect(() => {
-
 		if (!notificationTokenId || modalStep !== 1) {
-			return
+			return;
 		}
 
-		middlewareApi({
-			endpoint: "checkout/checkIfSubmitEmailPushNotificationWasConfirmed",
-			method: 'POST',
-			requestBody: { "email": simplyInput.trim().toLowerCase(), "notificationTokenId": notificationTokenId, language: shortLang(i18n.language) }
-		})
-			.then(({ ok, rejected, authToken, userData }) => {
-				if (authToken) {
-					setAuthToken(authToken)
-					saveDataSessionStorage({ key: 'simplyinToken', data: authToken })
-					changeInputValue(simplyinTokenInputField, authToken);
-				}
-				if (ok) {
-
-
-					const newData = { ...userData }
-					if (newData?.createdAt) {
-						delete newData.createdAt
+		const makeApiCall = async () => {
+			try {
+				const response = await middlewareApi({
+					endpoint: "checkout/checkIfSubmitEmailPushNotificationWasConfirmed",
+					method: 'POST',
+					requestBody: {
+						"email": simplyInput.trim().toLowerCase(),
+						"notificationTokenId": notificationTokenId,
+						language: shortLang(i18n.language)
 					}
-					if (newData?.updatedAt) {
-						delete newData.updatedAt
-					}
-
-					setUserData(newData)
-
-					if (userData?.language) {
-						i18n.changeLanguage(userData?.language.toLowerCase())
-					}
-
-					saveDataSessionStorage({ key: 'UserData', data: newData })
-
-					setVisible(true)
-					setModalStep(2)
-
-					predefinedFill(newData, handleClosePopup, {
-						setSelectedBillingIndex,
-						setSelectedShippingIndex,
-						setSelectedDeliveryPointIndex,
-						setSameDeliveryAddress,
-						setPickupPointDelivery,
-						setSelectedUserData
-					})
-				} else if (ok === false && rejected === true) {
-					setVisible(true)
-					setModalStep("rejected")
-				}
-				else if (counter < maxAttempts) {
-					setTimeout(() => setCounter((prev) => prev + 1), 1000);
-				} else {
-					console.log('Login not accepted within 30 seconds');
-				}
-			})
-			.catch(error => {
+				});
+				handleApiResponse(response);
+			} catch (error) {
 				console.error('Error checking login status:', error);
+			}
+		};
+
+		const handleApiResponse = ({ ok, rejected, authToken, userData }: any) => {
+			if (authToken) {
+				handleAuthToken(authToken);
+			}
+
+			if (ok) {
+				handleSuccessfulResponse(userData);
+			} else if (ok === false && rejected === true) {
+				handleRejectedResponse();
+			} else {
+				handleRetry();
+			}
+		};
+
+		const handleAuthToken = (authToken: string) => {
+			setAuthToken(authToken);
+			saveDataSessionStorage({ key: 'simplyinToken', data: authToken });
+			changeInputValue(simplyinTokenInputField, authToken);
+		};
+
+		const handleSuccessfulResponse = (userData: any) => {
+			const newData = cleanUserData(userData);
+			setUserData(newData);
+
+			if (userData?.language) {
+				i18n.changeLanguage(userData.language.toLowerCase());
+			}
+
+			saveDataSessionStorage({ key: 'UserData', data: newData });
+			setVisible(true);
+			setModalStep(2);
+
+			predefinedFill(newData, handleClosePopup, {
+				setSelectedBillingIndex,
+				setSelectedShippingIndex,
+				setSelectedDeliveryPointIndex,
+				setSameDeliveryAddress,
+				setPickupPointDelivery,
+				setSelectedUserData
 			});
+		};
 
+		const handleRejectedResponse = () => {
+			setVisible(true);
+			setModalStep("rejected");
+		};
 
-	}, [notificationTokenId, counter, visible])
+		const handleRetry = () => {
+			if (counter < maxAttempts) {
+				setTimeout(() => setCounter(prev => prev + 1), 1000);
+			} else {
+				console.log('Login not accepted within 30 seconds');
+			}
+		};
+
+		const cleanUserData = (data: any) => {
+			const { createdAt, updatedAt, ...cleanedData } = data;
+			return cleanedData;
+		};
+
+		makeApiCall();
+	}, [notificationTokenId, counter, visible]);
 
 
 	useEffect(() => {

@@ -65,7 +65,7 @@ export const PhoneField = ({ defaultRegister }: { defaultRegister: boolean }) =>
 						if (isValidPhoneNumber(selectedCountryNumber?.number)) {
 							setCountryCode(countryCode as Country);
 							setPhoneInput(selectedCountryNumber.number);
-							this.removeEventListener("input", singlePhoneNumberChange)
+							billingPhoneField.removeEventListener("input", singlePhoneNumberChange);
 						}
 					}
 
@@ -78,54 +78,51 @@ export const PhoneField = ({ defaultRegister }: { defaultRegister: boolean }) =>
 
 
 	useEffect(() => {
+		const handlePhoneNumber = () => {
+			const phoneInputField = document.getElementById("billing_phone") as HTMLInputElement;
+			const phoneVal = phoneInputField?.value.replace(/^00|^0/, '+') || "";
 
-		setError("")
-		const phoneInputField = document.getElementById("billing_phone") as HTMLInputElement
+			if (!phoneVal) return;
 
-		//if there is 0 or 00 replace with +
-		const phoneVal = phoneInputField?.value.replace(/^00|^0/, '+') || ""
-		if (!phoneVal) return
-
-		try {
-			if (isValidPhoneNumber(phoneVal || "")) {
-				// Condition 1: Valid phone number
-				setPhoneInput(phoneVal || "");
+			try {
+				if (isValidPhoneNumber(phoneVal)) {
+					setPhoneInput(phoneVal);
+					setError(""); // Reset error if phone number is valid
 			} else if (phoneVal.startsWith("+")) {
-				// Condition 2: Phone number starts with '+'
-				setPhoneInput(phoneVal || "");
+				  setPhoneInput(phoneVal);
 				setError(t("payment.checkPhoneNumber"));
 			} else {
-				// Condition 3: Phone number does not start with '+' and is not valid
-
-				// Retrieve the selected country code from the billing_country element
-				const countrySelect = document.getElementById('billing_country') as HTMLSelectElement;
-				const countryCode = countrySelect?.value || "PL"; // Default to "PL" if not available
-
-				// Parse the phone number using the selected country code
-				const selectedCountryNumber = parsePhoneNumber(phoneVal, countryCode as Country || "PL");
-
-				if (!selectedCountryNumber) {
-					// Invalid phone number for the selected country
-					return;
+					handleInvalidPhoneNumber(phoneVal);
 				}
-
-				// Set the country code and formatted phone input
-				setCountryCode(countryCode as Country);
-				setPhoneInput(selectedCountryNumber.number || "");
-
-				if (!isValidPhoneNumber(selectedCountryNumber.number || "") && phoneVal) {
-					// Invalid phone number for the selected country
-					setError(t("payment.checkPhoneNumber"));
-				}
+			} catch (err) {
+				setError(t('payment.phoneNumberError'));
+				console.error('Error:', err);
 			}
-		} catch (err) {
-			// Handle any unexpected errors
-			setError(t('payment.phoneNumberError'));
-			console.error('Error:', err);
-		}
+		};
+
+		const handleInvalidPhoneNumber = (phoneVal: string) => {
+			const countrySelect = document.getElementById('billing_country') as HTMLSelectElement;
+			const countryCode = countrySelect?.value || "PL";
+
+			const selectedCountryNumber = parsePhoneNumber(phoneVal, countryCode as Country || "PL");
+
+			if (!selectedCountryNumber) {
+				return;
+			}
+
+			setCountryCode(countryCode as Country);
+			setPhoneInput(selectedCountryNumber.number || "");
+
+			if (!isValidPhoneNumber(selectedCountryNumber.number || "") && phoneVal) {
+				setError(t("payment.checkPhoneNumber"));
+			}
+		};
+
+		handlePhoneNumber();
 		checkedRef.current = true;
+
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [attributeObject, checked])
+	}, [attributeObject, checked]);
 
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const debouncedValidation = useCallback(
@@ -216,6 +213,7 @@ export const PhoneField = ({ defaultRegister }: { defaultRegister: boolean }) =>
 					countryCallingCodeEditable={false}
 					defaultCountry={countryCode || "PL"}
 					value={phoneInput}
+					//@ts-ignore
 					onChange={phoneChange}
 					inputComponent={MyCustomInput}
 
