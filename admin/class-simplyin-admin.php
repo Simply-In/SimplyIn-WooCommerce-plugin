@@ -59,11 +59,6 @@ class SimplyIn_Admin
 				$err_code = esc_attr('plugin_name_example_setting');
 				$setting_field = 'plugin_name_example_setting';
 				break;
-			default:
-				$message = __('An unexpected error occurred.', 'my-text-domain');
-				$err_code = esc_attr('plugin_name_unexpected_error');
-				$setting_field = 'plugin_name_unexpected_error';
-				break;
 		}
 		$type = 'error';
 		add_settings_error(
@@ -206,74 +201,58 @@ class SimplyIn_Admin
 
 	public function settings_page_render_settings_field($args)
 	{
-		$wp_data_value = $this->get_wp_data_value($args);
+
+		if ($args['wp_data'] == 'option') {
+			$wp_data_value = get_option($args['name']);
+		} elseif ($args['wp_data'] == 'post_meta') {
+			$wp_data_value = get_post_meta($args['post_id'], $args['name'], true);
+		}
 
 		global $allowedposttags;
-		$this->update_allowed_tags($allowedposttags);
+
+		foreach ($this->allowed_tags as $tag) {
+			$allowedposttags[$tag] = array_combine($this->allowed_atts, array_fill(0, count($this->allowed_atts), true));
+		}
 
 		switch ($args['type']) {
 			case 'input':
-				$this->render_input_field($args, $wp_data_value, $allowedposttags);
-				break;
-			case 'checkbox':
-				$this->render_checkbox_field($args, $wp_data_value);
+				$value = ($args['value_type'] == 'serialized') ? serialize($wp_data_value) : $wp_data_value;
+				if ($args['subtype'] != 'checkbox') {
+					// Render input fields
+					$prependStart = (isset($args['prepend_value'])) ? '<div class="input-prepend"> <span class="add-on">' . $args['prepend_value'] . '</span>' : '';
+					$prependEnd = (isset($args['prepend_value'])) ? '</div>' : '';
+					$step = (isset($args['step'])) ? 'step="' . $args['step'] . '"' : '';
+					$min = (isset($args['min'])) ? 'min="' . $args['min'] . '"' : '';
+					$max = (isset($args['max'])) ? 'max="' . $args['max'] . '"' : '';
+					$disabled_attr = (isset($args['disabled'])) ? 'disabled' : '';
+					$required_attr = (isset($args['required']) && $args['required'] == 'true') ? 'required' : '';
+
+					echo wp_kses($prependStart . '<input type="' . $args['subtype'] . '" id="' . $args['id'] . '" ' . $required_attr . ' ' . $step . ' ' . $max . ' ' . $min . ' name="' . $args['name'] . '" size="40" value="' . esc_attr($value) . '" ' . $disabled_attr . ' />' . $prependEnd, $allowedposttags);
+
+				} else {
+					// Render checkbox
+					$checked = ($wp_data_value) ? 'checked' : 'false';
+					echo '<div class="registerByDefaultContainer">
+							<div>
+								<h2>User registration during checkout</h2>
+								<div class="row">
+								<p>The "Save your details <a href="https://www.simply.in" target="_blank">Simply.IN</a>" checkbox is selected by default for users who do not have an account at <a href="https://www.simply.in" target="_blank">Simply.IN</a></p>
+									<div>
+										<label class="switch">
+											<input type="' . $args['subtype'] . '" id="' . $args['id'] . '" name="' . $args['name'] . '" ' . $checked . ' />
+											<span class="slider round"></span>
+										</label>
+									</div>
+								</div>
+								</div>
+						</div>';
+					// echo '';
+
+				}
 				break;
 			default:
 				break;
 		}
-	}
-
-	private function get_wp_data_value($args)
-	{
-		if ($args['wp_data'] == 'option') {
-			return get_option($args['name']);
-		} elseif ($args['wp_data'] == 'post_meta') {
-			return get_post_meta($args['post_id'], $args['name'], true);
-		}
-		return '';
-	}
-
-	private function update_allowed_tags(&$allowedposttags)
-	{
-		foreach ($this->allowed_tags as $tag) {
-			$allowedposttags[$tag] = array_combine($this->allowed_atts, array_fill(0, count($this->allowed_atts), true));
-		}
-	}
-
-	private function render_input_field($args, $wp_data_value, $allowedposttags)
-	{
-		$value = ($args['value_type'] == 'serialized') ? serialize($wp_data_value) : $wp_data_value;
-		$prependStart = $args['prepend_value'] ?? '';
-		$prependEnd = $args['prepend_value'] ? '</div>' : '';
-		$step = $args['step'] ? 'step="' . $args['step'] . '"' : '';
-		$min = $args['min'] ? 'min="' . $args['min'] . '"' : '';
-		$max = $args['max'] ? 'max="' . $args['max'] . '"' : '';
-		$disabled_attr = $args['disabled'] ? 'disabled' : '';
-		$required_attr = ($args['required'] ?? 'false') == 'true' ? 'required' : '';
-
-		echo wp_kses(
-			$prependStart . '<input type="' . $args['subtype'] . '" id="' . $args['id'] . '" ' . $required_attr . ' ' . $step . ' ' . $max . ' ' . $min . ' name="' . $args['name'] . '" size="40" value="' . esc_attr($value) . '" ' . $disabled_attr . ' />' . $prependEnd,
-			$allowedposttags
-		);
-	}
-
-	private function render_checkbox_field($args, $wp_data_value)
-	{
-		$checked = $wp_data_value ? 'checked' : '';
-		echo '<div class="registerByDefaultContainer">
-            <div>
-                <h2>User registration during checkout</h2>
-                <div class="row">
-                <p>The "Save your details <a href="https://www.simply.in" target="_blank">Simply.IN</a>" checkbox is selected by default for users who do not have an account at <a href="https://www.simply.in" target="_blank">Simply.IN</a></p>
-                    <div>
-                        <label class="switch">
-                            <input type="' . $args['subtype'] . '" id="' . $args['id'] . '" name="' . $args['name'] . '" ' . $checked . ' />
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-        </div>';
 	}
 
 
