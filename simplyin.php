@@ -718,14 +718,14 @@ function onOrderCreate($order)
 	$items_data = get_order_items_data($order);
 	$payment_method_data = get_payment_method_data($order);
 
-	$phoneAppInputField = get_sanitized_post_data('phoneAppInputField');
-	$simplyin_Token_Input_Value = get_sanitized_post_data('simplyinTokenInput');
-	$create_new_accountVal = get_sanitized_post_data('simply-save-checkbox');
-	$parcel_machine_id = get_sanitized_post_data('parcel_machine_id');
-	$custom_tax_field_id = get_sanitized_post_data('simply_tax_label_id');
-	$simply_billing_id = get_sanitized_post_data('simply_billing_id');
-	$simply_shipping_id = get_sanitized_post_data('simply_shipping_id');
-	$taxId = get_sanitized_post_data($custom_tax_field_id);
+	$phoneAppInputField = get_sanitized_post_data_simplyin('phoneAppInputField');
+	$simplyin_Token_Input_Value = get_sanitized_post_data_simplyin('simplyinTokenInput');
+	$create_new_accountVal = get_sanitized_post_data_simplyin('simply-save-checkbox');
+	$parcel_machine_id = get_sanitized_post_data_simplyin('parcel_machine_id');
+	$custom_tax_field_id = get_sanitized_post_data_simplyin('simply_tax_label_id');
+	$simply_billing_id = get_sanitized_post_data_simplyin('simply_billing_id');
+	$simply_shipping_id = get_sanitized_post_data_simplyin('simply_shipping_id');
+	$taxId = get_sanitized_post_data_simplyin($custom_tax_field_id);
 
 	if (should_create_new_account($create_new_accountVal, $simplyin_Token_Input_Value)) {
 		$body_data = build_new_account_order_data($order, $phoneAppInputField, $taxId, $parcel_machine_id, $items_data, $payment_method_data, $plugin_version, $woocommerce_version);
@@ -771,7 +771,7 @@ function get_payment_method_data($order)
 	return ['method' => $payment_method, 'title' => $payment_method_title];
 }
 
-function get_sanitized_post_data($field_name)
+function get_sanitized_post_data_simplyin($field_name)
 {
 	return isset($_POST[$field_name]) ? sanitize_text_field($_POST[$field_name]) : '';
 }
