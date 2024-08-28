@@ -592,7 +592,7 @@ function customRestApiCallback()
 	}
 
 	$apiKey = get_option('simplyin_api_key');
-
+	
 	if (empty($apiKey)) {
 		http_response_code(400);  // Bad Request
 		echo "Error: Simplyin API key is empty";
@@ -600,6 +600,7 @@ function customRestApiCallback()
 	}
 
 	$body['apiKey'] = $apiKey;
+	$body["shopName"] = get_bloginfo('name');
 
 
 
