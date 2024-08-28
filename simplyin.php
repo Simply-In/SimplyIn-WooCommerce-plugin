@@ -593,7 +593,7 @@ function customRestApiCallback()
 	}
 
 	$apiKey = get_option('simplyin_api_key');
-
+	
 	if (empty($apiKey)) {
 		http_response_code(400);  // Bad Request
 		echo "Error: Simplyin API key is empty";
@@ -601,6 +601,7 @@ function customRestApiCallback()
 	}
 
 	$body['apiKey'] = $apiKey;
+	$body["shopName"] = get_bloginfo('name');
 
 
 
@@ -659,7 +660,7 @@ function sendPostRequest($bodyData, $endpoint, $token)
 		return;
 	}
 	$bodyData['merchantApiKey'] = $merchantToken;
-
+	$bodyData["shopName"] = get_bloginfo('name');
 
 	$base_url = home_url();
 	// $headers = array('Content-Type: application/json', 'Origin: ' . $base_url);
