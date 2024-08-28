@@ -10,7 +10,7 @@
  * Plugin Name: SimplyIN
  * Plugin URI:       
  * Description: SimplyIN application st 
- * Version:           1.1.4 
+ * Version:           1.1.5 
  * Version:           1.0.3 
 
  * Author:            Simply.IN Sp. z o.o.
