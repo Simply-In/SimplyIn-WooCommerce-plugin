@@ -1,3 +1,6 @@
+2024-08-30 (version: 1.1.5):
+- f57a80c0cd673cb7a0f114dfe4ab84e5f6e6acf9
+
 2024-08-22 (version: 1.1.4):
 - f57a80c0cd673cb7a0f114dfe4ab84e5f6e6acf9
 
