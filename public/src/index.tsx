@@ -10,6 +10,24 @@ import './i18n.ts'
 
 
 console.log('SimplyIn Hello');
+
+//function for returning correct form fields order
+const dispatchBillingFields = () => {
+	const countrySelect = document.getElementById('billing_country') as HTMLSelectElement;
+	const changeEvent = new Event('change', { bubbles: true });
+	countrySelect.dispatchEvent(changeEvent);
+}
+
+dispatchBillingFields()
+
+setTimeout(() => {
+	dispatchBillingFields()
+}, 100)
+setTimeout(() => {
+	dispatchBillingFields()
+}, 1000)
+
+
 // checking if there is a custom or built taxId/nip in field
 const nipFieldHandling = () => {
 
@@ -123,6 +141,10 @@ if (isSafari) {
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore
 document.addEventListener("DOMContentLoaded", (async (): any => {
+	dispatchBillingFields()
+	setTimeout(() => {
+		dispatchBillingFields()
+	}, 100)
 	setTimeout(() => {
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		//@ts-ignore
