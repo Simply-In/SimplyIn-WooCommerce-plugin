@@ -125,9 +125,6 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 
 	const filteredParcelLockers = useMemo(() => userData?.parcelLockers.filter((el: any) => selectedTab === "parcel_machine" ? el.service_type === "parcel_machine" : el.service_type !== "parcel_machine"), [selectedTab, userData?.parcelLockers])
 
-
-
-
 	const handleSelectData = () => {
 		if (!userData?.billingAddresses[selectedBillingIndex]) {
 			return
