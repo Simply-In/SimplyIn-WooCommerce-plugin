@@ -2,7 +2,7 @@ import { Grid } from '@mui/material'
 import { useState, useEffect, useContext, useRef } from 'react'
 
 import { EditFormTitle } from '../../SimplyID.styled';
-import { useForm } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { ApiContext } from '../../SimplyID';
@@ -87,7 +87,7 @@ export const Step2Form = ({
 
 	const { editData }: any = editItem
 
-	const { control, handleSubmit, formState: { errors }, setError, clearErrors, setValue, watch, getValues } = useForm({
+	const methods = useForm({
 		resolver: yupResolver(SignupSchema),
 		defaultValues: editItem?.property === "parcelLockers" ? {
 			addressName: editData?.addressName || null,
@@ -112,6 +112,8 @@ export const Step2Form = ({
 
 		}
 	});
+
+	const { control, handleSubmit, formState: { errors }, setError, clearErrors, setValue, watch, getValues } = methods;
 
 	const onSubmit = (data: any) => {
 
@@ -304,6 +306,7 @@ export const Step2Form = ({
 
 	return (
 		<div >
+			<FormProvider {...methods}>
 			<EditFormTitle>{editItemTitle()}</EditFormTitle>
 
 			<form onSubmit={handleSubmit(onSubmit)}>
@@ -339,6 +342,7 @@ export const Step2Form = ({
 					handleCancel={handleCancel} />
 
 			</form >
+			</FormProvider>
 		</div >
 	)
 }

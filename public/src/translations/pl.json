@@ -97,7 +97,9 @@
 			"additionalInfo": "Dodatkowe informacje",
 			"distance": "Odległość",
 			"searchAddress": "Wyszukaj adres",
-			"noPointFound": "Nie znaleziono żadnych punktów w pobliżu podanego adresu"
+			"noPointFound": "Nie znaleziono żadnych punktów w pobliżu podanego adresu",
+			"getTaxIdData": "Pobierz dane NIP",
+			"NoTaxIdData": "Brak danych NIP"
 		},
 		"countries": {
 			"AF": "Afganistan",
