@@ -10,13 +10,7 @@
  * Plugin Name: SimplyIN
  * Plugin URI:       
  * Description: SimplyIN application st 
-<<<<<<< HEAD
  * Version:           1.0.21 
-=======
- * Version:           1.1.6 
- * Version:           1.0.3 
-
->>>>>>> a4e22ed6745a60ea14b647f8c5a3dca95be5baa6
  * Author:            Simply.IN Sp. z o.o.
  * Author URI:        https://simply.in
  * License:           https://joinup.ec.europa.eu/software/page/eupl
@@ -33,13 +27,7 @@ define('CONTENT_TYPE_JSON', 'Content-Type: application/json');
 require_once plugin_dir_path(__FILE__) . 'includes/class-simplyin.php';
 
 $env = parse_ini_file('.env');
-<<<<<<< HEAD
 $backendEnvironment = $env['BACKEND_ENVIRONMENT_DEV'];
-=======
-
-$backendEnvironment = $env['BACKEND_ENVIRONMENT_STAGE'];
-
->>>>>>> a4e22ed6745a60ea14b647f8c5a3dca95be5baa6
 
 
 function run_simplyin()
@@ -113,6 +101,7 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 
 
 	// $apiKey = get_option('simplyin_api_key');
+	// $apiKey = get_option('simplyin_api_key');
 
 	$order_data = $order->get_data();
 	$order_email = $order_data['billing']['email'];
@@ -182,6 +171,7 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 		"email" => $order_email,
 		"shopOrderNumber" => $order_data['id'],
 		"newOrderStatus" => $new_status,
+		"signature" => $signature,
 		"signature" => $signature,
 		"trackings" => $tracking_numbers
 	);
@@ -664,10 +654,18 @@ function generateSignature()
 }
 
 
+
+
+
 function customRestApiCallback()
 {
 
+
 	global $simplyin_config;
+
+
+
+	// return
 
 
 
@@ -688,6 +686,10 @@ function customRestApiCallback()
 
 
 
+	$signature = generateSignature();
+	$body['signature'] = $signature;   //signature
+	// $body['apiKey'] = $apiKey;   // do wywalenia
+	$body["shopName"] = get_bloginfo('name');
 	$signature = generateSignature();
 	$body['signature'] = $signature;   //signature
 	// $body['apiKey'] = $apiKey;   // do wywalenia
@@ -745,6 +747,8 @@ function sendPostRequest($bodyData, $endpoint, $token)
 		echo "Error: Simplyin API key is empty";
 		return;
 	}
+	// $bodyData['merchantApiKey'] = $merchantToken;
+	$bodyData["shopName"] = get_bloginfo('name');
 	// $bodyData['merchantApiKey'] = $merchantToken;
 	$bodyData["shopName"] = get_bloginfo('name');
 
@@ -810,11 +814,8 @@ function onOrderCreate($order)
 	$items_data = get_order_items_data($order);
 	$payment_method_data = get_payment_method_data($order);
 
-<<<<<<< HEAD
 	$shipping_total = $order->get_shipping_total();
 	
-=======
->>>>>>> a4e22ed6745a60ea14b647f8c5a3dca95be5baa6
 	$phoneAppInputField = get_sanitized_post_data_simplyin('phoneAppInputField');
 	$simplyin_Token_Input_Value = get_sanitized_post_data_simplyin('simplyinTokenInput');
 	$create_new_accountVal = get_sanitized_post_data_simplyin('simply-save-checkbox');
