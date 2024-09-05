@@ -10,7 +10,13 @@
  * Plugin Name: SimplyIN
  * Plugin URI:       
  * Description: SimplyIN application st 
+<<<<<<< HEAD
  * Version:           1.0.21 
+=======
+ * Version:           1.1.6 
+ * Version:           1.0.3 
+
+>>>>>>> a4e22ed6745a60ea14b647f8c5a3dca95be5baa6
  * Author:            Simply.IN Sp. z o.o.
  * Author URI:        https://simply.in
  * License:           https://joinup.ec.europa.eu/software/page/eupl
@@ -27,7 +33,13 @@ define('CONTENT_TYPE_JSON', 'Content-Type: application/json');
 require_once plugin_dir_path(__FILE__) . 'includes/class-simplyin.php';
 
 $env = parse_ini_file('.env');
+<<<<<<< HEAD
 $backendEnvironment = $env['BACKEND_ENVIRONMENT_DEV'];
+=======
+
+$backendEnvironment = $env['BACKEND_ENVIRONMENT_STAGE'];
+
+>>>>>>> a4e22ed6745a60ea14b647f8c5a3dca95be5baa6
 
 
 function run_simplyin()
@@ -798,8 +810,11 @@ function onOrderCreate($order)
 	$items_data = get_order_items_data($order);
 	$payment_method_data = get_payment_method_data($order);
 
+<<<<<<< HEAD
 	$shipping_total = $order->get_shipping_total();
 	
+=======
+>>>>>>> a4e22ed6745a60ea14b647f8c5a3dca95be5baa6
 	$phoneAppInputField = get_sanitized_post_data_simplyin('phoneAppInputField');
 	$simplyin_Token_Input_Value = get_sanitized_post_data_simplyin('simplyinTokenInput');
 	$create_new_accountVal = get_sanitized_post_data_simplyin('simply-save-checkbox');
