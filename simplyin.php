@@ -708,6 +708,11 @@ add_action('woocommerce_checkout_order_created', 'onOrderCreate', 10, 3);
 
 function onOrderCreate($order)
 {
+	// $logs_directory = plugin_dir_path(__FILE__) . 'logs/';
+	// $log_file = $logs_directory . 'order_log.json';
+	// file_put_contents($log_file, json_encode($order), FILE_APPEND);
+
+
 	global $woocommerce;
 	$plugin_version = get_plugin_version();
 	$woocommerce_version = get_option('woocommerce_version');
@@ -715,6 +720,8 @@ function onOrderCreate($order)
 	$items_data = get_order_items_data($order);
 	$payment_method_data = get_payment_method_data($order);
 
+	$shipping_total = $order->get_shipping_total();
+	
 	$phoneAppInputField = get_sanitized_post_data_simplyin('phoneAppInputField');
 	$simplyin_Token_Input_Value = get_sanitized_post_data_simplyin('simplyinTokenInput');
 	$create_new_accountVal = get_sanitized_post_data_simplyin('simply-save-checkbox');
@@ -725,10 +732,10 @@ function onOrderCreate($order)
 	$taxId = get_sanitized_post_data_simplyin($custom_tax_field_id);
 
 	if (should_create_new_account($create_new_accountVal, $simplyin_Token_Input_Value)) {
-		$body_data = build_new_account_order_data($order, $phoneAppInputField, $taxId, $parcel_machine_id, $items_data, $payment_method_data, $plugin_version, $woocommerce_version);
+		$body_data = build_new_account_order_data($order, $phoneAppInputField, $taxId, $parcel_machine_id, $items_data, $payment_method_data, $plugin_version, $woocommerce_version, $shipping_total);
 		sendPostRequest($body_data, 'checkout/createOrderAndAccount', "");
 	} elseif (has_auth_token($simplyin_Token_Input_Value)) {
-		$body_data = build_existing_account_order_data($order, $simplyin_Token_Input_Value, $simply_billing_id, $simply_shipping_id, $taxId, $parcel_machine_id, $items_data, $payment_method_data, $plugin_version, $woocommerce_version);
+		$body_data = build_existing_account_order_data($order, $simplyin_Token_Input_Value, $simply_billing_id, $simply_shipping_id, $taxId, $parcel_machine_id, $items_data, $payment_method_data, $plugin_version, $woocommerce_version, $shipping_total);
 		sendPostRequest($body_data, 'checkout/createOrderWithoutAccount', $simplyin_Token_Input_Value);
 	}
 }
@@ -747,11 +754,28 @@ function get_order_items_data($order)
 		foreach ($items as $item) {
 			$product_id = $item->get_product_id();
 			$product = wc_get_product($product_id);
+
+			// Get tax information for the item
+			$taxes = $item->get_taxes(); // This returns an array with tax data
+
+			$quantity = $item->get_quantity() ?? 1;
+
+			$tax_amount = array_sum($taxes['total']) / $quantity; // Sum of all tax amounts for the item
+
+			$tax_rate = $tax_amount > 0 ? ($tax_amount / $item->get_total()) * 100 : 0; // Calculate tax rate as a percentage
+
+			$price_net = (float) $order->get_item_total($item);
+
+			$price_total = (float) $price_net + $tax_amount;
+
 			$items_data[] = [
 				'name' => $item->get_name(),
 				'url' => get_permalink($product_id),
-				'price' => (float) $order->get_item_total($item),
-				'quantity' => $item->get_quantity(),
+				'price_net' => $price_net, // Item price excluding tax
+				'price' => $price_total,
+				'quantity' => $quantity,
+				'tax_amount' => (float) $tax_amount, // Tax amount for this item
+				'tax_rate' => (float) $tax_rate, // Tax rate for this item
 				'thumbnailUrl' => wp_get_attachment_image_url($product->get_image_id(), 'thumbnail') ?? "",
 				'currency' => $order->get_currency(),
 			];
@@ -783,7 +807,7 @@ function has_auth_token($simplyin_Token_Input_Value)
 	return !empty($simplyin_Token_Input_Value);
 }
 
-function build_new_account_order_data($order, $phoneAppInputField, $taxId, $parcel_machine_id, $items_data, $payment_method_data, $plugin_version, $woocommerce_version)
+function build_new_account_order_data($order, $phoneAppInputField, $taxId, $parcel_machine_id, $items_data, $payment_method_data, $plugin_version, $woocommerce_version, $shipping_total)
 {
 	$locale = get_locale();
 	$languageCode = strtoupper(substr($locale, 0, 2));
@@ -807,6 +831,7 @@ function build_new_account_order_data($order, $phoneAppInputField, $taxId, $parc
 			"items" => $items_data,
 			"placedDuringAccountCreation" => true,
 			"billingData" => get_billing_data($order, $taxId),
+			"shippingPrice" => (float) $shipping_total,
 			"shopName" => get_bloginfo('name'),
 			"pluginVersion" => $plugin_version,
 			"shopVersion" => $woocommerce_version,
@@ -826,7 +851,7 @@ function build_new_account_order_data($order, $phoneAppInputField, $taxId, $parc
 	return $body_data;
 }
 
-function build_existing_account_order_data($order, $simplyin_Token_Input_Value, $simply_billing_id, $simply_shipping_id, $taxId, $parcel_machine_id, $items_data, $payment_method_data, $plugin_version, $woocommerce_version)
+function build_existing_account_order_data($order, $simplyin_Token_Input_Value, $simply_billing_id, $simply_shipping_id, $taxId, $parcel_machine_id, $items_data, $payment_method_data, $plugin_version, $woocommerce_version, $shipping_total)
 {
 	$billingData = get_billing_data($order, $taxId, $simply_billing_id);
 
@@ -840,6 +865,7 @@ function build_existing_account_order_data($order, $simplyin_Token_Input_Value, 
 			"items" => $items_data,
 			"placedDuringAccountCreation" => false,
 			"billingData" => $billingData,
+			"shippingPrice" => (float) $shipping_total,
 			"shopName" => get_bloginfo('name'),
 			"pluginVersion" => $plugin_version,
 			"shopVersion" => $woocommerce_version,
