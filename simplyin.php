@@ -787,8 +787,6 @@ function sendPostRequest($bodyData, $endpoint, $token)
 	}
 
 
-
-
 	$base_url = home_url();
 
 	$headers = array(CONTENT_TYPE_JSON, 'Origin: ' . $base_url);
@@ -967,6 +965,7 @@ function build_new_account_order_data($order, $phoneAppInputField, $taxId, $parc
 			"shopName" => get_bloginfo('name'),
 			"pluginVersion" => $plugin_version,
 			"shopVersion" => $woocommerce_version,
+			"platform" => "woocommerce",
 			"shopUserEmail" => wp_get_current_user()->data->user_email ?? '',
 		],
 	];
@@ -1001,6 +1000,7 @@ function build_existing_account_order_data($order, $simplyin_Token_Input_Value, 
 			"shopName" => get_bloginfo('name'),
 			"pluginVersion" => $plugin_version,
 			"shopVersion" => $woocommerce_version,
+			"platform" => "woocommerce",
 			"shopUserEmail" => wp_get_current_user()->data->user_email ?? '',
 		],
 	];
