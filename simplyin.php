@@ -67,10 +67,6 @@ function send_encrypted_data($encrypted_data)
 	// Execute cURL session
 	$response = curl_exec($ch);
 
-	// Check for cURL errors
-	// if (curl_errno($ch)) {
-		// file_put_contents($log_file, curl_error($ch), FILE_APPEND);
-	// }
 
 
 	curl_close($ch);
@@ -81,8 +77,6 @@ function send_encrypted_data($encrypted_data)
 function onOrderUpdate($order_id, $old_status, $new_status, $order)
 {
 
-	// $logs_directory = plugin_dir_path(__FILE__) . 'logs/';
-	// $log_file = $logs_directory . 'order_log.json';
 
 
 	$stopStatuses = [
@@ -99,9 +93,6 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 		return;
 	}
 
-
-	// $apiKey = get_option('simplyin_api_key');
-	// $apiKey = get_option('simplyin_api_key');
 
 	$order_data = $order->get_data();
 	$order_email = $order_data['billing']['email'];
@@ -177,7 +168,7 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 
 
 	$plaintext = json_encode($body_data);
-	
+
 	function encrypt($plaintext, $secret_key, $cipher = "aes-256-cbc")
 	{
 		$ivlen = openssl_cipher_iv_length($cipher);
@@ -633,13 +624,35 @@ function generateSignature()
 	$signature = getSignature($secretKey, $nonce);
 
 
+
+
+
+	logData($nonce);
+	logData($signature);
+
+
+
+	// sleep(45);
+
+
+
+
+
 	return $signature;
 
 }
 
 
 
+function logData($data)
+{
+	$logs_directory = plugin_dir_path(__FILE__) . 'logs/';
+	$log_file = $logs_directory . 'order_log.json';
+	file_put_contents($log_file, json_encode($data), FILE_APPEND);
 
+
+
+}
 
 function customRestApiCallback()
 {
@@ -667,6 +680,7 @@ function customRestApiCallback()
 	$body['signature'] = $signature;   //signature
 	// $body['apiKey'] = $apiKey;   // do wywalenia
 	$body["shopName"] = get_bloginfo('name');
+
 
 
 
@@ -702,6 +716,10 @@ function customRestApiCallback()
 
 	$response = curl_exec($ch);
 
+
+	logData($response);
+
+
 	curl_close($ch);
 	echo $response;
 }
@@ -720,11 +738,15 @@ function sendPostRequest($bodyData, $endpoint, $token)
 		echo "Error: Simplyin API key is empty";
 		return;
 	}
-	// $bodyData['merchantApiKey'] = $merchantToken;
+
 	$bodyData["shopName"] = get_bloginfo('name');
-	
+
+	$signature = generateSignature();
+
+	$bodyData['signature'] = $signature;   //signature
+
 	$base_url = home_url();
-	// $headers = array('Content-Type: application/json', 'Origin: ' . $base_url);
+
 	$headers = array(CONTENT_TYPE_JSON, 'Origin: ' . $base_url);
 
 	global $simplyin_config;
@@ -739,7 +761,7 @@ function sendPostRequest($bodyData, $endpoint, $token)
 	$jsonData = json_encode($bodyData);
 
 
-	print_r($jsonData);
+	// print_r($jsonData);
 	// Initialize cURL session
 	$ch = curl_init();
 
@@ -773,9 +795,6 @@ add_action('woocommerce_checkout_order_created', 'onOrderCreate', 10, 3);
 
 function onOrderCreate($order)
 {
-	// $logs_directory = plugin_dir_path(__FILE__) . 'logs/';
-	// $log_file = $logs_directory . 'order_log.json';
-	// file_put_contents($log_file, json_encode($order), FILE_APPEND);
 
 
 	global $woocommerce;
@@ -786,7 +805,7 @@ function onOrderCreate($order)
 	$payment_method_data = get_payment_method_data($order);
 
 	$shipping_total = $order->get_shipping_total();
-	
+
 	$phoneAppInputField = get_sanitized_post_data_simplyin('phoneAppInputField');
 	$simplyin_Token_Input_Value = get_sanitized_post_data_simplyin('simplyinTokenInput');
 	$create_new_accountVal = get_sanitized_post_data_simplyin('simply-save-checkbox');
@@ -798,9 +817,13 @@ function onOrderCreate($order)
 
 	if (should_create_new_account($create_new_accountVal, $simplyin_Token_Input_Value)) {
 		$body_data = build_new_account_order_data($order, $phoneAppInputField, $taxId, $parcel_machine_id, $items_data, $payment_method_data, $plugin_version, $woocommerce_version, $shipping_total);
+		logData($body_data);
+
 		sendPostRequest($body_data, 'checkout/createOrderAndAccount', "");
 	} elseif (has_auth_token($simplyin_Token_Input_Value)) {
 		$body_data = build_existing_account_order_data($order, $simplyin_Token_Input_Value, $simply_billing_id, $simply_shipping_id, $taxId, $parcel_machine_id, $items_data, $payment_method_data, $plugin_version, $woocommerce_version, $shipping_total);
+
+		logData($body_data);
 		sendPostRequest($body_data, 'checkout/createOrderWithoutAccount', $simplyin_Token_Input_Value);
 	}
 }
