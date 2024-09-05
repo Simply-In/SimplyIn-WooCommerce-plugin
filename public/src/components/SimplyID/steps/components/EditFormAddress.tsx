@@ -1,5 +1,6 @@
 import { Grid, TextField, FormControl, InputLabel, Select, MenuItem, FormHelperText } from '@mui/material'
-import { Controller } from 'react-hook-form'
+import { useEffect } from 'react';
+import { Controller, useFormContext } from 'react-hook-form'
 import { useTranslation } from "react-i18next";
 
 interface IEditFormAddress {
@@ -13,6 +14,28 @@ interface IEditFormAddress {
 
 export const EditFormAddress = ({ control, errors, isBillingAddress, countryListSelect }: IEditFormAddress) => {
 	const { t } = useTranslation();
+
+
+	const methods = useFormContext()
+
+	const { watch, setError } = methods
+
+
+	const nipField = watch('taxId')
+
+
+	useEffect(() => {
+		if (nipField?.length > 8) {
+			console.log(nipField);
+		}
+	}, [nipField])
+
+
+	const handleTaxIDClick = () => {
+		setError("taxId", { "message": t("modal-form.NoTaxIdData") })
+	}
+
+
 
 	return (
 		<>
@@ -54,14 +77,41 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 			</Grid >
 			{isBillingAddress &&
 				<Grid item xs={12}>
-					<Controller
-						name="taxId"
-						control={control}
-						render={({ field }) =>
-							<TextField {...field} label={t('modal-form.taxId')} fullWidth error={!!errors.taxId} helperText={errors?.taxId?.message} />
-						}
-					/>
-				</Grid>}
+					<FormControl fullWidth error={!!errors.taxId}>
+						<div style={{ display: "flex", alignItems: "center" }}>
+							<TextField
+								// {...field}
+								label={t('modal-form.taxId')}
+								fullWidth
+								error={!!errors.taxId}
+							/>
+
+							<div
+								style={{
+									padding: "0px 16px",
+									marginLeft: "8px",
+									border: "1px solid rgb(0, 0, 0, 0.23)",
+									display: "flex",
+									alignItems: "center",
+									justifyContent: "center",
+									borderRadius: "4px",
+									cursor: "pointer",
+									color: "#FFFFFF",
+									backgroundColor: "rgb(25, 118, 210)",
+									textAlign: "center"
+
+								}}
+								onClick={handleTaxIDClick}
+							>
+								{t('modal-form.getTaxIdData')}
+							</div>
+						</div>
+						{errors?.taxId && (
+							<FormHelperText>{errors.taxId.message}</FormHelperText>
+						)}
+					</FormControl>
+				</Grid>
+			}
 			<Grid item xs={12}>
 				<Controller
 					name="street"
