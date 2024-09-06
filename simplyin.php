@@ -10,7 +10,7 @@
  * Plugin Name: SimplyIN
  * Plugin URI:       
  * Description: SimplyIN application st 
- * Version:           1.1.9 
+ * Version:           1.1.10 
  * Version:           1.0.3 
 
  * Author:            Simply.IN Sp. z o.o.
@@ -842,7 +842,7 @@ function build_new_account_order_data($order, $phoneAppInputField, $taxId, $parc
 			"shopName" => get_bloginfo('name'),
 			"pluginVersion" => $plugin_version,
 			"shopVersion" => $woocommerce_version,
-			"platform" => "woocommerce",
+			"platform" => "WooCommerce",
 			"shopUserEmail" => wp_get_current_user()->data->user_email ?? '',
 		],
 	];
@@ -877,7 +877,7 @@ function build_existing_account_order_data($order, $simplyin_Token_Input_Value, 
 			"shopName" => get_bloginfo('name'),
 			"pluginVersion" => $plugin_version,
 			"shopVersion" => $woocommerce_version,
-			"platform" => "woocommerce",
+			"platform" => "WooCommerce",
 			"shopUserEmail" => wp_get_current_user()->data->user_email ?? '',
 		],
 	];
