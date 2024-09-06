@@ -578,13 +578,15 @@ function customRestApiCallback()
 	global $simplyin_config;
 
 	$base_url = home_url();
-	// $headers = array('Content-Type: application/json', 'Origin: ' . $base_url);
-	$headers = array(CONTENT_TYPE_JSON, 'Origin: ' . $base_url);
-	// $headers = array('Content-Type: application/json');
+	
 	$data = json_decode(file_get_contents("php://input"), true);
+
 	$endpoint = $data['endpoint'];
+
 	$method = strtoupper($data['method']);
 	$body = $data['requestBody'];
+	$ip = $body["ip"];
+	$headers = array(CONTENT_TYPE_JSON, 'Origin: ' . $base_url, "Client-ip: " . $ip);
 
 	if (isset($data['token'])) {
 		$token = $data['token'];
@@ -640,6 +642,7 @@ function customRestApiCallback()
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
 	$response = curl_exec($ch);
+
 
 	curl_close($ch);
 	echo $response;
@@ -785,6 +788,7 @@ function get_order_items_data($order)
 			];
 		}
 	}
+	logData($items_data);
 	return $items_data;
 }
 
