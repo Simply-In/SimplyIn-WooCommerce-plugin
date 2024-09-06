@@ -645,8 +645,8 @@ function generateSignature()
 
 
 
-	logData($nonce);
-	logData($signature);
+	// logData($nonce);
+	// logData($signature);
 
 
 
@@ -680,11 +680,15 @@ function customRestApiCallback()
 	global $simplyin_config;
 
 	$base_url = home_url();
-	$headers = array(CONTENT_TYPE_JSON, 'Origin: ' . $base_url);
+
 	$data = json_decode(file_get_contents("php://input"), true);
+
 	$endpoint = $data['endpoint'];
+
 	$method = strtoupper($data['method']);
 	$body = $data['requestBody'];
+	$ip = $body["ip"];
+	$headers = array(CONTENT_TYPE_JSON, 'Origin: ' . $base_url, "Client-ip: " . $ip);
 
 	if (isset($data['token'])) {
 		$token = $data['token'];
@@ -748,7 +752,7 @@ function customRestApiCallback()
 	$response = curl_exec($ch);
 
 
-	logData($response);
+	// logData($response);
 
 
 	curl_close($ch);
@@ -911,6 +915,7 @@ function get_order_items_data($order)
 			];
 		}
 	}
+	logData($items_data);
 	return $items_data;
 }
 
