@@ -69,7 +69,7 @@ jobs:
         rm -rf node_modules
 
     - name: Upload files
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: simplyin-woo-stage
         path: .
@@ -80,7 +80,7 @@ jobs:
 
     steps:
     - name: Download files
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: simplyin-woo-stage
         path: .
@@ -90,7 +90,7 @@ jobs:
         # Exclude the ZIP file from being included in the ZIP itself
         zip -r simplyin-woo-stage.zip . 
     - name: Upload zip file
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: simplyin-woo-stage
         path: simplyin-woo-stage.zip
@@ -101,7 +101,7 @@ jobs:
 
     steps:
     - name: Download zip file
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: simplyin-woo-stage
         path: .
