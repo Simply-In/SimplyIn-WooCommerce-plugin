@@ -11,6 +11,7 @@ env:
   AZURE_STORAGE_ACCOUNT_PROD: ${{vars.AZURE_STORAGE_ACCOUNT_PROD}} #container-name
   AZURE_STORAGE_CONTAINER_NAME_WOO: ${{vars.AZURE_STORAGE_CONTAINER_NAME_WOO}}
   AZURE_CREDENTIALS: ${{secrets.AZURE_CREDENTIALS_PROD}}
+
 jobs:
   version:
     name: Version bump
@@ -84,7 +85,6 @@ jobs:
     
     - name: Zip files excluding the ZIP file itself
       run: |
-        # Exclude the ZIP file from being included in the ZIP itself
         zip -r simplyin-woo-prod.zip . 
     - name: Upload zip file
       uses: actions/upload-artifact@v3
@@ -106,8 +106,9 @@ jobs:
     - name: Install Azure CLI
       run: |
         curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
     - name: Azure authentication
-      uses: azure/login@v1
+      uses: azure/login@v1.4.0
       with:
         creds: ${{ env.AZURE_CREDENTIALS }}
     
@@ -115,7 +116,4 @@ jobs:
       run: |
         pwd
         ls -lahtr
-        #az storage blob upload-batch --account-name ${{ env.AZURE_STORAGE_ACCOUNT_PROD }} --destination ${{ env.AZURE_STORAGE_CONTAINER_NAME_WOO }} --source ./simplyin-woo-prod.zip --pattern "*.zip" --auth-mode login ${{env.SUBSCRIPTION}} --overwrite
-        az storage blob upload-batch --account-name ${{ env.AZURE_STORAGE_ACCOUNT_PROD }} --destination ${{ env.AZURE_STORAGE_CONTAINER_NAME_WOO }} --source . --pattern "*.zip" --auth-mode login ${{env.SUBSCRIPTION}} --overwrite
-
-
+        az storage blob upload-batch --account-name ${{ env.AZURE_STORAGE_ACCOUNT_PROD }} --destination ${{ env.AZURE_STORAGE_CONTAINER_NAME_WOO }} --source . --pattern "*.zip" --auth-mode login --overwrite
