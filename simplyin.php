@@ -915,7 +915,7 @@ function get_order_items_data($order)
 			];
 		}
 	}
-	logData($items_data);
+	// logData($items_data);
 	return $items_data;
 }
 
