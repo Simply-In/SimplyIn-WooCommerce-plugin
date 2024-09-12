@@ -59,7 +59,7 @@ jobs:
         rm -rf node_modules
 
     - name: Upload files
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact
       with:
         name: simplyin-woo-preprod
         path: .
@@ -70,7 +70,7 @@ jobs:
 
     steps:
     - name: Download files
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact
       with:
         name: simplyin-woo-preprod
         path: .
@@ -80,7 +80,7 @@ jobs:
         # Exclude the ZIP file from being included in the ZIP itself
         zip -r simplyin-woo-preprod.zip . 
     - name: Upload zip file
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact
       with:
         name: simplyin-woo-preprod
         path: simplyin-woo-preprod.zip
@@ -91,7 +91,7 @@ jobs:
 
     steps:
     - name: Download zip file
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact
       with:
         name: simplyin-woo-preprod
         path: .
