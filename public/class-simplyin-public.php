@@ -11,13 +11,13 @@
 
 	public function simplyin_enqueue_styles() {
 
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/simplyin-public.css', array(), $this->version, 'all' );
+		// wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/simplyin-public.css', array(), $this->version, 'all' );
 
 	}
 
 	public function enqueue_scripts() {
-		
-		 wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/simplyin-public.js', array( 'jquery' ), $this->version, false );
+
+		//  wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/simplyin-public.js', array( 'jquery' ), $this->version, false );
 		$api_key = get_option("simplyin_api_key");
 		$scriptData = array(
         'api_key' => $api_key,
