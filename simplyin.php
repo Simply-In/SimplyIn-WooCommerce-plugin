@@ -10,7 +10,8 @@
  * Plugin Name: SimplyIN
  * Plugin URI:       
  * Description: SimplyIN application st 
- * Version:           1.1.10 
+ * Version:           1.1.11 
+
  
  * Author:            Simply.IN Sp. z o.o.
  * Author URI:        https://simply.in
@@ -790,7 +791,7 @@ function get_order_items_data($order)
 			];
 		}
 	}
-	// logData($items_data);
+
 	return $items_data;
 }
 
