@@ -34,14 +34,11 @@ $backendEnvironment = $env['BACKEND_ENVIRONMENT_STAGE'];
 
 
 
-function run_simplyin()
-{
-	$plugin = new SimplyIn();
-	$plugin->run();
-}
+$simplyin_plugin = new SimplyIn();
+$simplyin_plugin->run();
 
 
-run_simplyin();
+
 
 $simplyin_config = array(
 	'backendSimplyIn' => $backendEnvironment,
@@ -236,8 +233,6 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 			"hashedEmail" => $hashedEmail
 		);
 
-
-
 	send_encrypted_data(json_encode($orderData));
 
 }
@@ -356,7 +351,10 @@ function save_Simply_Flag_Checkbox_Value($order_id)
 {
 
 	$checkbox_status = isset($_POST['simply-save-checkbox']) && !empty($_POST['simply-save-checkbox']);
-	update_post_meta($order_id, 'simply-save-checkbox', $checkbox_status);
+	update_post_meta($order_id, 'simply-save-checkbox', $checkbox_status); // depricated
+        $order = wc_get_order($order_id); 
+        $order->update_meta_data('simply-save-checkbox',$checkbox_status);
+        $order->save_meta_data();
 
 }
 
@@ -504,26 +502,39 @@ add_action('woocommerce_checkout_update_order_meta', 'save_tax_id_to_order');
 
 function save_tax_id_to_order($order_id)
 {
+        $order = wc_get_order( $order_id );
+        
 	if (!empty($_POST['billing_tax_id_simply'])) {
-		update_post_meta($order_id, '_billing_tax_id_simply', sanitize_text_field($_POST['billing_tax_id_simply']));
+		update_post_meta($order_id, '_billing_tax_id_simply', sanitize_text_field($_POST['billing_tax_id_simply'])); // deprecated
+                $order->update_meta_data('_billing_tax_id_simply',sanitize_text_field($_POST['billing_tax_id_simply']));
 	}
 
 	if (!empty($_POST['simplyinTokenInput'])) {
-		update_post_meta($order_id, '_simplyinTokenInput', sanitize_text_field($_POST['simplyinTokenInput']));
+		update_post_meta($order_id, '_simplyinTokenInput', sanitize_text_field($_POST['simplyinTokenInput']));// depricated
+                $order->update_meta_data('_simplyinTokenInput',sanitize_text_field($_POST['simplyinTokenInput']));
 	}
 	if (!empty($_POST['simply_tax_label_id'])) {
-		update_post_meta($order_id, '_simply_tax_label_id', sanitize_text_field($_POST['simply_tax_label_id']));
+		update_post_meta($order_id, '_simply_tax_label_id', sanitize_text_field($_POST['simply_tax_label_id']));// depricated
+                $order->update_meta_data('_simply_tax_label_id',sanitize_text_field($_POST['simply_tax_label_id']));
 	}
 	if (!empty($_POST['simply_billing_id'])) {
-		update_post_meta($order_id, '_simply_billing_id', sanitize_text_field($_POST['simply_billing_id']));
+		update_post_meta($order_id, '_simply_billing_id', sanitize_text_field($_POST['simply_billing_id']));// depricated
+                $order->update_meta_data('_simply_billing_id',sanitize_text_field($_POST['simply_billing_id']));
 	}
 	if (!empty($_POST['simply_shipping_id'])) {
-		update_post_meta($order_id, '_simply_shipping_id', sanitize_text_field($_POST['simply_shipping_id']));
+		update_post_meta($order_id, '_simply_shipping_id', sanitize_text_field($_POST['simply_shipping_id']));// depricated
+                $order->update_meta_data('_simply_shipping_id',sanitize_text_field($_POST['simply_shipping_id']));
 	}
 	if (!empty($_POST['phoneAppInputField'])) {
-		update_post_meta($order_id, '_phoneAppInputField', sanitize_text_field($_POST['phoneAppInputField']));
+		update_post_meta($order_id, '_phoneAppInputField', sanitize_text_field($_POST['phoneAppInputField']));// depricated
+                $order->update_meta_data('_phoneAppInputField',sanitize_text_field($_POST['phoneAppInputField']));
 	}
-	update_post_meta($order_id, '_simply-save-checkbox', sanitize_text_field($_POST['simply-save-checkbox']));
+        
+        $aimplyin_save_checkbox = isset($_POST['simply-save-checkbox']) ? $_POST['simply-save-checkbox'] : false;
+        
+	update_post_meta($order_id, '_simply-save-checkbox', sanitize_text_field($aimplyin_save_checkbox)); // depricated
+        $order->update_meta_data('_simply-save-checkbox',sanitize_text_field($aimplyin_save_checkbox));
+        $order->save_meta_data();
 
 }
 
@@ -533,7 +544,7 @@ function save_tax_id_to_order($order_id)
 function add_custom_string_to_order_details_customer($order)
 {
 
-	$billing_tax_id = get_post_meta($order->id, '_billing_tax_id_simply', true);
+	$billing_tax_id = get_post_meta($order->get_id(), '_billing_tax_id_simply', true);
 
 	echo '<script>const areaname = document.querySelector(".woocommerce-column--billing-address").querySelector(".woocommerce-customer-details--email");
 	const newNode = document.createElement("div");
@@ -549,7 +560,10 @@ add_action('woocommerce_checkout_update_order_meta', 'save_custom_checkout_field
 function save_custom_checkout_field($order_id)
 {
 	if ($_POST['billing_tax_id_simply']) {
-		update_post_meta($order_id, 'billing_tax_id_simply', sanitize_text_field($_POST['billing_tax_id_simply']));
+                $order = wc_get_order( $order_id );
+                $order->update_meta_data('billing_tax_id_simply',sanitize_text_field($_POST['billing_tax_id_simply']));
+                $order->save_meta_data();
+		update_post_meta($order_id, 'billing_tax_id_simply', sanitize_text_field($_POST['billing_tax_id_simply'])); //depricated
 	}
 }
 
@@ -582,15 +596,13 @@ function customRestApiCallback()
 	global $simplyin_config;
 
 	$base_url = home_url();
-	
+	// $headers = array('Content-Type: application/json', 'Origin: ' . $base_url);
+	$headers = array(CONTENT_TYPE_JSON, 'Origin: ' . $base_url);
+	// $headers = array('Content-Type: application/json');
 	$data = json_decode(file_get_contents("php://input"), true);
-
 	$endpoint = $data['endpoint'];
-
 	$method = strtoupper($data['method']);
 	$body = $data['requestBody'];
-	$ip = $body["ip"];
-	$headers = array(CONTENT_TYPE_JSON, 'Origin: ' . $base_url, "Client-ip: " . $ip);
 
 	if (isset($data['token'])) {
 		$token = $data['token'];
@@ -599,7 +611,7 @@ function customRestApiCallback()
 	}
 
 	$apiKey = get_option('simplyin_api_key');
-	
+
 	if (empty($apiKey)) {
 		http_response_code(400);  // Bad Request
 		echo "Error: Simplyin API key is empty";
@@ -607,7 +619,6 @@ function customRestApiCallback()
 	}
 
 	$body['apiKey'] = $apiKey;
-	$body["shopName"] = get_bloginfo('name');
 
 
 
@@ -647,7 +658,6 @@ function customRestApiCallback()
 
 	$response = curl_exec($ch);
 
-
 	curl_close($ch);
 	echo $response;
 }
@@ -667,7 +677,7 @@ function sendPostRequest($bodyData, $endpoint, $token)
 		return;
 	}
 	$bodyData['merchantApiKey'] = $merchantToken;
-	$bodyData["shopName"] = get_bloginfo('name');
+
 
 	$base_url = home_url();
 	// $headers = array('Content-Type: application/json', 'Origin: ' . $base_url);
@@ -684,8 +694,6 @@ function sendPostRequest($bodyData, $endpoint, $token)
 	// Convert data to JSON format
 	$jsonData = json_encode($bodyData);
 
-
-	print_r($jsonData);
 	// Initialize cURL session
 	$ch = curl_init();
 
@@ -719,11 +727,6 @@ add_action('woocommerce_checkout_order_created', 'onOrderCreate', 10, 3);
 
 function onOrderCreate($order)
 {
-	// $logs_directory = plugin_dir_path(__FILE__) . 'logs/';
-	// $log_file = $logs_directory . 'order_log.json';
-	// file_put_contents($log_file, json_encode($order), FILE_APPEND);
-
-
 	global $woocommerce;
 	$plugin_version = get_plugin_version();
 	$woocommerce_version = get_option('woocommerce_version');
@@ -731,8 +734,6 @@ function onOrderCreate($order)
 	$items_data = get_order_items_data($order);
 	$payment_method_data = get_payment_method_data($order);
 
-	$shipping_total = $order->get_shipping_total();
-	
 	$phoneAppInputField = get_sanitized_post_data_simplyin('phoneAppInputField');
 	$simplyin_Token_Input_Value = get_sanitized_post_data_simplyin('simplyinTokenInput');
 	$create_new_accountVal = get_sanitized_post_data_simplyin('simply-save-checkbox');
@@ -743,11 +744,22 @@ function onOrderCreate($order)
 	$taxId = get_sanitized_post_data_simplyin($custom_tax_field_id);
 
 	if (should_create_new_account($create_new_accountVal, $simplyin_Token_Input_Value)) {
-		$body_data = build_new_account_order_data($order, $phoneAppInputField, $taxId, $parcel_machine_id, $items_data, $payment_method_data, $plugin_version, $woocommerce_version, $shipping_total);
-		sendPostRequest($body_data, 'checkout/createOrderAndAccount', "");
+		$body_data = build_new_account_order_data($order, $phoneAppInputField, $taxId, $parcel_machine_id, $items_data, $payment_method_data, $plugin_version, $woocommerce_version);
+		$response = json_decode(sendPostRequest($body_data, 'checkout/createOrderAndAccount', ""));
+                if ($response && isset($response->createdOrder) && isset($response->createdOrder->shopOrderNumber) && $response->createdOrder->shopOrderNumber == $order->get_order_number()) {
+                    $order->update_meta_data('SimplyInOrderId',$response->createdOrder->_id);
+                    $order->update_meta_data('SimplyInOrderExported',1);
+                    $order->save_meta_data();
+
+                }
 	} elseif (has_auth_token($simplyin_Token_Input_Value)) {
-		$body_data = build_existing_account_order_data($order, $simplyin_Token_Input_Value, $simply_billing_id, $simply_shipping_id, $taxId, $parcel_machine_id, $items_data, $payment_method_data, $plugin_version, $woocommerce_version, $shipping_total);
-		sendPostRequest($body_data, 'checkout/createOrderWithoutAccount', $simplyin_Token_Input_Value);
+		$body_data = build_existing_account_order_data($order, $simplyin_Token_Input_Value, $simply_billing_id, $simply_shipping_id, $taxId, $parcel_machine_id, $items_data, $payment_method_data, $plugin_version, $woocommerce_version);
+		$response = json_decode(sendPostRequest($body_data, 'checkout/createOrderWithoutAccount', $simplyin_Token_Input_Value));
+                if ($response && isset($response->createdOrder) && isset($response->createdOrder->shopOrderNumber) && $response->createdOrder->shopOrderNumber == $order->get_order_number()) {
+                    $order->update_meta_data('SimplyInOrderId',$response->createdOrder->_id);
+                    $order->update_meta_data('SimplyInOrderExported',1);
+                    $order->save_meta_data();
+                }
 	}
 }
 
@@ -765,34 +777,17 @@ function get_order_items_data($order)
 		foreach ($items as $item) {
 			$product_id = $item->get_product_id();
 			$product = wc_get_product($product_id);
-
-			// Get tax information for the item
-			$taxes = $item->get_taxes(); // This returns an array with tax data
-
-			$quantity = $item->get_quantity() ?? 1;
-
-			$tax_amount = array_sum($taxes['total']) / $quantity; // Sum of all tax amounts for the item
-
-			$tax_rate = $tax_amount > 0 ? ($tax_amount / $item->get_total()) * 100 : 0; // Calculate tax rate as a percentage
-
-			$price_net = (float) $order->get_item_total($item);
-
-			$price_total = (float) $price_net + $tax_amount;
-
 			$items_data[] = [
 				'name' => $item->get_name(),
 				'url' => get_permalink($product_id),
-				'price_net' => $price_net, // Item price excluding tax
-				'price' => $price_total,
-				'quantity' => $quantity,
-				'tax_amount' => (float) $tax_amount, // Tax amount for this item
-				'tax_rate' => (float) $tax_rate, // Tax rate for this item
+				'price' => (float) $order->get_item_total($item),
+				'quantity' => $item->get_quantity(),
 				'thumbnailUrl' => wp_get_attachment_image_url($product->get_image_id(), 'thumbnail') ?? "",
 				'currency' => $order->get_currency(),
 			];
 		}
 	}
-
+	// logData($items_data);
 	return $items_data;
 }
 
@@ -819,7 +814,7 @@ function has_auth_token($simplyin_Token_Input_Value)
 	return !empty($simplyin_Token_Input_Value);
 }
 
-function build_new_account_order_data($order, $phoneAppInputField, $taxId, $parcel_machine_id, $items_data, $payment_method_data, $plugin_version, $woocommerce_version, $shipping_total)
+function build_new_account_order_data($order, $phoneAppInputField, $taxId, $parcel_machine_id, $items_data, $payment_method_data, $plugin_version, $woocommerce_version)
 {
 	$locale = get_locale();
 	$languageCode = strtoupper(substr($locale, 0, 2));
@@ -843,11 +838,9 @@ function build_new_account_order_data($order, $phoneAppInputField, $taxId, $parc
 			"items" => $items_data,
 			"placedDuringAccountCreation" => true,
 			"billingData" => get_billing_data($order, $taxId),
-			"shippingPrice" => (float) $shipping_total,
 			"shopName" => get_bloginfo('name'),
 			"pluginVersion" => $plugin_version,
 			"shopVersion" => $woocommerce_version,
-			"platform" => "WooCommerce",
 			"shopUserEmail" => wp_get_current_user()->data->user_email ?? '',
 		],
 	];
@@ -864,7 +857,7 @@ function build_new_account_order_data($order, $phoneAppInputField, $taxId, $parc
 	return $body_data;
 }
 
-function build_existing_account_order_data($order, $simplyin_Token_Input_Value, $simply_billing_id, $simply_shipping_id, $taxId, $parcel_machine_id, $items_data, $payment_method_data, $plugin_version, $woocommerce_version, $shipping_total)
+function build_existing_account_order_data($order, $simplyin_Token_Input_Value, $simply_billing_id, $simply_shipping_id, $taxId, $parcel_machine_id, $items_data, $payment_method_data, $plugin_version, $woocommerce_version)
 {
 	$billingData = get_billing_data($order, $taxId, $simply_billing_id);
 
@@ -878,11 +871,9 @@ function build_existing_account_order_data($order, $simplyin_Token_Input_Value, 
 			"items" => $items_data,
 			"placedDuringAccountCreation" => false,
 			"billingData" => $billingData,
-			"shippingPrice" => (float) $shipping_total,
 			"shopName" => get_bloginfo('name'),
 			"pluginVersion" => $plugin_version,
 			"shopVersion" => $woocommerce_version,
-			"platform" => "WooCommerce",
 			"shopUserEmail" => wp_get_current_user()->data->user_email ?? '',
 		],
 	];
@@ -944,5 +935,36 @@ function get_shipping_data($order, $simply_shipping_id = '')
 
 	return $shippingData;
 }
+
+
+add_filter( 'cron_schedules', 'simplyin_add_udpate_cron_interval' );
+function simplyin_add_udpate_cron_interval( $schedules ) { 
+    $schedules['simplyin_update_interval'] = array(
+        'interval' => 60*60*2,
+        'display'  => esc_html__( 'SimplyIn Update Interval' ), );
+    return $schedules;
+}
+
+// Schedule an action if it's not already scheduled
+if ( ! wp_next_scheduled( 'simplyin_add_udpate_cron_interval' ) ) {
+    wp_schedule_event( time(), 'simplyin_update_interval', 'simplyin_add_udpate_cron_interval' );
+}
+
+// Hook into that action that'll fire every three minutes
+add_action( 'simplyin_add_udpate_cron_interval', 'simplyin_update_interval_event_func' );
+function simplyin_update_interval_event_func() {
+    global $simplyin_plugin;
+    $data = date("Y-m-d H:i:s") . " [cronjob-sunc] updating everything \n";
+    $simplyin_plugin->sync->simplyin_sync();
+}
+
+/**
+ * Deactivation hook.
+ */
+function simpyin_deactivate() {
+    wp_clear_scheduled_hook( 'simplyin_add_udpate_cron_interval' );
+}
+register_deactivation_hook( __FILE__, 'simpyin_deactivate' );
+
 
 
