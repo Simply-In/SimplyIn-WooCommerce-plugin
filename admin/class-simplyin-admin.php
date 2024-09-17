@@ -97,22 +97,32 @@ class SimplyIn_Admin
 			)
 		);
 
-		// Register by Default checkbox field
-		add_settings_field(
-			'register_by_default',
-			'Register by Default',
-			array($this, 'settings_page_render_settings_field'),
-			'settings_simply_apikey',
-			'simplyin_settings_page_general_section',
-			array(
-				'type' => 'input',
-				'subtype' => 'checkbox',
-				'id' => 'register_by_default',
-				'name' => 'register_by_default',
-				'value_type' => 'normal',
-				'wp_data' => 'option'
-			)
-		);
+                $disabled = get_option("SimplyInRegisterByDefaultDisabled");
+		// Register by Default checkbox field  - show only when option disabled is not set
+                
+                if (empty($disabled)) {
+                    add_settings_field(
+                            'register_by_default',
+                            'Register by Default',
+                            array($this, 'settings_page_render_settings_field'),
+                            'settings_simply_apikey',
+                            'simplyin_settings_page_general_section',
+                            array(
+                                    'type' => 'input',
+                                    'subtype' => 'checkbox',
+                                    'id' => 'register_by_default',
+                                    'name' => 'register_by_default',
+                                    'value_type' => 'normal',
+                                    'wp_data' => 'option'
+                            )
+                    );
+
+                    // Register settings
+                    register_setting(
+                            'settings_simply_apikey',
+                            'register_by_default'
+                    );
+                }
 
 		// Register settings
 		register_setting(
@@ -120,10 +130,7 @@ class SimplyIn_Admin
 			'simplyin_api_key'
 		);
 
-		register_setting(
-			'settings_simply_apikey',
-			'register_by_default'
-		);
+		
 
 	}
 
