@@ -9,6 +9,8 @@ interface IEditFormAddress {
 	countryListSelect: any
 }
 
+
+
 export const EditFormAddress = ({ control, errors, isBillingAddress, countryListSelect }: IEditFormAddress) => {
 	const { t } = useTranslation();
 
@@ -19,7 +21,7 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 					name="addressName"
 					control={control}
 					render={({ field }) =>
-						<TextField {...field} label={t('modal-form.addressNamePlaceholder')} fullWidth error={!!errors.addressName} helperText={errors?.addressName?.message} />
+						<TextField  {...field} label={t('modal-form.addressNamePlaceholder')} fullWidth error={!!errors.addressName} helperText={errors?.addressName?.message} />
 					}
 				/>
 			</Grid>

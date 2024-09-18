@@ -204,7 +204,7 @@ document.addEventListener("DOMContentLoaded", (async (): any => {
 
 	BillingSection?.insertBefore(simplyLogoContainer, BillingSection.firstChild);
 	ReactDOM.render(
-		<SimplyBrandIcon />,
+		<SimplyBrandIcon parentId={"simplyLogoContainer"} />,
 		document.getElementById("simplyLogoContainer")
 	);
 

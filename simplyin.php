@@ -479,6 +479,7 @@ function custom_checkout_css()
 			display: none;
 		}
 
+		#simply-save-checkbox,
 		#simply_tax_label_id_field,
 		#simply_billing_id_field,
 		#simply_shipping_id_field {
