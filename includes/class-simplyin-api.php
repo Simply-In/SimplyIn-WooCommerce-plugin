@@ -6,7 +6,7 @@ class SimplyIn_Api {
     protected $merchand_api_key;
     protected $version;
     protected $plugin_name;
-    protected $saveLogs = true;
+    protected $saveLogs = false;
 
     public function __construct($plugin_name, $version) {
         $this->plugin_name = $plugin_name;
