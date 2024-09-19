@@ -176,8 +176,8 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 
 
 	$plaintext = json_encode($body_data);
-	
-	function encrypt($plaintext, $secret_key, $cipher = "aes-256-cbc")
+
+	function encryptSimplyIn($plaintext, $secret_key, $cipher = "aes-256-cbc")
 	{
 		$ivlen = openssl_cipher_iv_length($cipher);
 		$iv = openssl_random_pseudo_bytes($ivlen);
@@ -192,7 +192,7 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 
 
 
-	function decrypt($ciphertext, $secret_key, $cipher = "aes-256-cbc")
+	function decryptSimplyIn($ciphertext, $secret_key, $cipher = "aes-256-cbc")
 	{ {
 			$ciphertext_raw = base64_decode($ciphertext);
 			if ($ciphertext_raw === false) {
@@ -222,7 +222,7 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 
 	$key = getSecretKey($order_email);
 
-	$encryptedData = encrypt($plaintext, $key);
+	$encryptedData = encryptSimplyIn($plaintext, $key);
 
 
 	$hashedEmail = hashEmail($order_email);
