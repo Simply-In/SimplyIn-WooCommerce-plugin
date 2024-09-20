@@ -5,8 +5,8 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
-		"build": "tsc && vite build --watch",
-		"deploy-build": "tsc && vite build",
+		"build": "tsc && vite build --watch && node replace.mjs ",
+		"deploy-build": "tsc && vite build && node replace.mjs",
 		"lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
 		"preview": "vite preview"
 	},
@@ -59,6 +59,7 @@
 		"eslint": "^8.38.0",
 		"eslint-plugin-react-hooks": "^4.6.0",
 		"eslint-plugin-react-refresh": "^0.3.4",
+		"replace-in-file": "^8.1.0",
 		"terser": "^5.30.3",
 		"typescript": "^5.0.2",
 		"vite": "4.5.3"

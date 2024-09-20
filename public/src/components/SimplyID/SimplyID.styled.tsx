@@ -25,8 +25,8 @@ export const PopupHeader = styled.div`
   flex-direction: row;
   justify-content: space-between;
   position: sticky;
-  padding: 16px 16px 0;
-  background: white;
+  padding: 16px 16px 0 !important;
+  background: white !important;
   top:-1px;
   z-index:10;
   /* border-bottom: 1px solid #F1F7FF; */
@@ -39,26 +39,26 @@ export const PopupTitle = styled.div`
   font-family: Inter, sans-serif;
   font-style: normal;
   font-weight: 600;
-  font-size: 18px;
-  line-height: 22px;
-  margin: 30px auto 12px;
+  font-size: 18px !important;
+  line-height: 22px !important;
+  margin: 30px auto 12px !important;
 `;
 export const PopupSimplyinLogo = styled.label`
-  color: #3167b9;
+  color: #3167b9 !important;
   font-family: Doppio One, sans-serif;
   font-style: normal;
-  font-weight: 600;
-  font-size: 20px;
-  line-height: 145%;
-  letter-spacing: 0.2em;
+  font-weight: 600 !important;
+  font-size: 20px !important;
+  line-height: 145% !important;
+  letter-spacing: 0.2em !important;
 `;
 export const Step2Title = styled.label`
-  color: #000;
+  color: #000 !important;
   font-family: Inter, sans-serif;
   font-style: normal;
-  font-weight: 600;
-  font-size: 24px;
-  line-height: 125%;
+  font-weight: 600 !important;
+  font-size: 24px !important;
+  line-height: 125% !important;
   position:relative;
 `;
 
@@ -85,16 +85,16 @@ export const PopupTextSecondary = styled.div`
   font-family: Inter, sans-serif;
   font-style: normal;
   font-weight: 400;
-  font-size: 14px;
-  line-height: 20px;
+  font-size: 14px !important;
+  line-height: 20px !important;
   text-align: center;
-  color: #757575;
+  color: #757575 !important;
   margin-top: 24px;
 `;
 export const PopupCodeNotDelivered = styled(PopupTextSecondary) <{ color?: string, marginTop?: string }>`
   margin-bottom: 4px;
-  color: ${props => props?.color || "#000"};
-  margin-top: ${props => props?.marginTop || "16px"};
+  color: ${props => props?.color ?? "#000"} !important;
+  margin-top: ${props => props?.marginTop ?? "16px"} !important;
 `;
 
 export const PopupSendAgain = styled(PopupTextSecondary) <{ disabled?: boolean }>`
@@ -143,7 +143,7 @@ export const PopupCountDownContainer = styled.div<{ color?: string }>`
 	flex-direction:column;
 	justify-content: center;
 	align-items: center;
-	color: ${props => props?.color || "inherit"};
+	color: ${props => props?.color ?? "inherit"};
 `
 
 
@@ -160,7 +160,7 @@ export const SingleSystemLink = styled.a`
 	flex-direction:row;
 	justify-content: space-between;
 	align-items: center;
-	color:#3167B9;
+	color:#3167B9 !important;
 	gap:6px;
 	font-size:14px;
 	text-decoration:none;

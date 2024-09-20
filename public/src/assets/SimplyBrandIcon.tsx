@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { useTranslation } from "react-i18next";
+import { useEffect, useRef, useState } from "react";
 
 export const IconResponsiveContainer = styled.div`
 	display: flex;
@@ -13,11 +14,48 @@ export const IconResponsiveContainer = styled.div`
 	  }
 	`
 
-const SimplyBrandIcon = () => {
+const SimplyBrandIcon = ({ parentId }: { parentId: string }) => {
+	const container = document.getElementById(parentId);
+	if (container) {
+		container.style.backgroundColor = "inherit"
+	}
+
+
+	const componentRef = useRef(null);
+	const [parentWithBg, setParentWithBg] = useState(null);
+
+	useEffect(() => {
+		let element = componentRef.current
+
+		setTimeout(() => {
+
+
+			// Traverse up the DOM to find the first parent with a directly defined background-color
+			while (element && (element as any).parentElement) {
+				const parentStyle = window?.getComputedStyle((element as any).parentElement);
+				const bgColor = parentStyle?.getPropertyValue('background-color');
+
+				// Check if the background-color is directly applied and not inherited (i.e., not 'rgba(0, 0, 0, 0)' which is usually the default transparent color)
+				if (bgColor && bgColor !== 'rgba(0, 0, 0, 0)') {
+					setParentWithBg((element as any)?.parentElement);
+					break;
+				}
+
+				if ((element as any).parentElement) {
+					element = (element as any).parentElement;
+				} else {
+					break;
+				}
+			}
+
+		}, 100)
+	}, []);
+
+
+
 	const { t } = useTranslation();
 
-	const container = document.querySelector('body'); // Replace with your container's ID or class
-	const containerStyle = window.getComputedStyle(container as HTMLElement);
+	const containerStyle = window?.getComputedStyle(parentWithBg || container as HTMLElement);
 	const backgroundColor = containerStyle.backgroundColor;
 
 	function getRGBComponents(color: any): any {
@@ -38,16 +76,16 @@ const SimplyBrandIcon = () => {
 	}
 
 	function isLightColor(color: any) {
+
 		const { r, g, b } = getRGBComponents(color);
 		// Calculate the brightness of the color
 		const brightness = (r * 299 + g * 587 + b * 114) / 1000;
 		// Consider a color light if the brightness is higher than 128
 		return brightness > 128;
 	}
-
 	return (
 
-		<div style={{ display: "flex", flexDirection: "column", fontSize: "14px", width: "100%", justifyContent: "center" }}>
+		<div style={{ display: "flex", flexDirection: "column", fontSize: "14px", width: "100%", justifyContent: "center" }} ref={componentRef}> 
 			<div style={{ display: "flex", width: "auto", flexDirection: "column", alignItems: "center" }}>
 				<svg width="" height="32" viewBox="0 0 932 32" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%" }}>
 					<path d="M264.253 16L1.99993 16" stroke="url(#paint0_linear_8948_22555)" strokeWidth="4" strokeLinecap="round" />
