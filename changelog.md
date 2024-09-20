@@ -1,3 +1,7 @@
+2024-09-20 (version: 1.1.7):
+- 987a74a657dc195ea9a9464a5d056ee4bf1a3399
+- f57a80c0cd673cb7a0f114dfe4ab84e5f6e6acf9
+
 2024-09-02 (version: 1.1.6):
 - f57a80c0cd673cb7a0f114dfe4ab84e5f6e6acf9
 
