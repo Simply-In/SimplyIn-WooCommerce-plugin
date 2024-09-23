@@ -29,7 +29,7 @@ require_once plugin_dir_path(__FILE__) . 'includes/class-simplyin.php';
 
 $env = parse_ini_file('.env');
 
-$backendEnvironment = $env['BACKEND_ENVIRONMENT_DEV'];
+$backendEnvironment = $env['BACKEND_ENVIRONMENT_PREPROD'];
 
 $simplyin_plugin = new SimplyIn();
 $simplyin_plugin->run();
