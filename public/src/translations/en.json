@@ -98,7 +98,9 @@
 			"additionalInfo": "Additional information",
 			"distance": "Distance",
 			"searchAddress": "Search address",
-			"noPointFound": "No points found near the specified address"
+			"noPointFound": "No points found near the specified address",
+			"getTaxIdData": "Get tax ID data",
+			"NoTaxIdData": "No tax ID data"
 
 		},
 		"countries": {

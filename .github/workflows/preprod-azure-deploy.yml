@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Replace version in simplyin.php
       run: |
@@ -59,7 +59,7 @@ jobs:
         rm -rf node_modules
 
     - name: Upload files
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: simplyin-woo-preprod
         path: .
@@ -70,17 +70,16 @@ jobs:
 
     steps:
     - name: Download files
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
       with:
         name: simplyin-woo-preprod
         path: .
     
     - name: Zip files excluding the ZIP file itself
       run: |
-        # Exclude the ZIP file from being included in the ZIP itself
         zip -r simplyin-woo-preprod.zip . 
     - name: Upload zip file
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: simplyin-woo-preprod
         path: simplyin-woo-preprod.zip
@@ -91,7 +90,7 @@ jobs:
 
     steps:
     - name: Download zip file
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
       with:
         name: simplyin-woo-preprod
         path: .
@@ -99,8 +98,9 @@ jobs:
     - name: Install Azure CLI
       run: |
         curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
     - name: Azure authentication
-      uses: azure/login@v1
+      uses: azure/login@v1.4.0
       with:
         creds: ${{ env.AZURE_CREDENTIALS }}
     
@@ -108,7 +108,4 @@ jobs:
       run: |
         pwd
         ls -lahtr
-        #az storage blob upload-batch --account-name ${{ env.AZURE_STORAGE_ACCOUNT_PROD }} --destination ${{ env.AZURE_STORAGE_CONTAINER_NAME_WOO }} --source ./simplyin-woo-preprod.zip --pattern "*.zip" --auth-mode login ${{env.SUBSCRIPTION}} --overwrite
-        az storage blob upload-batch --account-name ${{ env.AZURE_STORAGE_ACCOUNT_PROD }} --destination ${{ env.AZURE_STORAGE_CONTAINER_NAME_WOO }} --source . --pattern "*.zip" --auth-mode login ${{env.SUBSCRIPTION}} --overwrite
-
-
+        az storage blob upload-batch --account-name ${{ env.AZURE_STORAGE_ACCOUNT_PROD }} --destination ${{ env.AZURE_STORAGE_CONTAINER_NAME_WOO }} --source . --pattern "*.zip" --auth-mode login --overwrite
