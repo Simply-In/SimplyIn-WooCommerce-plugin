@@ -1,7 +1,9 @@
 import { Grid, TextField, FormControl, InputLabel, Select, MenuItem, FormHelperText } from '@mui/material'
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { Controller, useFormContext } from 'react-hook-form'
 import { useTranslation } from "react-i18next";
+import { ApiContext } from '../../SimplyID';
+import { middlewareApi } from '../../../../services/middlewareApi';
 
 interface IEditFormAddress {
 	control: any
@@ -15,10 +17,11 @@ interface IEditFormAddress {
 export const EditFormAddress = ({ control, errors, isBillingAddress, countryListSelect }: IEditFormAddress) => {
 	const { t } = useTranslation();
 
+	const apiToken = useContext(ApiContext)?.authToken;
 
 	const methods = useFormContext()
 
-	const { watch, setError } = methods
+	const { watch, setError, getValues, setValue, reset } = methods
 
 
 	const nipField = watch('taxId')
@@ -32,9 +35,29 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 
 
 	const handleTaxIDClick = () => {
-		setError("taxId", { "message": t("modal-form.NoTaxIdData") })
+
+		const taxID = getValues("taxId")
+		const normalizedTaxId = taxID.replace(/\D/g, '')
+		const requestBody = { taxId: normalizedTaxId }
+		middlewareApi({
+			endpoint: `checkout/retrieveCompanyData` as any,
+			method: 'POST',
+			token: apiToken,
+			requestBody: requestBody
+		}).then(({ data }) => {
+
+			if (!data) {
+				setError("taxId", { "message": t("modal-form.NoTaxIdData") })
+			}
+
+			reset({ ...getValues(), taxID: normalizedTaxId, companyName: data?.companyName, state: data?.state, city: data?.city, street: `${data?.street} ${data?.buildingNumber}`, appartmentNumber: data?.apartmentNumber, postalCode: data?.postalCode })
+
+		})
+
+
 	}
 
+	const values = getValues()
 
 
 	return (
@@ -44,7 +67,7 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 					name="addressName"
 					control={control}
 					render={({ field }) =>
-						<TextField  {...field} label={t('modal-form.addressNamePlaceholder')} fullWidth error={!!errors.addressName} helperText={errors?.addressName?.message} />
+						<TextField  {...field} label={t('modal-form.addressNamePlaceholder')} fullWidth error={!!errors.addressName} helperText={errors?.addressName?.message} value={values.addressName || ""} />
 					}
 				/>
 			</Grid>
@@ -53,7 +76,7 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 					name="name"
 					control={control}
 					render={({ field }) =>
-						<TextField {...field} label={t('modal-form.name')} fullWidth error={!!errors.name} helperText={errors?.name?.message} />
+						<TextField {...field} label={t('modal-form.name')} fullWidth error={!!errors.name} helperText={errors?.name?.message} value={values.name || ""} />
 					}
 				/>
 			</Grid>
@@ -62,7 +85,8 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 					name="surname"
 					control={control}
 					render={({ field }) =>
-						<TextField {...field} label={t('modal-form.surname')} fullWidth error={!!errors.surname} helperText={errors?.surname?.message} />
+
+						<TextField {...field} label={t('modal-form.surname')} fullWidth error={!!errors.surname} helperText={errors?.surname?.message} value={values.surname || ""} />
 					}
 				/>
 			</Grid>
@@ -71,7 +95,15 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 					name="companyName"
 					control={control}
 					render={({ field }) =>
-						<TextField {...field} label={t('modal-form.companyName')} fullWidth error={!!errors.companyName} helperText={errors?.companyName?.message} />
+						<TextField {...field}
+							label={t('modal-form.companyName')}
+							fullWidth
+							error={!!errors.companyName}
+							helperText={errors?.companyName?.message}
+
+							value={values.companyName || ""}
+
+						/>
 					}
 				/>
 			</Grid >
@@ -79,11 +111,32 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 				<Grid item xs={12}>
 					<FormControl fullWidth error={!!errors.taxId}>
 						<div style={{ display: "flex", alignItems: "center" }}>
-							<TextField
-								// {...field}
-								label={t('modal-form.taxId')}
-								fullWidth
-								error={!!errors.taxId}
+
+							<Controller
+								name="taxId"
+								control={control}
+
+								defaultValue="" // Make sure to set defaultValue for controlled components
+								render={({ field }) => (
+									<TextField
+										{...field}
+										type="text"
+										label={t('modal-form.taxId')}
+										fullWidth
+										error={!!errors.taxId}
+										inputProps={{
+											inputMode: 'numeric',
+										}}
+										onChange={(e) => {
+											const value = e.target.value;
+											// Only allow numbers, spaces, and dashes
+											const filteredValue = value.replace(/[^0-9-\s]/g, '');
+											field.onChange(filteredValue); // update field value
+										}}
+										value={field.value} // controlled value from form
+									// helperText={errors?.taxId?.message}
+									/>
+								)}
 							/>
 
 							<div
@@ -98,8 +151,7 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 									cursor: "pointer",
 									color: "#FFFFFF",
 									backgroundColor: "rgb(25, 118, 210)",
-									textAlign: "center"
-
+									textAlign: "center",
 								}}
 								onClick={handleTaxIDClick}
 							>
@@ -117,7 +169,7 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 					name="street"
 					control={control}
 					render={({ field }) =>
-						<TextField {...field} label={t('modal-form.streetAndNumber')} fullWidth error={!!errors.street} helperText={errors?.street?.message} />
+						<TextField {...field} label={t('modal-form.streetAndNumber')} fullWidth error={!!errors.street} helperText={errors?.street?.message} value={values.street || ""} />
 					}
 				/>
 			</Grid>
@@ -126,7 +178,7 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 					name="appartmentNumber"
 					control={control}
 					render={({ field }) =>
-						<TextField {...field} label={t('modal-form.appartment')} fullWidth error={!!errors.appartmentNumber} helperText={errors?.appartmentNumber?.message} />
+						<TextField {...field} label={t('modal-form.appartment')} fullWidth error={!!errors.appartmentNumber} helperText={errors?.appartmentNumber?.message} value={values.appartmentNumber || ""} />
 					}
 				/>
 			</Grid>
@@ -135,7 +187,7 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 					name="postalCode"
 					control={control}
 					render={({ field }) =>
-						<TextField {...field} label={t('modal-form.postalCode')} fullWidth error={!!errors.postalCode} helperText={errors?.postalCode?.message} />
+						<TextField {...field} label={t('modal-form.postalCode')} fullWidth error={!!errors.postalCode} helperText={errors?.postalCode?.message} value={values.postalCode || ""} />
 					}
 				/>
 			</Grid>
@@ -144,7 +196,7 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 					name="city"
 					control={control}
 					render={({ field }) =>
-						<TextField {...field} label={t('modal-form.city')} fullWidth error={!!errors.city} helperText={errors?.city?.message} />
+						<TextField {...field} label={t('modal-form.city')} fullWidth error={!!errors.city} helperText={errors?.city?.message} value={values.city || ""} />
 					}
 				/>
 			</Grid>
