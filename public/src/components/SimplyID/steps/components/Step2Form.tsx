@@ -70,7 +70,9 @@ export const Step2Form = ({
 			name: Yup.string().required(t('modal-form.nameError')),
 			surname: Yup.string().required(t('modal-form.surnameError')),
 		companyName: Yup.string().notRequired(),
-		taxId: Yup.string().notRequired(),
+			taxId: Yup.string()
+				.matches(/^[0-9-\s]*$/, "Only numbers, spaces, and dashes are allowed")
+				.notRequired(),
 			street: Yup.string().required(t('modal-form.streetError')),
 		appartmentNumber: Yup.string().notRequired(),
 			postalCode: Yup.string().required(t('modal-form.postalCodeError')),
