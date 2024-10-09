@@ -28,12 +28,11 @@ const SimplyBrandIcon = ({ parentId }: { parentId: string }) => {
 		let element = componentRef.current
 
 		setTimeout(() => {
-
-
 			// Traverse up the DOM to find the first parent with a directly defined background-color
 			while (element && (element as any).parentElement) {
 				const parentStyle = window?.getComputedStyle((element as any).parentElement);
-				const bgColor = parentStyle?.getPropertyValue('background-color');
+				const bgColor = parentStyle.backgroundColor
+
 
 				// Check if the background-color is directly applied and not inherited (i.e., not 'rgba(0, 0, 0, 0)' which is usually the default transparent color)
 				if (bgColor && bgColor !== 'rgba(0, 0, 0, 0)') {
@@ -49,14 +48,38 @@ const SimplyBrandIcon = ({ parentId }: { parentId: string }) => {
 			}
 
 		}, 100)
+		setTimeout(() => {
+			// Traverse up the DOM to find the first parent with a directly defined background-color
+			while (element && (element as any).parentElement) {
+				const parentStyle = window?.getComputedStyle((element as any).parentElement);
+				const bgColor = parentStyle.backgroundColor
+
+				// Check if the background-color is directly applied and not inherited (i.e., not 'rgba(0, 0, 0, 0)' which is usually the default transparent color)
+				if (bgColor && bgColor !== 'rgba(0, 0, 0, 0)') {
+					setParentWithBg((element as any)?.parentElement);
+					break;
+				}
+
+				if ((element as any).parentElement) {
+					element = (element as any).parentElement;
+				} else {
+					break;
+				}
+			}
+
+		}, 500)
 	}, []);
 
 
-
+	console.log(parentWithBg);
 	const { t } = useTranslation();
 
-	const containerStyle = window?.getComputedStyle(parentWithBg || container as HTMLElement);
-	const backgroundColor = containerStyle.backgroundColor;
+	let backgroundColor = ""
+	if (parentWithBg) {
+		const containerStyle = window?.getComputedStyle(parentWithBg as any);
+		backgroundColor = containerStyle.backgroundColor;
+		console.log('container background color', backgroundColor);
+	}
 
 	function getRGBComponents(color: any): any {
 		if (color?.startsWith('rgb')) {
@@ -75,14 +98,15 @@ const SimplyBrandIcon = ({ parentId }: { parentId: string }) => {
 		return null;
 	}
 
-	function isLightColor(color: any) {
-
+	function isLightColor(color: string) {
+		if (!color) return true;
 		const { r, g, b } = getRGBComponents(color);
 		// Calculate the brightness of the color
 		const brightness = (r * 299 + g * 587 + b * 114) / 1000;
 		// Consider a color light if the brightness is higher than 128
 		return brightness > 128;
 	}
+
 	return (
 
 		<div style={{ display: "flex", flexDirection: "column", fontSize: "14px", width: "100%", justifyContent: "center" }} ref={componentRef}> 
