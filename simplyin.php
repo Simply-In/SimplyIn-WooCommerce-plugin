@@ -76,11 +76,8 @@ function send_encrypted_data($encrypted_data)
 
 }
 
-
 function onOrderUpdate($order_id, $old_status, $new_status, $order)
 {
-
-
 
 	$stopStatuses = [
 		"processing",
