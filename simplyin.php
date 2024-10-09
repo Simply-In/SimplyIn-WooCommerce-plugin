@@ -10,9 +10,8 @@
  * Plugin Name: SimplyIN
  * Plugin URI:       
  * Description: SimplyIN application st 
- * Version:           1.1.21 
- * Version:           1.1.19 
-
+ * Version:           2.0.0 
+ 
 
  * Author:            Simply.IN Sp. z o.o.
  * Author URI:        https://simply.in
@@ -82,7 +81,7 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 
 	// $logs_directory = plugin_dir_path(__FILE__) . 'logs/';
 	// $log_file = $logs_directory . 'order_log.json';
-
+	// file_put_contents($log_file, json_encode(), FILE_APPEND);
 
 	$stopStatuses = [
 		"processing",
@@ -725,12 +724,24 @@ add_action('woocommerce_checkout_order_created', 'onOrderCreate', 10, 3);
 
 function onOrderCreate($order)
 {
+	$logs_directory = plugin_dir_path(__FILE__) . 'logs/';
+	$log_file = $logs_directory . 'order_log.json';
+	file_put_contents($log_file, json_encode($order), FILE_APPEND);
+
+
 	global $woocommerce;
 	$plugin_version = get_plugin_version();
 	$woocommerce_version = get_option('woocommerce_version');
-
+	
 	$items_data = get_order_items_data($order);
 	$payment_method_data = get_payment_method_data($order);
+
+	file_put_contents($log_file, json_encode($items_data), FILE_APPEND);
+	file_put_contents($log_file, json_encode($payment_method_data), FILE_APPEND);
+
+	$shipping_total = $order->get_shipping_total();
+	file_put_contents($log_file, json_encode($shipping_total), FILE_APPEND);
+
 
 	$phoneAppInputField = get_sanitized_post_data_simplyin('phoneAppInputField');
 	$simplyin_Token_Input_Value = get_sanitized_post_data_simplyin('simplyinTokenInput');
@@ -812,7 +823,7 @@ function has_auth_token($simplyin_Token_Input_Value)
 	return !empty($simplyin_Token_Input_Value);
 }
 
-function build_new_account_order_data($order, $phoneAppInputField, $taxId, $parcel_machine_id, $items_data, $payment_method_data, $plugin_version, $woocommerce_version)
+function build_new_account_order_data($order, $phoneAppInputField, $taxId, $parcel_machine_id, $items_data, $payment_method_data, $plugin_version, $woocommerce_version, $shipping_total)
 {
 	$locale = get_locale();
 	$languageCode = strtoupper(substr($locale, 0, 2));
@@ -836,6 +847,7 @@ function build_new_account_order_data($order, $phoneAppInputField, $taxId, $parc
 			"items" => $items_data,
 			"placedDuringAccountCreation" => true,
 			"billingData" => get_billing_data($order, $taxId),
+			"shippingPrice" => $shipping_total,
 			"shopName" => get_bloginfo('name'),
 			"pluginVersion" => $plugin_version,
 			"shopVersion" => $woocommerce_version,
@@ -855,7 +867,7 @@ function build_new_account_order_data($order, $phoneAppInputField, $taxId, $parc
 	return $body_data;
 }
 
-function build_existing_account_order_data($order, $simplyin_Token_Input_Value, $simply_billing_id, $simply_shipping_id, $taxId, $parcel_machine_id, $items_data, $payment_method_data, $plugin_version, $woocommerce_version)
+function build_existing_account_order_data($order, $simplyin_Token_Input_Value, $simply_billing_id, $simply_shipping_id, $taxId, $parcel_machine_id, $items_data, $payment_method_data, $plugin_version, $woocommerce_version, $shipping_total)
 {
 	$billingData = get_billing_data($order, $taxId, $simply_billing_id);
 
@@ -869,6 +881,7 @@ function build_existing_account_order_data($order, $simplyin_Token_Input_Value, 
 			"items" => $items_data,
 			"placedDuringAccountCreation" => false,
 			"billingData" => $billingData,
+			"shippingPrice" => $shipping_total,
 			"shopName" => get_bloginfo('name'),
 			"pluginVersion" => $plugin_version,
 			"shopVersion" => $woocommerce_version,
