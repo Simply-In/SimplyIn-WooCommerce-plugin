@@ -34,7 +34,6 @@
 		"geolib": "^3.3.4",
 		"i18next": "^23.8.2",
 		"lodash": "^4.17.21",
-		"node-regon": "^1.1.0",
 		"react": "^18.2.0",
 		"react-autocomplete": "^1.8.1",
 		"react-countdown": "^2.3.5",
