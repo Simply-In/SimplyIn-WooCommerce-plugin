@@ -44,25 +44,15 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 			method: 'POST',
 			token: apiToken,
 			requestBody: requestBody
-
 		}).then(({ data }: any) => {
-
-
 			if (!data) {
 				setError("taxId", { "message": t("modal-form.NoTaxIdData") })
 			}
 
 
 			reset({ ...getValues(), taxID: normalizedTaxId, companyName: data?.companyName, state: data?.state, city: data?.city, street: `${data?.street || ""} ${data?.buildingNumber || ""}`, appartmentNumber: data?.apartmentNumber, postalCode: data?.postalCode })
-
-
 		})
-
-
 	}
-
-	const values = getValues()
-
 
 	return (
 		<>
@@ -71,7 +61,13 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 					name="addressName"
 					control={control}
 					render={({ field }) =>
-						<TextField  {...field} label={t('modal-form.addressNamePlaceholder')} fullWidth error={!!errors.addressName} helperText={errors?.addressName?.message} value={values.addressName || ""} />
+						<TextField  {...field} label={t('modal-form.addressNamePlaceholder')} fullWidth error={!!errors.addressName} helperText={errors?.addressName?.message}
+							value={field.value}
+							InputLabelProps={{ shrink: true }}
+							onChange={(e) => {
+								const value = e.target.value;
+								field.onChange(value);
+							}} />
 					}
 				/>
 			</Grid>
@@ -80,17 +76,29 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 					name="name"
 					control={control}
 					render={({ field }) =>
-						<TextField {...field} label={t('modal-form.name')} fullWidth error={!!errors.name} helperText={errors?.name?.message} value={values.name || ""} />
+						<TextField {...field} label={t('modal-form.name')} fullWidth error={!!errors.name} helperText={errors?.name?.message}
+							value={field.value}
+							InputLabelProps={{ shrink: true }}
+							onChange={(e) => {
+								const value = e.target.value;
+								field.onChange(value);
+							}} />
 					}
 				/>
 			</Grid>
 			<Grid item xs={6}>
 				<Controller
 					name="surname"
+
 					control={control}
 					render={({ field }) =>
 
-						<TextField {...field} label={t('modal-form.surname')} fullWidth error={!!errors.surname} helperText={errors?.surname?.message} value={values.surname || ""} />
+						<TextField {...field} label={t('modal-form.surname')} fullWidth error={!!errors.surname} helperText={errors?.surname?.message} value={field.value}
+							InputLabelProps={{ shrink: true }}
+							onChange={(e) => {
+								const value = e.target.value;
+								field.onChange(value);
+							}} />
 					}
 				/>
 			</Grid>
@@ -104,10 +112,14 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 							fullWidth
 							error={!!errors.companyName}
 							helperText={errors?.companyName?.message}
+							InputLabelProps={{ shrink: true }}
+							value={field.value}
+							onChange={(e) => {
+								const value = e.target.value;
+								field.onChange(value);
+							}} />
 
-							value={values.companyName || ""}
 
-						/>
 					}
 				/>
 			</Grid >
@@ -131,6 +143,7 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 										inputProps={{
 											inputMode: 'numeric',
 										}}
+										InputLabelProps={{ shrink: true }}
 										onChange={(e) => {
 											const value = e.target.value;
 											// Only allow numbers, spaces, and dashes
@@ -178,7 +191,13 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 					name="street"
 					control={control}
 					render={({ field }) =>
-						<TextField {...field} label={t('modal-form.streetAndNumber')} fullWidth error={!!errors.street} helperText={errors?.street?.message} value={values.street || ""} />
+						<TextField {...field} label={t('modal-form.streetAndNumber')} fullWidth error={!!errors.street} helperText={errors?.street?.message} value={field.value}
+							onChange={(e) => {
+								const value = e.target.value;
+								field.onChange(value);
+							}}
+							InputLabelProps={{ shrink: true }}
+						/>
 					}
 				/>
 			</Grid>
@@ -187,7 +206,13 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 					name="appartmentNumber"
 					control={control}
 					render={({ field }) =>
-						<TextField {...field} label={t('modal-form.appartment')} fullWidth error={!!errors.appartmentNumber} helperText={errors?.appartmentNumber?.message} value={values.appartmentNumber || ""} />
+						<TextField {...field} label={t('modal-form.appartment')} fullWidth error={!!errors.appartmentNumber} helperText={errors?.appartmentNumber?.message} value={field.value}
+							onChange={(e) => {
+								const value = e.target.value;
+								field.onChange(value);
+							}}
+							InputLabelProps={{ shrink: true }}
+						/>
 					}
 				/>
 			</Grid>
@@ -196,7 +221,13 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 					name="postalCode"
 					control={control}
 					render={({ field }) =>
-						<TextField {...field} label={t('modal-form.postalCode')} fullWidth error={!!errors.postalCode} helperText={errors?.postalCode?.message} value={values.postalCode || ""} />
+						<TextField {...field} label={t('modal-form.postalCode')} fullWidth error={!!errors.postalCode} helperText={errors?.postalCode?.message} value={field.value}
+							onChange={(e) => {
+								const value = e.target.value;
+								field.onChange(value);
+							}}
+							InputLabelProps={{ shrink: true }}
+						/>
 					}
 				/>
 			</Grid>
@@ -205,7 +236,14 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 					name="city"
 					control={control}
 					render={({ field }) =>
-						<TextField {...field} label={t('modal-form.city')} fullWidth error={!!errors.city} helperText={errors?.city?.message} value={values.city || ""} />
+						<TextField {...field} label={t('modal-form.city')} fullWidth error={!!errors.city} helperText={errors?.city?.message}
+							value={field.value}
+							onChange={(e) => {
+								const value = e.target.value;
+								field.onChange(value);
+							}}
+							InputLabelProps={{ shrink: true }}
+						/>
 					}
 				/>
 			</Grid>
