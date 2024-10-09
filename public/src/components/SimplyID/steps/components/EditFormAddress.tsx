@@ -1,4 +1,4 @@
-import { Grid, TextField, FormControl, InputLabel, Select, MenuItem, FormHelperText } from '@mui/material'
+import { Grid, TextField, FormControl, InputLabel, Select, MenuItem, FormHelperText, Button } from '@mui/material'
 import { useContext, useEffect } from 'react';
 import { Controller, useFormContext } from 'react-hook-form'
 import { useTranslation } from "react-i18next";
@@ -139,7 +139,7 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 								)}
 							/>
 
-							<div
+							<Button
 								style={{
 									padding: "0px 16px",
 									marginLeft: "8px",
@@ -156,7 +156,8 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 								onClick={handleTaxIDClick}
 							>
 								{t('modal-form.getTaxIdData')}
-							</div>
+							</Button>
+
 						</div>
 						{errors?.taxId && (
 							<FormHelperText>{errors.taxId.message}</FormHelperText>
