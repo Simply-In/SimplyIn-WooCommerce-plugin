@@ -1,4 +1,4 @@
-import { Grid, TextField, FormControl, InputLabel, Select, MenuItem, FormHelperText } from '@mui/material'
+import { Grid, TextField, FormControl, InputLabel, Select, MenuItem, FormHelperText, Button } from '@mui/material'
 import { useContext, useEffect } from 'react';
 import { Controller, useFormContext } from 'react-hook-form'
 import { useTranslation } from "react-i18next";
@@ -44,13 +44,17 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 			method: 'POST',
 			token: apiToken,
 			requestBody: requestBody
-		}).then(({ data }) => {
+
+		}).then(({ data }: any) => {
+
 
 			if (!data) {
 				setError("taxId", { "message": t("modal-form.NoTaxIdData") })
 			}
 
-			reset({ ...getValues(), taxID: normalizedTaxId, companyName: data?.companyName, state: data?.state, city: data?.city, street: `${data?.street} ${data?.buildingNumber}`, appartmentNumber: data?.apartmentNumber, postalCode: data?.postalCode })
+
+			reset({ ...getValues(), taxID: normalizedTaxId, companyName: data?.companyName, state: data?.state, city: data?.city, street: `${data?.street || ""} ${data?.buildingNumber || ""}`, appartmentNumber: data?.apartmentNumber, postalCode: data?.postalCode })
+
 
 		})
 
@@ -139,7 +143,9 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 								)}
 							/>
 
-							<div
+
+							<Button
+
 								style={{
 									padding: "0px 16px",
 									marginLeft: "8px",
@@ -156,7 +162,10 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 								onClick={handleTaxIDClick}
 							>
 								{t('modal-form.getTaxIdData')}
-							</div>
+
+							</Button>
+
+
 						</div>
 						{errors?.taxId && (
 							<FormHelperText>{errors.taxId.message}</FormHelperText>
