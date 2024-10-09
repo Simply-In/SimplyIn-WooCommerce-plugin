@@ -10,9 +10,8 @@
  * Plugin Name: SimplyIN
  * Plugin URI:       
  * Description: SimplyIN application st 
- * Version:           1.1.21 
- * Version:           1.1.19 
-
+ * Version:           2.0.0 
+ 
 
  * Author:            Simply.IN Sp. z o.o.
  * Author URI:        https://simply.in
@@ -31,7 +30,7 @@ require_once plugin_dir_path(__FILE__) . 'includes/class-simplyin.php';
 
 $env = parse_ini_file('.env');
 
-$backendEnvironment = $env['BACKEND_ENVIRONMENT_DEV'];
+$backendEnvironment = $env['BACKEND_ENVIRONMENT_STAGE'];
 
 
 $simplyin_plugin = new SimplyIn();
