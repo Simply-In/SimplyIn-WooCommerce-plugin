@@ -9,9 +9,8 @@
  * @wordpress-plugin
  * Plugin Name: SimplyIN
  * Plugin URI:       
- * Description: SimplyIN application st 
- * Version:           2.1.0 
- * Version:           2.0.0 
+ * Description: SimplyIN application st
+ * Version:           2.1.0
 
  
 
