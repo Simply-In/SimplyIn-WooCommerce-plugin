@@ -1,3 +1,9 @@
+2024-10-09 (version: 2.4.0):
+- preprod->prod
+- f57a80c0cd673cb7a0f114dfe4ab84e5f6e6acf9
+- - [Release notes](https://github.com/babel/babel/releases)
+- updated-dependencies:
+
 2024-10-09 (version: 2.3.0):
 - preprod->prod
 - f57a80c0cd673cb7a0f114dfe4ab84e5f6e6acf9
