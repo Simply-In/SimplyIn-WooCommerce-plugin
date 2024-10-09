@@ -10,7 +10,9 @@
  * Plugin Name: SimplyIN
  * Plugin URI:       
  * Description: SimplyIN application st 
+
  * Version:           2.0.0 
+
  
 
  * Author:            Simply.IN Sp. z o.o.
@@ -79,7 +81,7 @@ function send_encrypted_data($encrypted_data)
 function onOrderUpdate($order_id, $old_status, $new_status, $order)
 {
 
-	
+
 
 	$stopStatuses = [
 		"processing",
@@ -722,7 +724,7 @@ add_action('woocommerce_checkout_order_created', 'onOrderCreate', 10, 3);
 
 function onOrderCreate($order)
 {
-	
+
 	global $woocommerce;
 	$plugin_version = get_plugin_version();
 	$woocommerce_version = get_option('woocommerce_version');
@@ -733,6 +735,7 @@ function onOrderCreate($order)
 
 	$shipping_total = $order->get_shipping_total();
 	
+
 
 	$phoneAppInputField = get_sanitized_post_data_simplyin('phoneAppInputField');
 	$simplyin_Token_Input_Value = get_sanitized_post_data_simplyin('simplyinTokenInput');
@@ -859,6 +862,7 @@ function build_new_account_order_data($order, $phoneAppInputField, $taxId, $parc
 }
 
 function build_existing_account_order_data($order, $simply_billing_id, $simply_shipping_id, $taxId, $parcel_machine_id, $items_data, $payment_method_data, $plugin_version, $woocommerce_version, $shipping_total)
+
 {
 	$billingData = get_billing_data($order, $taxId, $simply_billing_id);
 
