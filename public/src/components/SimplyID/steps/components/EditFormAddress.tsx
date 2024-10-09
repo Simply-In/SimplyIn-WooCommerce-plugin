@@ -21,7 +21,7 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 
 	const methods = useFormContext()
 
-	const { watch, setError, getValues, setValue, reset } = methods
+	const { watch, setError, getValues, reset } = methods
 
 
 	const nipField = watch('taxId')
