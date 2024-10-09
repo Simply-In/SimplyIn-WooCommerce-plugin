@@ -44,13 +44,13 @@ export const EditFormAddress = ({ control, errors, isBillingAddress, countryList
 			method: 'POST',
 			token: apiToken,
 			requestBody: requestBody
-		}).then(({ data }) => {
+		}).then(({ data }: any) => {
 
 			if (!data) {
 				setError("taxId", { "message": t("modal-form.NoTaxIdData") })
 			}
 
-			reset({ ...getValues(), taxID: normalizedTaxId, companyName: data?.companyName, state: data?.state, city: data?.city, street: `${data?.street} ${data?.buildingNumber}`, appartmentNumber: data?.apartmentNumber, postalCode: data?.postalCode })
+			reset({ ...getValues(), taxID: normalizedTaxId, companyName: data?.companyName, state: data?.state, city: data?.city, street: `${data?.street || ""} ${data?.buildingNumber || ""}`, appartmentNumber: data?.apartmentNumber, postalCode: data?.postalCode })
 
 		})
 
