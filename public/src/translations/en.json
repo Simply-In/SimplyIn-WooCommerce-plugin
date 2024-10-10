@@ -62,7 +62,7 @@
 			"PudoAndParcelMachines": "Select a parcel machine or pick-up point",
 			"paymentMethod": "Payment method",
 			"addNewPaymentMethod": "Add new payment method",
-			"paymentMethodNotSelected": "Payment method is not selected"
+			"paymentMethodNotSelected": "Payment method not selected"
 
 		},
 		"modal-step-rejected": {

@@ -657,7 +657,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 
 				}
 
-				<Step2PaymentSection expanded={expanded} handleAddNewData={handleAddNewData} handleExpandClick={handleExpandClick} handleChange={handleChange}
+				<Step2PaymentSection expanded={expanded} handleExpandClick={handleExpandClick} handleChange={handleChange}
 					setUserData={setUserData} userData={userData} setEditItemIndex={setEditItemIndex}
 				/>
 

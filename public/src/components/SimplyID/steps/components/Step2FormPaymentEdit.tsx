@@ -1,4 +1,4 @@
-import { Grid, TextField } from '@mui/material'
+import { Grid, InputAdornment, TextField, Typography } from '@mui/material'
 import { useContext } from 'react'
 
 import { EditFormTitle } from '../../SimplyID.styled';
@@ -13,6 +13,8 @@ import { saveDataSessionStorage } from '../../../../services/sessionStorageApi';
 import { EditFormFooter } from './EditFormFooter';
 
 import { useTranslation } from "react-i18next";
+import { VisaIcon } from '../../../../assets/visaIcon';
+import { MasterCardIcon } from '../../../../assets/mastercardIcon';
 
 
 
@@ -91,7 +93,7 @@ export const Step2PaymentForm = ({
 	const handleCancel = () => { setEditItemIndex(null) }
 
 
-
+	console.log('editData', editData);
 
 	//saving address data function
 	const handleSave = (editedData: any) => {
@@ -164,23 +166,8 @@ export const Step2PaymentForm = ({
 								}
 							/>
 						</Grid>
-						<Grid item xs={6}>
-							<Controller
-								name="cardProvider"
-								control={control}
-								render={({ field }) =>
-									<TextField {...field} label={t('modal-form.cardProvider')} fullWidth error={!!errors.cardProvider} helperText={errors?.cardProvider?.message}
-										value={field.value}
-										disabled
-										InputLabelProps={{ shrink: true }}
-										onChange={(e) => {
-											const value = e.target.value;
-											field.onChange(value);
-										}} />
-								}
-							/>
-						</Grid>
-						<Grid item xs={6} style={{ marginBottom: "16px" }}>
+
+						<Grid item xs={12} style={{ marginBottom: "16px" }}>
 							<Controller
 								name="cardNumberLastDigits"
 
@@ -195,7 +182,16 @@ export const Step2PaymentForm = ({
 										onChange={(e) => {
 											const value = e.target.value;
 											field.onChange(value);
-										}} />
+										}}
+										InputProps={{
+											endAdornment: <InputAdornment position="end">
+												{editData?.cardProvider === "visa" ?
+													<VisaIcon /> :
+													<MasterCardIcon />}
+											</InputAdornment>
+										}}
+
+									/>
 								}
 							/>
 						</Grid>

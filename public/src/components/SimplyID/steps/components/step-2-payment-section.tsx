@@ -1,32 +1,38 @@
 
 import { CardActions, CardContent, Collapse, FormControlLabel, Radio, RadioGroup } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { DataPropertiesNames, ExpandMore, RadioPropertiesNamesType, expandedType } from '../Step2';
+import { ExpandMore, RadioPropertiesNamesType, expandedType } from '../Step2';
 import { DataValueContainer, DataValueLabel, DataValueTitle, NoDataLabel, RadioElementContainer, SectionTitle } from '../../SimplyID.styled';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { SelectedDataContext } from '../../SimplyID';
 import ContextMenu from '../../ContextMenu';
 
-
+import { MasterCardIcon } from '../../../../assets/mastercardIcon.tsx';
+import { VisaIcon } from '../../../../assets/visaIcon.tsx'
 
 
 type Step2Props = {
 	expanded: expandedType
-	handleAddNewData: (property: DataPropertiesNames) => void
 	handleExpandClick: (property: keyof expandedType, value?: boolean) => void
 	handleChange: (event: React.ChangeEvent<HTMLInputElement>, type: RadioPropertiesNamesType) => void
 	setUserData: any
 	userData: any
 	setEditItemIndex: any
 }
-export const Step2PaymentSection = ({ expanded, handleAddNewData, handleExpandClick, handleChange, setUserData, userData, setEditItemIndex }: Step2Props) => {
+export const Step2PaymentSection = ({ expanded, handleExpandClick, handleChange, setUserData,
+	userData,
+	setEditItemIndex }: Step2Props) => {
 
 	const { t } = useTranslation();
 	const { selectedPaymentIndex, setSelectedPaymentIndex } = useContext(SelectedDataContext)
 
+	useEffect(() => {
+		if (userData?.paymentDetails?.length) {
+			setSelectedPaymentIndex(0)
+		}
+	}, [])
 
-	console.log(userData?.paymentDetails);
 	return (
 		<>
 			<CardActions disableSpacing sx={{ padding: 0 }}>
@@ -47,17 +53,32 @@ export const Step2PaymentSection = ({ expanded, handleAddNewData, handleExpandCl
 					<DataValueContainer style={{ padding: 8 }}>
 
 						{(selectedPaymentIndex !== null && !isNaN(selectedPaymentIndex)) ?
-							<>
+							<div style={{ display: "flex", flexDirection: "row" }}>
+								<div className="logo"
+									style={{
+										display: "flex",
+										justifyContent: "center",
+										alignItems: "center",
+										minWidth: "50px",
+										width: "50px",
+										marginRight: "8px",
+									}}>
+									{userData?.paymentDetails[selectedPaymentIndex]?.cardProvider === "visa" ?
+										<VisaIcon /> :
+										<MasterCardIcon />}
+
+								</div>
+								<div>
 								<DataValueTitle>
 									{userData?.paymentDetails[selectedPaymentIndex]?.cardName ?? <>{t('modal-step-2.paymentMethod')}{" "}{+selectedPaymentIndex + 1}</>}
 								</DataValueTitle>
-								{userData?.shippingAddresses &&
+									{userData?.paymentDetails &&
 									<DataValueLabel>
-										{"**** **** **** "}{userData?.paymentDetails[selectedPaymentIndex]?.cardNumberLastDigits || "****"}
-										{", " + userData?.paymentDetails[selectedPaymentIndex]?.cardProvider || ""}
+											{"**** **** **** "}{userData?.paymentDetails[selectedPaymentIndex]?.cardNumberLastDigits || "****"}
 									</DataValueLabel>
 								}
-							</> :
+								</div>
+							</div> :
 							<NoDataLabel>{t('modal-step-2.paymentMethodNotSelected')}</NoDataLabel>
 						}
 					</DataValueContainer>
@@ -81,15 +102,30 @@ export const Step2PaymentSection = ({ expanded, handleAddNewData, handleExpandCl
 									<RadioElementContainer key={el._id}>
 										<FormControlLabel value={index} control={<Radio onClick={(e) => handleChange(e as any, "paymentDetails")} />}
 											label={
-												<DataValueContainer>
-													<DataValueTitle>
-														{el?.cardName ?? <>{t('modal-step-2.paymentMethod')}{" "}{+index + 1}</>}
-													</DataValueTitle>
-													<DataValueLabel>
-														{"**** **** **** "}{el?.cardNumberLastDigits || "****"}
-														{", " + el?.cardProvider || ""}
-													</DataValueLabel>
-												</DataValueContainer>
+												<div style={{ display: "flex" }}>
+													<div className="logo"
+														style={{
+															display: "flex",
+															justifyContent: "center",
+															alignItems: "center",
+															minWidth: "50px",
+															width: "50px",
+															marginRight: "8px"
+														}}>
+														{el?.cardProvider === "visa" ?
+															<VisaIcon /> :
+															<MasterCardIcon />}
+
+													</div>
+													<DataValueContainer>
+														<DataValueTitle>
+															{el?.cardName ?? <>{t('modal-step-2.paymentMethod')}{" "}{+index + 1}</>}
+														</DataValueTitle>
+														<DataValueLabel>
+															{"**** **** **** "}{el?.cardNumberLastDigits || "****"}
+														</DataValueLabel>
+													</DataValueContainer>
+												</div>
 											} style={{ marginBottom: 0 }} />
 										<ContextMenu
 											setUserData={setUserData}

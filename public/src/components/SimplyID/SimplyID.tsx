@@ -134,6 +134,7 @@ export const SimplyID = () => {
 		setSimplyInput(e.target.value)
 		sessionStorage.removeItem("simplyinToken")
 		sessionStorage.removeItem("UserData")
+		sessionStorage.removeItem("paymentDetails")
 	}
 
 	const handleClosePopup = () => {
