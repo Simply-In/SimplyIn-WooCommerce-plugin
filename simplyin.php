@@ -590,15 +590,13 @@ function customRestApiCallback()
 	global $simplyin_config;
 
 	$base_url = home_url();
-	
+	// $headers = array('Content-Type: application/json', 'Origin: ' . $base_url);
+	$headers = array(CONTENT_TYPE_JSON, 'Origin: ' . $base_url);
+	// $headers = array('Content-Type: application/json');
 	$data = json_decode(file_get_contents("php://input"), true);
-
 	$endpoint = $data['endpoint'];
-
 	$method = strtoupper($data['method']);
 	$body = $data['requestBody'];
-	$ip = $body["ip"];
-	$headers = array(CONTENT_TYPE_JSON, 'Origin: ' . $base_url, "Client-ip: " . $ip);
 
 	if (isset($data['token'])) {
 		$token = $data['token'];
@@ -615,7 +613,6 @@ function customRestApiCallback()
 	}
 
 	$body['apiKey'] = $apiKey;
-	$body["shopName"] = get_bloginfo('name');
 
 
 
@@ -655,7 +652,6 @@ function customRestApiCallback()
 
 	$response = curl_exec($ch);
 
-
 	curl_close($ch);
 	echo $response;
 }
@@ -675,7 +671,7 @@ function sendPostRequest($bodyData, $endpoint, $token)
 		return;
 	}
 	$bodyData['merchantApiKey'] = $merchantToken;
-	$bodyData["shopName"] = get_bloginfo('name');
+
 
 	$base_url = home_url();
 	// $headers = array('Content-Type: application/json', 'Origin: ' . $base_url);
@@ -784,28 +780,11 @@ function get_order_items_data($order)
 		foreach ($items as $item) {
 			$product_id = $item->get_product_id();
 			$product = wc_get_product($product_id);
-
-			// Get tax information for the item
-			$taxes = $item->get_taxes(); // This returns an array with tax data
-
-			$quantity = $item->get_quantity() ?? 1;
-
-			$tax_amount = array_sum($taxes['total']) / $quantity; // Sum of all tax amounts for the item
-
-			$tax_rate = $tax_amount > 0 ? ($tax_amount / $item->get_total()) * 100 : 0; // Calculate tax rate as a percentage
-
-			$price_net = (float) $order->get_item_total($item);
-
-			$price_total = (float) $price_net + $tax_amount;
-
 			$items_data[] = [
 				'name' => $item->get_name(),
 				'url' => get_permalink($product_id),
-				'price_net' => $price_net, // Item price excluding tax
-				'price' => $price_total,
-				'quantity' => $quantity,
-				'tax_amount' => (float) $tax_amount, // Tax amount for this item
-				'tax_rate' => (float) $tax_rate, // Tax rate for this item
+				'price' => (float) $order->get_item_total($item),
+				'quantity' => $item->get_quantity(),
 				'thumbnailUrl' => wp_get_attachment_image_url($product->get_image_id(), 'thumbnail') ?? "",
 				'currency' => $order->get_currency(),
 			];
@@ -866,7 +845,6 @@ function build_new_account_order_data($order, $phoneAppInputField, $taxId, $parc
 			"shopName" => get_bloginfo('name'),
 			"pluginVersion" => $plugin_version,
 			"shopVersion" => $woocommerce_version,
-			"platform" => "WooCommerce",
 			"shopUserEmail" => wp_get_current_user()->data->user_email ?? '',
 		],
 	];
@@ -902,7 +880,6 @@ function build_existing_account_order_data($order, $simply_billing_id, $simply_s
 			"shopName" => get_bloginfo('name'),
 			"pluginVersion" => $plugin_version,
 			"shopVersion" => $woocommerce_version,
-			"platform" => "WooCommerce",
 			"shopUserEmail" => wp_get_current_user()->data->user_email ?? '',
 		],
 	];
