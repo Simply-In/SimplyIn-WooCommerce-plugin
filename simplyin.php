@@ -68,9 +68,9 @@ function send_encrypted_data($encrypted_data)
 	// $response = curl_exec($ch);
 
 	// Check for cURL errors
-	if (curl_errno($ch)) {
+	// if (curl_errno($ch)) {
 		// file_put_contents($log_file, curl_error($ch), FILE_APPEND);
-	}
+	// }
 
 
 	curl_close($ch);
@@ -166,7 +166,6 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 		"email" => $order_email,
 		"shopOrderNumber" => $order_data['id'],
 		"newOrderStatus" => $new_status,
-		"signature" => $signature,
 		"signature" => $signature,
 		"trackings" => $tracking_numbers
 	);
@@ -644,26 +643,11 @@ function generateSignature()
 
 	$nonce = $data['nonce'];
 
-	// echo json_encode($nonce);
-	// echo " --- ";
-	// echo json_encode($secretKey);
-	// echo " --- ";
 	$signature = getSignature($secretKey, $nonce);
 
 
 	return $signature;
 
-
-
-
-	// $nonce = "8e09ead6-90b4-40e2-a134-ea93c8df3977";
-
-
-	// HMAC-SHA256 - signature
-// $signature = hash_hmac('sha256', $nonce, $secretKey);
-
-	// Display the signature
-// return $signature;
 }
 
 
@@ -676,13 +660,6 @@ function customRestApiCallback()
 
 	global $simplyin_config;
 
-
-
-	// return
-
-
-
-	// return
 
 	$base_url = home_url();
 	$headers = array(CONTENT_TYPE_JSON, 'Origin: ' . $base_url);
@@ -699,10 +676,6 @@ function customRestApiCallback()
 
 
 
-	$signature = generateSignature();
-	$body['signature'] = $signature;   //signature
-	// $body['apiKey'] = $apiKey;   // do wywalenia
-	$body["shopName"] = get_bloginfo('name');
 	$signature = generateSignature();
 	$body['signature'] = $signature;   //signature
 	// $body['apiKey'] = $apiKey;   // do wywalenia
@@ -762,9 +735,7 @@ function sendPostRequest($bodyData, $endpoint, $token)
 	}
 	// $bodyData['merchantApiKey'] = $merchantToken;
 	$bodyData["shopName"] = get_bloginfo('name');
-	// $bodyData['merchantApiKey'] = $merchantToken;
-	$bodyData["shopName"] = get_bloginfo('name');
-
+	
 	$base_url = home_url();
 	// $headers = array('Content-Type: application/json', 'Origin: ' . $base_url);
 	$headers = array(CONTENT_TYPE_JSON, 'Origin: ' . $base_url);
