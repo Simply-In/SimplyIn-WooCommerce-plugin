@@ -853,11 +853,28 @@ function get_order_items_data($order)
 		foreach ($items as $item) {
 			$product_id = $item->get_product_id();
 			$product = wc_get_product($product_id);
+
+			// Get tax information for the item
+			$taxes = $item->get_taxes(); // This returns an array with tax data
+
+			$quantity = $item->get_quantity() ?? 1;
+
+			$tax_amount = array_sum($taxes['total']) / $quantity; // Sum of all tax amounts for the item
+
+			$tax_rate = $tax_amount > 0 ? ($tax_amount / $item->get_total()) * 100 : 0; // Calculate tax rate as a percentage
+
+			$price_net = (float) $order->get_item_total($item);
+
+			$price_total = (float) $price_net + $tax_amount;
+
 			$items_data[] = [
 				'name' => $item->get_name(),
 				'url' => get_permalink($product_id),
-				'price' => (float) $order->get_item_total($item),
-				'quantity' => $item->get_quantity(),
+				'price_net' => $price_net, // Item price excluding tax
+				'price' => $price_total,
+				'quantity' => $quantity,
+				'tax_amount' => (float) $tax_amount, // Tax amount for this item
+				'tax_rate' => (float) $tax_rate, // Tax rate for this item
 				'thumbnailUrl' => wp_get_attachment_image_url($product->get_image_id(), 'thumbnail') ?? "",
 				'currency' => $order->get_currency(),
 			];
