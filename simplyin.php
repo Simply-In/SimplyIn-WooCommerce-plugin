@@ -988,7 +988,7 @@ function build_new_account_order_data($order, $phoneAppInputField, $taxId, $parc
 			"shopName" => get_bloginfo('name'),
 			"pluginVersion" => $plugin_version,
 			"shopVersion" => $woocommerce_version,
-			"platform" => "woocommerce",
+			"platform" => "WooCommerce",
 			"shopUserEmail" => wp_get_current_user()->data->user_email ?? '',
 		],
 	];
@@ -1024,7 +1024,7 @@ function build_existing_account_order_data($order, $simply_billing_id, $simply_s
 			"shopName" => get_bloginfo('name'),
 			"pluginVersion" => $plugin_version,
 			"shopVersion" => $woocommerce_version,
-			"platform" => "woocommerce",
+			"platform" => "WooCommerce",
 			"shopUserEmail" => wp_get_current_user()->data->user_email ?? '',
 		],
 	];
