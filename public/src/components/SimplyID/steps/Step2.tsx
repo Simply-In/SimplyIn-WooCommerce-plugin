@@ -261,7 +261,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 					{userData?.billingAddresses?.length
 						?
 						<DataValueContainer style={{ padding: 8 }}>
-							<DataValueTitle>{userData?.billingAddresses[selectedBillingIndex || 0]?.addressName ?? <>{t('modal-step-2.address')}{" "}{(+selectedBillingIndex || 0) + 1}</>}</DataValueTitle>
+							<DataValueTitle>{userData?.billingAddresses[selectedBillingIndex || 0]?.icon ? <>{userData?.billingAddresses[selectedBillingIndex || 0]?.icon}{" "}</> : <></>}{userData?.billingAddresses[selectedBillingIndex || 0]?.addressName ?? <>{t('modal-step-2.address')}{" "}{(+selectedBillingIndex || 0) + 1}</>}</DataValueTitle>
 							{userData?.billingAddresses &&
 								<DataValueLabel>
 									{userData?.billingAddresses[selectedBillingIndex || 0]?.street || ""}
@@ -292,7 +292,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 											<FormControlLabel value={index} control={<Radio />}
 												label={
 													<DataValueContainer>
-														<DataValueTitle>{el?.addressName ? el.addressName : <>{t('modal-step-2.address')}{" "}{index + 1}</>}</DataValueTitle>
+														<DataValueTitle>{el?.icon ? <>{el?.icon}{" "}</> : <></>}{el?.addressName ? el.addressName : <>{t('modal-step-2.address')}{" "}{index + 1}</>}</DataValueTitle>
 														<DataValueLabel>{el?.street || ""}
 															{el?.appartmentNumber.length ? "/" + el?.appartmentNumber : ""}
 															{", " + el?.city || ""}</DataValueLabel>
@@ -369,6 +369,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 								{!sameDeliveryAddress && (selectedShippingIndex !== null && !isNaN(selectedShippingIndex)) &&
 									<>
 										<DataValueTitle>
+										{userData?.billingAddresses[selectedShippingIndex]?.icon ? <>{userData?.billingAddresses[selectedShippingIndex]?.icon}{" "}</> : <></>}
 										{userData?.shippingAddresses[selectedShippingIndex]?.addressName ?? <>{t('modal-step-2.address')} {+selectedShippingIndex + 1}</>}
 										</DataValueTitle>
 										{userData?.shippingAddresses &&
@@ -405,7 +406,9 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 												<FormControlLabel value={index} control={<Radio />}
 													label={
 														<DataValueContainer>
-															<DataValueTitle>{el?.addressName ? el?.addressName : <>{t('modal-step-2.address')}{" "}{index + 1}</>}</DataValueTitle>
+															<DataValueTitle>
+																{el?.icon ? <>{el?.icon}{" "}</> : <></>}
+																{el?.addressName ? el?.addressName : <>{t('modal-step-2.address')}{" "}{index + 1}</>}</DataValueTitle>
 															<DataValueLabel>
 																{el?.street || ""}
 																{el?.appartmentNumber.length ? "/" + el?.appartmentNumber : ""}
