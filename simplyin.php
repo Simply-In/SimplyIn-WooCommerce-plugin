@@ -67,6 +67,10 @@ function send_encrypted_data($encrypted_data)
 	// Execute cURL session
 	// $response = curl_exec($ch);
 
+	// Check for cURL errors
+	if (curl_errno($ch)) {
+		// file_put_contents($log_file, curl_error($ch), FILE_APPEND);
+	}
 
 
 	curl_close($ch);
@@ -90,6 +94,8 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 		return;
 	}
 
+
+	$apiKey = get_option('simplyin_api_key');
 
 	$order_data = $order->get_data();
 	$order_email = $order_data['billing']['email'];
@@ -153,33 +159,14 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 	}
 
 
-	$delimiter = "[{;;}]";
-	$apiKey = get_option('simplyin_api_key');
-	$parts = explode($delimiter, $apiKey);
 
-	$secretKey = $parts[0];
-	$publicKey = $parts[1];
-
-	if (empty($publicKey)) {
-		$body_data = array(
-			"email" => $order_email,
-			"shopOrderNumber" => $order_data['id'],
-			"newOrderStatus" => $new_status,
-			"apiKey" => $secretKey,
-			"trackings" => $tracking_numbers
-		);
-
-	} else {
-		$signature = generateSignature();
-		$body_data = array(
-			"email" => $order_email,
-			"shopOrderNumber" => $order_data['id'],
-			"newOrderStatus" => $new_status,
-			"signature" => $signature,
-			"trackings" => $tracking_numbers
-		);
-	}
-
+	$body_data = array(
+		"email" => $order_email,
+		"shopOrderNumber" => $order_data['id'],
+		"newOrderStatus" => $new_status,
+		"apiKey" => $apiKey,
+		"trackings" => $tracking_numbers
+	);
 
 
 	$plaintext = json_encode($body_data);
@@ -598,104 +585,12 @@ function customRestApiEndpoint()
 	);
 }
 
-
-
-function generateSignature()
-{
-
-	global $simplyin_config;
-	$apiKey = get_option('simplyin_api_key');
-
-
-	if (empty($apiKey)) {
-		http_response_code(400);  // Bad Request
-		echo "Error: Simplyin API key is empty";
-		return;
-	}
-
-
-	$base_url = home_url();
-
-	$headers = array(CONTENT_TYPE_JSON, 'Origin: ' . $base_url);
-
-	$delimiter = "[{;;}]";
-	$parts = explode($delimiter, $apiKey);
-
-	$secretKey = $parts[0];
-	$publicKey = $parts[1];
-
-	$endpoint = "checkout/generateNonce";
-	$url = $simplyin_config['backendSimplyIn'] . $endpoint;
-
-	$ch = curl_init();
-
-
-	$body['publicKey'] = $publicKey;
-
-
-	curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-	curl_setopt($ch, CURLOPT_URL, $url);
-	curl_setopt($ch, CURLOPT_POST, 1);
-	curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($body));
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-	$response = curl_exec($ch);
-
-	curl_close($ch);
-
-
-	function getSignature($secretKey, $nonce)
-	{
-		return hash_hmac('sha256', $nonce, $secretKey);
-	}
-
-
-	$data = json_decode($response, true); // true converts it into an associative array
-
-	$nonce = $data['nonce'];
-
-	$signature = getSignature($secretKey, $nonce);
-
-
-
-
-
-	// logData($nonce);
-	// logData($signature);
-
-
-
-	// sleep(45);
-
-
-
-
-
-	return $signature;
-
-}
-
-
-
-function logData($data)
-{
-	return;
-	$logs_directory = plugin_dir_path(__FILE__) . 'logs/';
-	$log_file = $logs_directory . 'order_log.json';
-	file_put_contents($log_file, json_encode($data), FILE_APPEND);
-
-
-
-}
-
 function customRestApiCallback()
 {
-
-
 	global $simplyin_config;
 
 	$base_url = home_url();
-
+	
 	$data = json_decode(file_get_contents("php://input"), true);
 
 	$endpoint = $data['endpoint'];
@@ -711,29 +606,23 @@ function customRestApiCallback()
 		$token = '';
 	}
 
-
-	$delimiter = "[{;;}]";
 	$apiKey = get_option('simplyin_api_key');
-	$parts = explode($delimiter, $apiKey);
 
-	// $secretKey = $parts[0];
-	$publicKey = $parts[1];
-
-	if (empty($publicKey)) {
-		$body['apiKey'] = $apiKey;
-
-	} else {
-		$signature = generateSignature();
-		$body['signature'] = $signature;   //signature
-
+	if (empty($apiKey)) {
+		http_response_code(400);  // Bad Request
+		echo "Error: Simplyin API key is empty";
+		return;
 	}
 
-
-
-	// $body['signature'] = $signature;   //signature
-	// $body['apiKey'] = $apiKey;   // do wywalenia
+	$body['apiKey'] = $apiKey;
 	$body["shopName"] = get_bloginfo('name');
 
+
+
+	if (empty($apiKey)) {
+		echo "Simplyin apikey is empty";
+		return;
+	}
 
 	update_option('Backend_SimplyIn', $simplyin_config['backendSimplyIn']);
 
@@ -767,9 +656,6 @@ function customRestApiCallback()
 	$response = curl_exec($ch);
 
 
-	// logData($response);
-
-
 	curl_close($ch);
 	echo $response;
 }
@@ -788,26 +674,11 @@ function sendPostRequest($bodyData, $endpoint, $token)
 		echo "Error: Simplyin API key is empty";
 		return;
 	}
-
+	$bodyData['merchantApiKey'] = $merchantToken;
 	$bodyData["shopName"] = get_bloginfo('name');
 
-
-	$delimiter = "[{;;}]";
-	$apiKey = get_option('simplyin_api_key');
-	$parts = explode($delimiter, $apiKey);
-	$publicKey = $parts[1];
-
-	if (empty($publicKey)) {
-		$bodyData['merchantApiKey'] = $apiKey;
-	} else {
-		$signature = generateSignature();
-		$bodyData['signature'] = $signature;
-
-	}
-
-
 	$base_url = home_url();
-
+	// $headers = array('Content-Type: application/json', 'Origin: ' . $base_url);
 	$headers = array(CONTENT_TYPE_JSON, 'Origin: ' . $base_url);
 
 	global $simplyin_config;
@@ -854,6 +725,9 @@ add_action('woocommerce_checkout_order_created', 'onOrderCreate', 10, 3);
 
 function onOrderCreate($order)
 {
+	// $logs_directory = plugin_dir_path(__FILE__) . 'logs/';
+	// $log_file = $logs_directory . 'order_log.json';
+	// file_put_contents($log_file, json_encode($order), FILE_APPEND);
 
 	global $woocommerce;
 	$plugin_version = get_plugin_version();
@@ -937,7 +811,7 @@ function get_order_items_data($order)
 			];
 		}
 	}
-	// logData($items_data);
+
 	return $items_data;
 }
 
