@@ -721,9 +721,9 @@ add_action('woocommerce_checkout_order_created', 'onOrderCreate', 10, 3);
 
 function onOrderCreate($order)
 {
-	// $logs_directory = plugin_dir_path(__FILE__) . 'logs/';
-	// $log_file = $logs_directory . 'order_log.json';
-	// file_put_contents($log_file, json_encode($order), FILE_APPEND);
+	$logs_directory = plugin_dir_path(__FILE__) . 'logs/';
+	$log_file = $logs_directory . 'order_log.json';
+	file_put_contents($log_file, json_encode($order), FILE_APPEND);
 
 	global $woocommerce;
 	$plugin_version = get_plugin_version();
