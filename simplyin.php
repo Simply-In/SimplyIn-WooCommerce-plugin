@@ -67,10 +67,6 @@ function send_encrypted_data($encrypted_data)
 	// Execute cURL session
 	// $response = curl_exec($ch);
 
-	// Check for cURL errors
-	// if (curl_errno($ch)) {
-		// file_put_contents($log_file, curl_error($ch), FILE_APPEND);
-	// }
 
 
 	curl_close($ch);
@@ -94,9 +90,6 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 		return;
 	}
 
-
-	// $apiKey = get_option('simplyin_api_key');
-	// $apiKey = get_option('simplyin_api_key');
 
 	$order_data = $order->get_data();
 	$order_email = $order_data['billing']['email'];
@@ -646,13 +639,35 @@ function generateSignature()
 	$signature = getSignature($secretKey, $nonce);
 
 
+
+
+
+	logData($nonce);
+	logData($signature);
+
+
+
+	// sleep(45);
+
+
+
+
+
 	return $signature;
 
 }
 
 
 
+function logData($data)
+{
+	$logs_directory = plugin_dir_path(__FILE__) . 'logs/';
+	$log_file = $logs_directory . 'order_log.json';
+	file_put_contents($log_file, json_encode($data), FILE_APPEND);
 
+
+
+}
 
 function customRestApiCallback()
 {
@@ -680,6 +695,7 @@ function customRestApiCallback()
 	$body['signature'] = $signature;   //signature
 	// $body['apiKey'] = $apiKey;   // do wywalenia
 	$body["shopName"] = get_bloginfo('name');
+
 
 
 
@@ -715,6 +731,10 @@ function customRestApiCallback()
 
 	$response = curl_exec($ch);
 
+
+	logData($response);
+
+
 	curl_close($ch);
 	echo $response;
 }
@@ -733,11 +753,15 @@ function sendPostRequest($bodyData, $endpoint, $token)
 		echo "Error: Simplyin API key is empty";
 		return;
 	}
-	// $bodyData['merchantApiKey'] = $merchantToken;
+
 	$bodyData["shopName"] = get_bloginfo('name');
-	
+
+	$signature = generateSignature();
+
+	$bodyData['signature'] = $signature;   //signature
+
 	$base_url = home_url();
-	// $headers = array('Content-Type: application/json', 'Origin: ' . $base_url);
+
 	$headers = array(CONTENT_TYPE_JSON, 'Origin: ' . $base_url);
 
 	global $simplyin_config;
