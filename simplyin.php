@@ -96,6 +96,7 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 
 
 	// $apiKey = get_option('simplyin_api_key');
+	// $apiKey = get_option('simplyin_api_key');
 
 	$order_data = $order->get_data();
 	$order_email = $order_data['billing']['email'];
@@ -165,6 +166,7 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 		"email" => $order_email,
 		"shopOrderNumber" => $order_data['id'],
 		"newOrderStatus" => $new_status,
+		"signature" => $signature,
 		"signature" => $signature,
 		"trackings" => $tracking_numbers
 	);
@@ -665,10 +667,18 @@ function generateSignature()
 }
 
 
+
+
+
 function customRestApiCallback()
 {
 
+
 	global $simplyin_config;
+
+
+
+	// return
 
 
 
@@ -689,6 +699,10 @@ function customRestApiCallback()
 
 
 
+	$signature = generateSignature();
+	$body['signature'] = $signature;   //signature
+	// $body['apiKey'] = $apiKey;   // do wywalenia
+	$body["shopName"] = get_bloginfo('name');
 	$signature = generateSignature();
 	$body['signature'] = $signature;   //signature
 	// $body['apiKey'] = $apiKey;   // do wywalenia
@@ -746,6 +760,8 @@ function sendPostRequest($bodyData, $endpoint, $token)
 		echo "Error: Simplyin API key is empty";
 		return;
 	}
+	// $bodyData['merchantApiKey'] = $merchantToken;
+	$bodyData["shopName"] = get_bloginfo('name');
 	// $bodyData['merchantApiKey'] = $merchantToken;
 	$bodyData["shopName"] = get_bloginfo('name');
 
