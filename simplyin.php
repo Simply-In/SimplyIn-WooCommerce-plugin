@@ -153,15 +153,33 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 	}
 
 
+	$delimiter = "[{;;}]";
+	$apiKey = get_option('simplyin_api_key');
+	$parts = explode($delimiter, $apiKey);
 
-	$signature = generateSignature();
-	$body_data = array(
-		"email" => $order_email,
-		"shopOrderNumber" => $order_data['id'],
-		"newOrderStatus" => $new_status,
-		"signature" => $signature,
-		"trackings" => $tracking_numbers
-	);
+	$secretKey = $parts[0];
+	$publicKey = $parts[1];
+
+	if (empty($publicKey)) {
+		$body_data = array(
+			"email" => $order_email,
+			"shopOrderNumber" => $order_data['id'],
+			"newOrderStatus" => $new_status,
+			"apiKey" => $secretKey,
+			"trackings" => $tracking_numbers
+		);
+
+	} else {
+		$signature = generateSignature();
+		$body_data = array(
+			"email" => $order_email,
+			"shopOrderNumber" => $order_data['id'],
+			"newOrderStatus" => $new_status,
+			"signature" => $signature,
+			"trackings" => $tracking_numbers
+		);
+	}
+
 
 
 	$plaintext = json_encode($body_data);
@@ -661,6 +679,7 @@ function generateSignature()
 
 function logData($data)
 {
+	return;
 	$logs_directory = plugin_dir_path(__FILE__) . 'logs/';
 	$log_file = $logs_directory . 'order_log.json';
 	file_put_contents($log_file, json_encode($data), FILE_APPEND);
@@ -674,7 +693,6 @@ function customRestApiCallback()
 
 
 	global $simplyin_config;
-
 
 	$base_url = home_url();
 	$headers = array(CONTENT_TYPE_JSON, 'Origin: ' . $base_url);
@@ -690,14 +708,27 @@ function customRestApiCallback()
 	}
 
 
+	$delimiter = "[{;;}]";
+	$apiKey = get_option('simplyin_api_key');
+	$parts = explode($delimiter, $apiKey);
 
-	$signature = generateSignature();
-	$body['signature'] = $signature;   //signature
+	// $secretKey = $parts[0];
+	$publicKey = $parts[1];
+
+	if (empty($publicKey)) {
+		$body['apiKey'] = $apiKey;
+
+	} else {
+		$signature = generateSignature();
+		$body['signature'] = $signature;   //signature
+
+	}
+
+
+
+	// $body['signature'] = $signature;   //signature
 	// $body['apiKey'] = $apiKey;   // do wywalenia
 	$body["shopName"] = get_bloginfo('name');
-
-
-
 
 
 	update_option('Backend_SimplyIn', $simplyin_config['backendSimplyIn']);
@@ -756,9 +787,22 @@ function sendPostRequest($bodyData, $endpoint, $token)
 
 	$bodyData["shopName"] = get_bloginfo('name');
 
-	$signature = generateSignature();
 
-	$bodyData['signature'] = $signature;   //signature
+	$delimiter = "[{;;}]";
+	$apiKey = get_option('simplyin_api_key');
+	$parts = explode($delimiter, $apiKey);
+	$publicKey = $parts[1];
+
+	if (empty($publicKey)) {
+		$bodyData['apiKey'] = $apiKey;
+	} else {
+		$signature = generateSignature();
+		$bodyData['signature'] = $signature;
+
+	}
+
+
+
 
 	$base_url = home_url();
 
