@@ -1,4 +1,4 @@
-import { Grid, InputAdornment, TextField, Typography } from '@mui/material'
+import { Grid, InputAdornment, TextField } from '@mui/material'
 import { useContext } from 'react'
 
 import { EditFormTitle } from '../../SimplyID.styled';
