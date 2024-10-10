@@ -670,7 +670,7 @@ function sendPostRequest($bodyData, $endpoint, $token)
 		return;
 	}
 	$bodyData['merchantApiKey'] = $merchantToken;
-
+	$bodyData["shopName"] = get_bloginfo('name');
 
 	$base_url = home_url();
 	// $headers = array('Content-Type: application/json', 'Origin: ' . $base_url);
