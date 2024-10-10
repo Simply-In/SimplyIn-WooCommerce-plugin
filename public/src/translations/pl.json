@@ -58,7 +58,11 @@
 			"point": "Punkt",
 			"pudo": "Punkty odbioru",
 			"parcelMachines": "Paczkomaszyny",
-			"PudoAndParcelMachines": "Wybierz paczkomaszynę lub punkt odbioru"
+			"PudoAndParcelMachines": "Wybierz paczkomaszynę lub punkt odbioru",
+			"paymentMethod": "Metoda płatności",
+			"addNewPaymentMethod": "Dodaj nową metodę płatności",
+			"paymentMethodNotSelected": "Metoda płatności nie została wybrana"
+
 		},
 		"modal-step-rejected": {
 			"loginRejected": "Logowanie odrzucone"
@@ -99,7 +103,13 @@
 			"searchAddress": "Wyszukaj adres",
 			"noPointFound": "Nie znaleziono żadnych punktów w pobliżu podanego adresu",
 			"getTaxIdData": "Pobierz dane NIP",
-			"NoTaxIdData": "Brak danych NIP"
+			"NoTaxIdData": "Brak danych NIP",
+			"paymentMethod": "Metoda płatności",
+			"cardName": "Nazwa karty",
+			"cardProvider": "Typ karty",
+			"cardNumber": "Numer karty",
+			"paymentMethodNameRequired": "Nazwa metody płatności jest wymagana"
+
 		},
 		"countries": {
 			"AF": "Afganistan",

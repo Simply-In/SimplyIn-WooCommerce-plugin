@@ -59,7 +59,11 @@
 			"point": "Point",
 			"pudo": "Pick-up point",
 			"parcelMachines": "APM",
-			"PudoAndParcelMachines": "Select a parcel machine or pick-up point"
+			"PudoAndParcelMachines": "Select a parcel machine or pick-up point",
+			"paymentMethod": "Payment method",
+			"addNewPaymentMethod": "Add new payment method",
+			"paymentMethodNotSelected": "Payment method not selected"
+
 		},
 		"modal-step-rejected": {
 			"loginRejected": "Login rejected"
@@ -100,7 +104,13 @@
 			"searchAddress": "Search address",
 			"noPointFound": "No points found near the specified address",
 			"getTaxIdData": "Get tax ID data",
-			"NoTaxIdData": "No tax ID data"
+			"NoTaxIdData": "No tax ID data",
+			"paymentMethod": "Payment method",
+			"cardName": "Card name",
+			"cardProvider": "Card provider",
+			"cardNumber": "Card number",
+			"paymentMethodNameRequired": "Payment method name is required"
+
 
 		},
 		"countries": {

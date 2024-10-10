@@ -56,7 +56,10 @@ export const SimplyID = () => {
 		selectedTab,
 		setSelectedTab,
 		deliveryType,
-		setDeliveryType
+		setDeliveryType,
+
+		selectedPaymentIndex,
+		setSelectedPaymentIndex
 
 
 	} = useSelectedSimplyData();
@@ -131,6 +134,7 @@ export const SimplyID = () => {
 		setSimplyInput(e.target.value)
 		sessionStorage.removeItem("simplyinToken")
 		sessionStorage.removeItem("UserData")
+		sessionStorage.removeItem("paymentDetails")
 	}
 
 	const handleClosePopup = () => {
@@ -304,7 +308,10 @@ export const SimplyID = () => {
 			downloadIconsAllowed,
 			selectedTab,
 			setSelectedTab,
-			deliveryType, setDeliveryType
+			deliveryType,
+			setDeliveryType,
+			selectedPaymentIndex,
+			setSelectedPaymentIndex
 
 		}
 	}, [selectedBillingIndex,
@@ -320,7 +327,10 @@ export const SimplyID = () => {
 		downloadIconsAllowed,
 		selectedTab,
 		setSelectedTab,
-		deliveryType, setDeliveryType
+		deliveryType,
+		setDeliveryType,
+		selectedPaymentIndex,
+		setSelectedPaymentIndex
 	])
 
 

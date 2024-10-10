@@ -26,6 +26,8 @@ export const useSelectedSimplyData = () => {
 	const [selectedTab, setSelectedTab] = useState<TabType>(SelectedTab || "parcel_machine");
 	const [deliveryType, setDeliveryType] = useState<DeliveryType>(isNumber(ParcelIndex) ? "machine" : "address");
 
+	const [selectedPaymentIndex, setSelectedPaymentIndex] = useState<number | null>(null);
+
 
 	return {
 		selectedBillingIndex,
@@ -41,6 +43,8 @@ export const useSelectedSimplyData = () => {
 		selectedTab,
 		setSelectedTab,
 		deliveryType,
-		setDeliveryType
+		setDeliveryType,
+		selectedPaymentIndex,
+		setSelectedPaymentIndex
 	};
 } 

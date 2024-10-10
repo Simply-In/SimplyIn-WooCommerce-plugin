@@ -34,7 +34,6 @@ $env = parse_ini_file('.env');
 $backendEnvironment = $env['BACKEND_ENVIRONMENT_DEV'];
 
 
-
 $simplyin_plugin = new SimplyIn();
 $simplyin_plugin->run();
 

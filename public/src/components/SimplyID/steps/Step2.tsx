@@ -28,6 +28,8 @@ import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import { DeliveryType, isNumber } from '../../../hooks/useSelectedSimplyData';
 import { loadDataFromSessionStorage } from '../../../services/sessionStorageApi';
+import { Step2PaymentSection } from './components/step-2-payment-section';
+import { Step2PaymentForm } from './components/Step2FormPaymentEdit';
 
 interface IStep2 {
 	handleClosePopup: () => void;
@@ -38,11 +40,18 @@ interface IStep2 {
 	setEditItemIndex: any,
 }
 
+export type expandedType = {
+	billing: boolean,
+	shipping: boolean,
+	deliveryPoint: boolean,
+	paymentDetails: boolean
+}
+
 interface ExpandMoreProps extends IconButtonProps {
 	expand: boolean;
 }
 
-const ExpandMore = styled((props: ExpandMoreProps) => {
+export const ExpandMore = styled((props: ExpandMoreProps) => {
 	const { ...other } = props;
 	return <IconButton {...other} />;
 })(({ theme, expand }) => ({
@@ -57,13 +66,20 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
 
 export type TabType = "parcel_machine" | "service_point"
 
+
+
+export type RadioPropertiesNamesType = "billing" | "shipping" | "parcelLockers" | "paymentDetails"
+
+export type DataPropertiesNames = "billingAddresses" | "shippingAddresses" | "parcelLockers" | "paymentDetails"
+
 export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUserData, editItemIndex, setEditItemIndex }: IStep2) => {
 	const { t } = useTranslation();
 
 	const [expanded, setExpanded] = useState({
 		billing: true,
 		shipping: false,
-		deliveryPoint: true
+		deliveryPoint: true,
+		paymentDetails: false
 	});
 
 	const {
@@ -75,16 +91,14 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 		setSameDeliveryAddress,
 		selectedDeliveryPointIndex,
 		setSelectedDeliveryPointIndex,
-
 		pickupPointDelivery,
 		setPickupPointDelivery,
-
 		selectedTab,
 		setSelectedTab,
-
 		deliveryType,
-		setDeliveryType
-
+		setDeliveryType,
+		selectedPaymentIndex,
+		setSelectedPaymentIndex
 
 	} = useContext(SelectedDataContext)
 
@@ -95,7 +109,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 		setSelectedDeliveryPointIndex(selectedShippingIndex || 0)
 	};
 
-	const handleExpandClick = (property: "billing" | "shipping" | "deliveryPoint", value?: boolean) => {
+	const handleExpandClick = (property: keyof expandedType, value?: boolean) => {
 
 		setExpanded((prev) => {
 			return ({ ...prev, [property]: value ?? !prev[property] })
@@ -103,7 +117,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 	};
 
 	//handling of selected address change
-	const handleChange = (event: React.ChangeEvent<HTMLInputElement>, type: "billing" | "shipping" | "parcelLockers") => {
+	const handleChange = (event: React.ChangeEvent<HTMLInputElement>, type: RadioPropertiesNamesType) => {
 		if (type === "billing") {
 			setSelectedBillingIndex(+(event.target as HTMLInputElement).value);
 		}
@@ -116,10 +130,19 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 			setSelectedDeliveryPointIndex(+(event.target as HTMLInputElement).value);
 			setPickupPointDelivery(true)
 		}
+		else if (type === "paymentDetails") {
+
+			setSelectedPaymentIndex((prev: number | null) => {
+
+
+
+				return prev === +(event.target as HTMLInputElement).value ? null : +(event.target as HTMLInputElement).value
+			})
+		}
 
 	}
 
-	const handleAddNewData = (property: "billingAddresses" | "shippingAddresses" | "parcelLockers") => {
+	const handleAddNewData = (property: DataPropertiesNames) => {
 		setEditItemIndex({ property: property, itemIndex: userData[property]?.length ? userData[property]?.length : 0, isNewData: true })
 	}
 
@@ -136,13 +159,15 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 				sessionStorage.setItem("ShippingIndex", `${selectedShippingIndex}`)
 				sessionStorage.setItem("ParcelIndex", `null`)
 				sessionStorage.setItem("SelectedTab", `${selectedTab}`)
+				sessionStorage.setItem("paymentDetails", `${selectedPaymentIndex}`)
 
 
 				return ({
 					...prev,
 					billingAddresses: userData?.billingAddresses[selectedBillingIndex || 0],
 					shippingAddresses: (selectedShippingIndex !== null && userData?.shippingAddresses?.length) ? userData?.shippingAddresses[selectedShippingIndex || 0] : null,
-					parcelLockers: null
+					parcelLockers: null,
+					paymentDetails: selectedPaymentIndex
 
 				})
 			})
@@ -152,12 +177,14 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 				sessionStorage.setItem("ShippingIndex", `null`)
 				sessionStorage.setItem("ParcelIndex", `${selectedDeliveryPointIndex}`)
 				sessionStorage.setItem("SelectedTab", `${selectedTab}`)
+				sessionStorage.setItem("paymentDetails", `${selectedPaymentIndex}`)
 
 				return ({
 					...prev,
 					billingAddresses: userData?.billingAddresses[selectedBillingIndex || 0],
 					shippingAddresses: null,
-					parcelLockers: filteredParcelLockers[selectedDeliveryPointIndex]?.lockerId || null
+					parcelLockers: filteredParcelLockers[selectedDeliveryPointIndex]?.lockerId || null,
+					paymentDetails: selectedPaymentIndex
 				})
 			})
 			if (selectedDeliveryPointIndex !== undefined) {
@@ -230,6 +257,12 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 	}, [])
 
 
+	useEffect(() => {
+		console.log("editItemIndex", editItemIndex);
+
+	}, [editItemIndex])
+
+
 
 
 	return (
@@ -261,7 +294,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 					{userData?.billingAddresses?.length
 						?
 						<DataValueContainer style={{ padding: 8 }}>
-							<DataValueTitle>{userData?.billingAddresses[selectedBillingIndex || 0]?.addressName ?? <>{t('modal-step-2.address')}{" "}{(+selectedBillingIndex || 0) + 1}</>}</DataValueTitle>
+							<DataValueTitle>{userData?.billingAddresses[selectedBillingIndex || 0]?.icon ? <>{userData?.billingAddresses[selectedBillingIndex || 0]?.icon}{" "}</> : <></>}{userData?.billingAddresses[selectedBillingIndex || 0]?.addressName ?? <>{t('modal-step-2.address')}{" "}{(+selectedBillingIndex || 0) + 1}</>}</DataValueTitle>
 							{userData?.billingAddresses &&
 								<DataValueLabel>
 									{userData?.billingAddresses[selectedBillingIndex || 0]?.street || ""}
@@ -292,7 +325,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 											<FormControlLabel value={index} control={<Radio />}
 												label={
 													<DataValueContainer>
-														<DataValueTitle>{el?.addressName ? el.addressName : <>{t('modal-step-2.address')}{" "}{index + 1}</>}</DataValueTitle>
+														<DataValueTitle>{el?.icon ? <>{el?.icon}{" "}</> : <></>}{el?.addressName ? el.addressName : <>{t('modal-step-2.address')}{" "}{index + 1}</>}</DataValueTitle>
 														<DataValueLabel>{el?.street || ""}
 															{el?.appartmentNumber.length ? "/" + el?.appartmentNumber : ""}
 															{", " + el?.city || ""}</DataValueLabel>
@@ -369,6 +402,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 								{!sameDeliveryAddress && (selectedShippingIndex !== null && !isNaN(selectedShippingIndex)) &&
 									<>
 										<DataValueTitle>
+										{userData?.billingAddresses[selectedShippingIndex]?.icon ? <>{userData?.billingAddresses[selectedShippingIndex]?.icon}{" "}</> : <></>}
 										{userData?.shippingAddresses[selectedShippingIndex]?.addressName ?? <>{t('modal-step-2.address')} {+selectedShippingIndex + 1}</>}
 										</DataValueTitle>
 										{userData?.shippingAddresses &&
@@ -405,7 +439,9 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 												<FormControlLabel value={index} control={<Radio />}
 													label={
 														<DataValueContainer>
-															<DataValueTitle>{el?.addressName ? el?.addressName : <>{t('modal-step-2.address')}{" "}{index + 1}</>}</DataValueTitle>
+															<DataValueTitle>
+																{el?.icon ? <>{el?.icon}{" "}</> : <></>}
+																{el?.addressName ? el?.addressName : <>{t('modal-step-2.address')}{" "}{index + 1}</>}</DataValueTitle>
 															<DataValueLabel>
 																{el?.street || ""}
 																{el?.appartmentNumber.length ? "/" + el?.appartmentNumber : ""}
@@ -428,7 +464,9 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 						</CardContent>
 
 					</Collapse>
-					<AddNewData onClick={() => handleAddNewData("shippingAddresses")}>
+					<AddNewData onClick={() => handleAddNewData("shippingAddresses")} style={{
+						paddingBottom: 12, borderBottom: "1px solid #D9D9D9"
+					}} >
 						<PlusIcon />
 						<AddNewDataText>{t('modal-step-2.addNewShippingData')}</AddNewDataText>
 					</AddNewData>
@@ -619,6 +657,10 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 
 				}
 
+				<Step2PaymentSection expanded={expanded} handleExpandClick={handleExpandClick} handleChange={handleChange}
+					setUserData={setUserData} userData={userData} setEditItemIndex={setEditItemIndex}
+				/>
+
 
 				<div style={{
 					position: "sticky",
@@ -637,7 +679,7 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 					</Button>
 				</div>
 			</>}
-			{editItemIndex?.property &&
+			{editItemIndex?.property && editItemIndex?.property !== "paymentDetails" &&
 				<Step2Form
 					userData={userData}
 					isNewData={editItemIndex?.isNewData}
@@ -653,6 +695,18 @@ export const Step2 = ({ handleClosePopup, userData, setUserData, setSelectedUser
 
 				/>}
 
+			{editItemIndex?.property == "paymentDetails" &&
+				<Step2PaymentForm
+					userData={userData}
+					isNewData={editItemIndex?.isNewData}
+					setUserData={setUserData}
+					editItem={{ ...(editItemIndex), editData: (userData[editItemIndex?.property])[editItemIndex?.itemIndex] }}
+					selectedPaymentIndex={selectedPaymentIndex}
+					setSelectedPaymentIndex={setSelectedPaymentIndex}
+					setEditItemIndex={setEditItemIndex}
+
+				/>
+			}
 		</>
 	)
 }

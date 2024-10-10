@@ -36,7 +36,7 @@ color: #3167B9;
 `
 
 
-const PropertyNameOptions = ["billingAddresses", "shippingAddresses", "parcelLockers"] as const;
+const PropertyNameOptions = ["billingAddresses", "shippingAddresses", "parcelLockers", "paymentDetails"] as const;
 type PropertyName = typeof PropertyNameOptions[number];
 
 interface IContextMenu {
@@ -224,6 +224,7 @@ export const ContextMenu = ({ userData, element, item, setEditItemIndex, propert
 				{isDeletable() && <MenuItem onClick={handleDelete}><ContextMenuItemContentWrapper><DeleteIcon /> {t('modal-step-2.delete')}</ContextMenuItemContentWrapper></MenuItem>}
 			</Menu>
 			<Dialog open={openDialog} onClose={handleCloseDialog}>
+
 				<DialogTitle style={{ padding: "12px 24px" }}>
 					<Stack direction="row" justifyContent="space-between">
 
