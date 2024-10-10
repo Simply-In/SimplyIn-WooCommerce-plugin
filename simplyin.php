@@ -165,7 +165,7 @@ function onOrderUpdate($order_id, $old_status, $new_status, $order)
 			"email" => $order_email,
 			"shopOrderNumber" => $order_data['id'],
 			"newOrderStatus" => $new_status,
-			"apiKey" => $secretKey,
+			"merchantApiKey" => $secretKey,
 			"trackings" => $tracking_numbers
 		);
 
@@ -716,7 +716,7 @@ function customRestApiCallback()
 	$publicKey = $parts[1];
 
 	if (empty($publicKey)) {
-		$body['apiKey'] = $apiKey;
+		$body['merchantApiKey'] = $apiKey;
 
 	} else {
 		$signature = generateSignature();
@@ -794,7 +794,7 @@ function sendPostRequest($bodyData, $endpoint, $token)
 	$publicKey = $parts[1];
 
 	if (empty($publicKey)) {
-		$bodyData['apiKey'] = $apiKey;
+		$bodyData['merchantApiKey'] = $apiKey;
 	} else {
 		$signature = generateSignature();
 		$bodyData['signature'] = $signature;
