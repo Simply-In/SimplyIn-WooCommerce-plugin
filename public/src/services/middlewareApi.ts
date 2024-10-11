@@ -21,20 +21,11 @@ interface IMiddlewareApi {
 //@ts-ignore
 const { woocommerce_version, plugin_version, current_user } = appLocalizer;
 
-async function getLocalIP(): Promise<string | null> {
-	try {
-		const response = await fetch('https://api.ipify.org?format=json');
-		const data = await response.json();
-		return data.ip;
-	} catch (error) {
-		console.error('Error fetching IP address:', error);
-		return null; // Handle the error as needed
-	}
-}
+
 
 export const middlewareApi = async ({ endpoint, method, requestBody, token }: IMiddlewareApi) => {
 	try {
-		const ip = await getLocalIP();
+
 
 		if (endpoint !== "parcelLockers/getClosest") {
 			const response = await axios.post(`${shopBase}/wp-json/simplyin/data/`, {
@@ -42,7 +33,6 @@ export const middlewareApi = async ({ endpoint, method, requestBody, token }: IM
 				method,
 				requestBody: {
 					...requestBody,
-					ip: ip ?? "",
 					shopVersion: woocommerce_version,
 					plugin_version: plugin_version,
 					shopUserEmail: current_user?.data?.user_email || undefined,
