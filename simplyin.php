@@ -63,7 +63,7 @@ function send_encrypted_data($encrypted_data)
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Return the response as a string instead of outputting it
 
 	// Execute cURL session
-	$response = curl_exec($ch);
+	// $response = curl_exec($ch);
 
 	// Check for cURL errors
 	if (curl_errno($ch)) {
@@ -79,8 +79,7 @@ function send_encrypted_data($encrypted_data)
 function onOrderUpdate($order_id, $old_status, $new_status, $order)
 {
 
-	// $logs_directory = plugin_dir_path(__FILE__) . 'logs/';
-	// $log_file = $logs_directory . 'order_log.json';
+
 
 	$stopStatuses = [
 		"processing",
@@ -723,12 +722,18 @@ add_action('woocommerce_checkout_order_created', 'onOrderCreate', 10, 3);
 
 function onOrderCreate($order)
 {
+
 	global $woocommerce;
 	$plugin_version = get_plugin_version();
 	$woocommerce_version = get_option('woocommerce_version');
-
+	
 	$items_data = get_order_items_data($order);
 	$payment_method_data = get_payment_method_data($order);
+
+
+	$shipping_total = $order->get_shipping_total();
+	
+
 
 	$phoneAppInputField = get_sanitized_post_data_simplyin('phoneAppInputField');
 	$simplyin_Token_Input_Value = get_sanitized_post_data_simplyin('simplyinTokenInput');
@@ -740,7 +745,7 @@ function onOrderCreate($order)
 	$taxId = get_sanitized_post_data_simplyin($custom_tax_field_id);
 
 	if (should_create_new_account($create_new_accountVal, $simplyin_Token_Input_Value)) {
-		$body_data = build_new_account_order_data($order, $phoneAppInputField, $taxId, $parcel_machine_id, $items_data, $payment_method_data, $plugin_version, $woocommerce_version);
+		$body_data = build_new_account_order_data($order, $phoneAppInputField, $taxId, $parcel_machine_id, $items_data, $payment_method_data, $plugin_version, $woocommerce_version, $shipping_total);
 		$response = json_decode(sendPostRequest($body_data, 'checkout/createOrderAndAccount', ""));
                 if ($response && isset($response->createdOrder) && isset($response->createdOrder->shopOrderNumber) && $response->createdOrder->shopOrderNumber == $order->get_order_number()) {
                     $order->update_meta_data('SimplyInOrderId',$response->createdOrder->_id);
@@ -749,7 +754,7 @@ function onOrderCreate($order)
 
                 }
 	} elseif (has_auth_token($simplyin_Token_Input_Value)) {
-		$body_data = build_existing_account_order_data($order, $simplyin_Token_Input_Value, $simply_billing_id, $simply_shipping_id, $taxId, $parcel_machine_id, $items_data, $payment_method_data, $plugin_version, $woocommerce_version);
+		$body_data = build_existing_account_order_data($order, $simply_billing_id, $simply_shipping_id, $taxId, $parcel_machine_id, $items_data, $payment_method_data, $plugin_version, $woocommerce_version, $shipping_total);
 		$response = json_decode(sendPostRequest($body_data, 'checkout/createOrderWithoutAccount', $simplyin_Token_Input_Value));
                 if ($response && isset($response->createdOrder) && isset($response->createdOrder->shopOrderNumber) && $response->createdOrder->shopOrderNumber == $order->get_order_number()) {
                     $order->update_meta_data('SimplyInOrderId',$response->createdOrder->_id);
@@ -810,7 +815,7 @@ function has_auth_token($simplyin_Token_Input_Value)
 	return !empty($simplyin_Token_Input_Value);
 }
 
-function build_new_account_order_data($order, $phoneAppInputField, $taxId, $parcel_machine_id, $items_data, $payment_method_data, $plugin_version, $woocommerce_version)
+function build_new_account_order_data($order, $phoneAppInputField, $taxId, $parcel_machine_id, $items_data, $payment_method_data, $plugin_version, $woocommerce_version, $shipping_total)
 {
 	$locale = get_locale();
 	$languageCode = strtoupper(substr($locale, 0, 2));
@@ -834,6 +839,7 @@ function build_new_account_order_data($order, $phoneAppInputField, $taxId, $parc
 			"items" => $items_data,
 			"placedDuringAccountCreation" => true,
 			"billingData" => get_billing_data($order, $taxId),
+			"shippingPrice" => $shipping_total,
 			"shopName" => get_bloginfo('name'),
 			"pluginVersion" => $plugin_version,
 			"shopVersion" => $woocommerce_version,
@@ -853,7 +859,8 @@ function build_new_account_order_data($order, $phoneAppInputField, $taxId, $parc
 	return $body_data;
 }
 
-function build_existing_account_order_data($order, $simplyin_Token_Input_Value, $simply_billing_id, $simply_shipping_id, $taxId, $parcel_machine_id, $items_data, $payment_method_data, $plugin_version, $woocommerce_version)
+function build_existing_account_order_data($order, $simply_billing_id, $simply_shipping_id, $taxId, $parcel_machine_id, $items_data, $payment_method_data, $plugin_version, $woocommerce_version, $shipping_total)
+
 {
 	$billingData = get_billing_data($order, $taxId, $simply_billing_id);
 
@@ -867,6 +874,7 @@ function build_existing_account_order_data($order, $simplyin_Token_Input_Value, 
 			"items" => $items_data,
 			"placedDuringAccountCreation" => false,
 			"billingData" => $billingData,
+			"shippingPrice" => $shipping_total,
 			"shopName" => get_bloginfo('name'),
 			"pluginVersion" => $plugin_version,
 			"shopVersion" => $woocommerce_version,
