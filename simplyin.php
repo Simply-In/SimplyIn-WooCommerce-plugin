@@ -768,42 +768,7 @@ function get_plugin_version()
 	return $plugin_data['Version'];
 }
 
-// function get_order_items_data($order)
-// {
-// 	$items_data = [];
-// 	if ($order) {
-// 		$items = $order->get_items();
-// 		foreach ($items as $item) {
-// 			$product_id = $item->get_product_id();
-// 			$product = wc_get_product($product_id);
-// 			$items_data[] = [
-// 				'name' => $item->get_name(),
-// 				'url' => get_permalink($product_id),
-// 				'price' => (float) $order->get_item_total($item),
-// 				'quantity' => $item->get_quantity(),
-// 				'thumbnailUrl' => wp_get_attachment_image_url($product->get_image_id(), 'thumbnail') ?? "",
-// 				'currency' => $order->get_currency(),
-// 			];
-// 		}
-// 	}
 
-// 	return $items_data;
-// }
-
-// function logData($dataToLog)
-// {
-// 	// Define the logs directory and file
-// 	$logs_directory = plugin_dir_path(__FILE__) . 'logs/';
-// 	$log_file = $logs_directory . 'order_log.json';
-
-// 	// Create the logs directory if it doesn't exist
-// 	if (!file_exists($logs_directory)) {
-// 		mkdir($logs_directory, 0755, true);
-// 	}
-
-// 	// Append the data to the log file
-// 	file_put_contents($log_file, json_encode($dataToLog) . PHP_EOL, FILE_APPEND);
-// }
 
 
 function get_order_items_data($order)
@@ -841,7 +806,7 @@ function get_order_items_data($order)
 			];
 		}
 	}
-	// logData($items_data);
+
 	return $items_data;
 }
 
