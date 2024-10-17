@@ -771,6 +771,44 @@ function get_plugin_version()
 	return $plugin_data['Version'];
 }
 
+// function get_order_items_data($order)
+// {
+// 	$items_data = [];
+// 	if ($order) {
+// 		$items = $order->get_items();
+// 		foreach ($items as $item) {
+// 			$product_id = $item->get_product_id();
+// 			$product = wc_get_product($product_id);
+// 			$items_data[] = [
+// 				'name' => $item->get_name(),
+// 				'url' => get_permalink($product_id),
+// 				'price' => (float) $order->get_item_total($item),
+// 				'quantity' => $item->get_quantity(),
+// 				'thumbnailUrl' => wp_get_attachment_image_url($product->get_image_id(), 'thumbnail') ?? "",
+// 				'currency' => $order->get_currency(),
+// 			];
+// 		}
+// 	}
+
+// 	return $items_data;
+// }
+
+// function logData($dataToLog)
+// {
+// 	// Define the logs directory and file
+// 	$logs_directory = plugin_dir_path(__FILE__) . 'logs/';
+// 	$log_file = $logs_directory . 'order_log.json';
+
+// 	// Create the logs directory if it doesn't exist
+// 	if (!file_exists($logs_directory)) {
+// 		mkdir($logs_directory, 0755, true);
+// 	}
+
+// 	// Append the data to the log file
+// 	file_put_contents($log_file, json_encode($dataToLog) . PHP_EOL, FILE_APPEND);
+// }
+
+
 function get_order_items_data($order)
 {
 	$items_data = [];
@@ -779,19 +817,40 @@ function get_order_items_data($order)
 		foreach ($items as $item) {
 			$product_id = $item->get_product_id();
 			$product = wc_get_product($product_id);
+
+			// Get tax information for the item
+			$taxes = $item->get_taxes(); // This returns an array with tax data
+
+			$quantity = $item->get_quantity() ?? 1;
+
+			$tax_amount = array_sum($taxes['total']) / $quantity; // Sum of all tax amounts for the item
+
+			$tax_rate = $tax_amount > 0 ? ($tax_amount / $item->get_total()) * 100 : 0; // Calculate tax rate as a percentage
+
+			$price_net = (float) $order->get_item_total($item);
+
+			$price_total = (float) $price_net + $tax_amount;
+
 			$items_data[] = [
 				'name' => $item->get_name(),
 				'url' => get_permalink($product_id),
-				'price' => (float) $order->get_item_total($item),
-				'quantity' => $item->get_quantity(),
+				'price_net' => $price_net, // Item price excluding tax
+				'price' => $price_total,
+				'quantity' => $quantity,
+				'tax_amount' => (float) $tax_amount, // Tax amount for this item
+				'tax_rate' => (float) $tax_rate, // Tax rate for this item
 				'thumbnailUrl' => wp_get_attachment_image_url($product->get_image_id(), 'thumbnail') ?? "",
 				'currency' => $order->get_currency(),
 			];
 		}
 	}
+	// logData($items_data);
+
+
 
 	return $items_data;
 }
+
 
 function get_payment_method_data($order)
 {
@@ -892,6 +951,9 @@ function build_existing_account_order_data($order, $simply_billing_id, $simply_s
 		$shippingData = get_shipping_data($order, $simply_shipping_id);
 		$body_data["newOrderData"]["shippingData"] = $shippingData;
 	}
+
+
+	// logData($body_data);
 
 	return $body_data;
 }

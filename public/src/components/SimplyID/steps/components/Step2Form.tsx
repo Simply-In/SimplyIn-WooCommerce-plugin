@@ -321,7 +321,6 @@ export const Step2Form = ({
 					{!isDeliveryPoint &&
 						<EditFormAddress
 							control={control}
-							errors={errors}
 							isBillingAddress={isBillingAddress}
 							countryListSelect={countryListSelect}
 						/>
