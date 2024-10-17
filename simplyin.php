@@ -912,7 +912,6 @@ function build_existing_account_order_data($order, $simply_billing_id, $simply_s
 	}
 
 
-	// logData($body_data);
 
 	return $body_data;
 }
